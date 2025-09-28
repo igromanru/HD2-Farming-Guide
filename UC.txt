@@ -19,6 +19,11 @@ To reduce any friction, read the guide carefully and follow the steps.
 [SIZE="2"]Video Tutorial[/SIZE]
 [YOUTUBE_ID]epMbesuXneA[/YOUTUBE_ID]
 
+[I]Text based tutorial is on the ToDo list for later[/I]
+
+[B][SIZE="3"]Medals and Experience Farming[/SIZE][/B]
+[I]Guide is on the ToDo list for later[/I]
+
 [B][SIZE="3"]AutoIt Macro[/SIZE][/B]
 Part of the repo and the release includes a simple AutoIt macro script that presses the interaction key with the optimal order and timing to pick up as many Super Credits as possible, as quickly as possible.  
 You can edit the script to change how many SC you want to pick-up per run, change the interaction key (default `F`) or the hotkey for the Macro (default: `o`, and default `CTRL+Q` to cancel the macro).

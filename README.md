@@ -16,11 +16,10 @@ To reduce any friction, read the guide carefully and follow the steps.
 
 ## Super Credits Farming
 **[Video Tutorial](https://www.youtube.com/watch?v=epMbesuXneA)**  
-
+*Text-based tutorial is on the ToDo list for later*
 
 ## Medals and Experience Farming
-*On the ToDo*
-
+*Guide is on the ToDo list for later*
 
 ## AutoIt Macro
 Part of the repo and the release includes a simple [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) macro script that presses the interaction key with the optimal order and timing to pick up as many Super Credits as possible, as quickly as possible.  
