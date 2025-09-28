@@ -22,6 +22,10 @@ Func _CancelMacro()
 EndFunc
 
 Func PickUpLoop()
+    If Not WinActive($sGameWindow) Then
+        Return
+    EndIf
+
     For $i = 1 To $iPickUpsCount
         If $bCancelMacro Then
             $bCancelMacro = False
