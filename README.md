@@ -13,3 +13,15 @@ Hacking is not an exact science. Removing GameGuard from the game will sometimes
 To reduce any friction, read the guide carefully and follow the steps.
 
 ## Super Credits Farming
+
+## Medals and Expirience Farming
+
+## AutoIt Macro
+Part of the repo and the release includes a simple AutoIt macro script that presses the interaction key with the optimal order and timing to pick up as many Super Credits as possible, as quickly as possible.  
+
+
+
+## Abridged ED CT
+The CT that I provide contains only features that you need or are usefull for farming.  
+You can activate the  `Enable All` script to enable all scripts you need to start farming Super Credits.  
+But the `Samples, Exp and Medals scripts` section contains scripts for Medals and Expirience farming as werll.

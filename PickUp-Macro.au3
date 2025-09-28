@@ -4,6 +4,8 @@
 
 ; How many loops of 13 pick-ups will be run
 Global Const $iPickUpsCount = 15
+; Change to the interaction key that you use in the game
+Global Const $sInteractionKey = "F"
 
 HotKeySet("o", "PickUpLoop") ; Hotkey to start the pick up loop
 HotKeySet("^q", "_CancelMacro") ; Ctrl + Q to cancel the macro
@@ -32,7 +34,7 @@ Func PickUpLoop()
             If $bCancelMacro Then
                 ExitLoop
             EndIf
-            Send("F")
+            Send($sInteractionKey)
             Sleep(1000)
         Next
         BlockInput($BI_ENABLE)
