@@ -1,4 +1,4 @@
-##RequireAdmin
+#RequireAdmin
 
 #include <AutoItConstants.au3>
 

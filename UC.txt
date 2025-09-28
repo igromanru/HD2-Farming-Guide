@@ -1,0 +1,36 @@
+[B][SIZE="3"]The guide is currently based on the last Experimental Division Cheat Engine Table v4.0.0 release[/SIZE][/B]
+I made an abridge version of the [URL="https://www.unknowncheats.me/forum/helldivers-2-a/717822-experimental-division-ct-game-guard-bypass.html"]Experimental Division CT v4.0.0[/URL] for farming only.  
+It contains only features that you need to farm Super Credits, Medals and Experience.  
+
+[B][SIZE="3"]Required resources[/SIZE][/B]
+[LIST]
+[*]HD2 ED Farming table
+[*]Cheat Engine 7.5 or higher
+[*]My AutoIt PickUp Macro or similar
+[*]Installed AutoIt (if you want to use the script)
+[*]Understanding on how the game works
+[/LIST]
+
+[B][SIZE="3"]General Information (Important!)[/SIZE][/B]
+Hacking is not an "exact science". Removing GameGuard from the game will sometimes cause it to crash. Also, some features might cause crashes under different circumstances.  
+To reduce any friction, read the guide carefully and follow the steps.
+
+[B][SIZE="3"]Super Credits Farming[/SIZE][/B]
+[SIZE="2"]Video Tutorial[/SIZE]
+[YOUTUBE_ID]epMbesuXneA[/YOUTUBE_ID]
+
+[B][SIZE="3"]AutoIt Macro[/SIZE][/B]
+Part of the repo and the release includes a simple AutoIt macro script that presses the interaction key with the optimal order and timing to pick up as many Super Credits as possible, as quickly as possible.  
+You can edit the script to change how many SC you want to pick-up per run, change the interaction key (default `F`) or the hotkey for the Macro (default: `o`, and default `CTRL+Q` to cancel the macro).
+
+[B][SIZE="3"]Abridged ED CT[/SIZE][/B]
+The CT that I provide contains only features that you need or are useful for farming.  
+You can activate the  `Enable All` script to enable all scripts you need to start farming Super Credits.  
+But the `Samples, Exp and Medals scripts` section contains scripts for Medals and Experience farming as well.  
+I've signed the table with my own signature to allow users to use the option "Execute Lua script: `Only when signed, else ask`", which will execute the Lua script with GameGuard Bypass as soon you open the table.
+
+[SIZE="3"][B]Download[/B][/SIZE]
+[B][URL="https://www.unknowncheats.me/forum/downloads.php?do=file&id=51369"]Latest (v1.0.0)[/URL][/B]
+[SPOILER="Changelog"]
+v1.0.0 - 28.09.2025:
+- Initial release[/SPOILER][B]Previous versions[/B]
