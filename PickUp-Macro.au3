@@ -2,13 +2,14 @@
 
 #include <AutoItConstants.au3>
 
-Const $iPickUpsCount = 15
+; How many loops of 13 pick-ups will be run
+Global Const $iPickUpsCount = 15
 
 HotKeySet("o", "PickUpLoop") ; Hotkey to start the pick up loop
 HotKeySet("^q", "_CancelMacro") ; Ctrl + Q to cancel the macro
 
-Const $sScriptName = "Helldivers 2 SC PickUp Macro by Igromanru"
-Const $sGameWindow = "HELLDIVERS™ 2"
+Global Const $sScriptName = "Helldivers 2 PickUp Macro by Igromanru"
+Global Const $sGameWindow = "HELLDIVERS™ 2"
 Global $bCancelMacro = False
 
 AutoItSetOption("SendKeyDelay", 10)
@@ -26,6 +27,7 @@ Func PickUpLoop()
         EndIf
         ; Pick up 13 times
         BlockInput($BI_DISABLE)
+        WinActivate($sGameWindow)
         For $s = 1 To 13
             If $bCancelMacro Then
                 ExitLoop
