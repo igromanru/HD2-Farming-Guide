@@ -40,7 +40,7 @@ Func PickUpLoop()
         BlockInput($BI_ENABLE)
         ; Sleep loop with ability to cancel
         if $i < $iPickUpsCount Then
-            For $s = 1 To 600
+            For $s = 1 To 590 ; 59sec + 1s sleep after input
                 If $bCancelMacro Then
                     ExitLoop
                 EndIf
