@@ -34,6 +34,10 @@ You can activate the  `Enable All` script to enable all scripts you need to star
 But the `Samples, Exp and Medals scripts` section contains scripts for Medals and Experience farming as well.  
 I've signed the table with my own signature to allow users to use the option "Execute Lua script: `Only when signed, else ask`", which will execute the Lua script with GameGuard Bypass as soon you open the table.
 
+[B][SIZE="3"]Contribution[/SIZE][/B]
+If you have different or better methods to farm, feel free to post them.
+I’ll add the best method to the guide and give you credit.
+
 [SIZE="3"][B]Download[/B][/SIZE]
 [B][URL="https://www.unknowncheats.me/forum/downloads.php?do=file&id=51369"]Latest (v1.0.0)[/URL][/B]
 [SPOILER="Changelog"]
