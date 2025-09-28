@@ -1,0 +1,4043 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="45">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>118846</ID>
+      <Description>"ED Farming Only"</Description>
+      <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+      <Color>00D7FF</Color>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>//Author : Zodiac
+
+{$lua}
+if syntaxcheck then return end
+
+[ENABLE]
+
+local first_scans = {
+    damageAddrFindScan    = '85 C9 75 ? 48 8D 05 ? ? ? ? C3 8B C1 48 8D 0D ? ? ? ? 48 8B 04 C1 C3 CC CC CC CC CC CC 48 8B C4', --Unique
+    explosionAddrFindScan = '85 C9 75 ? 48 8D 05 ? ? ? ? C3 8B C1 48 8D 0D ? ? ? ? 48 8B 04 C1 C3 CC CC CC CC CC CC 8? ? ? ?3', --Unique
+    projAddrFindScan      = '85 C9 75 ? 48 8D 05 ? ? ? ? C3 8B C1 48 8D 0D ? ? ? ? 48 8B 04 C1 C3  CC CC CC CC CC CC 40 55 48 8B EC', --Unique
+    arcAddrFindScan       = '85 C9 75 ? 48 8D 05 ? ? ? ? C3 8B C1 48 8D 0D ? ? ? ? 48 8B 04 C1 C3 CC CC CC CC CC CC 8B C1 48 8D 0D ? ? ? ? 48 8B 04 C1', --Unique
+    beamAddrFindScan      = '85 C9 75 ? 48 8D 05 ? ? ? ? C3 8B C1 48 8D 0D ? ? ? ? 48 8B 04 C1 C3 CC CC CC CC CC CC 8B C1 48 8D 0D ? ? ? ? F3 0F 10 04 81', --Unique
+    stratAddrFindScan     = '85 C9 75 ? 48 8D 05 ? ? ? ? C3 8B C1 48 8D 0D ? ? ? ? 48 8B 04 C1 C3 CC CC CC CC CC CC 40 53 48 83 EC 20', --Unique
+    statusAddrFindScan    = '48 63 C1 48 8D 0D ? ? ? ? 48 8B 04 C1 C3 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC C2 00 00' --Unique
+}
+
+for scansname, pattern in pairs(first_scans) do
+    _G[scansname] = AOBScanModuleUnique('game.dll', pattern)
+    if not _G[scansname] then
+        showMessage("Some of required addresses were not found!\nPlease restart the game.")
+        error()
+        return
+    end
+end
+
+local scan_symbols = {
+  'damageAddrFindScan',
+  'explosionAddrFindScan',
+  'projAddrFindScan',
+  'arcAddrFindScan',
+  'beamAddrFindScan',
+  'stratAddrFindScan',
+  'statusAddrFindScan'
+}
+
+for _, scan_symbol in ipairs(scan_symbols) do
+  registerSymbol(scan_symbol, _G[scan_symbol], true)
+end
+
+local find_names = {
+  "damageAddrFind",
+  "explosionAddrFind",
+  "projAddrFind",
+  "arcAddrFind",
+  "beamAddrFind",
+  "stratAddrFind",
+  "statusAddrFind"
+}
+
+local find_offsets = {14, 14, 14, 14, 14, 14, 3}
+
+for i, find_name in ipairs(find_names) do
+  local scanname_find = find_name .. "Scan"
+  _G[find_name] = _G[scanname_find] + find_offsets[i]
+end
+
+local find_symbols = {
+  'damageAddrFind',
+  'explosionAddrFind',
+  'projAddrFind',
+  'arcAddrFind',
+  'beamAddrFind',
+  'stratAddrFind',
+  'statusAddrFind'
+}
+
+for _, find_symbol in ipairs(find_symbols) do
+  registerSymbol(find_symbol, _G[find_symbol], true)
+end
+
+local markSymbolNames = {
+  "damage",
+  "explosion",
+  "proj",
+  "arc",
+  "beam",
+  "strat",
+  "status"
+}
+
+local finalSymbolNames = {}
+
+for _, markSymbolName in ipairs(markSymbolNames) do
+  if markSymbolName == "proj" or markSymbolName == "arc" or markSymbolName == "beam" then
+    table.insert(finalSymbolNames, "address_" .. markSymbolName)
+  else
+    table.insert(finalSymbolNames, markSymbolName .. "Addr")
+  end
+end
+
+for i, markSymbolName in ipairs(markSymbolNames) do
+  local findSymbolName = markSymbolName .. "AddrFind"
+  local findSymbol = _G[findSymbolName]
+  local finalSymbolName = finalSymbolNames[i]
+  _G[finalSymbolName] = findSymbol + readInteger(findSymbol + 3) + 7
+end
+
+local final_symbols = {
+  'damageAddr',
+  'explosionAddr',
+  'address_proj',
+  'address_arc',
+  'address_beam',
+  'stratAddr',
+  'statusAddr'
+}
+
+for _, final_symbol in ipairs(final_symbols) do
+  registerSymbol(final_symbol, _G[final_symbol], true)
+end
+
+local countBytesFinal = {
+    damageAddr    = "countDamageMaxIDaddr",
+    explosionAddr = "countExplosionMaxIDaddr",
+    address_proj  = "countProjectileMaxIDaddr",
+    address_arc   = "countArcMaxIDaddr",
+    address_beam  = "countBeamMaxIDaddr",
+    stratAddr     = "countStratMaxIDaddr",
+    statusAddr    = "countStatusMaxIDaddr"
+}
+
+for scanKey, globalName in pairs(countBytesFinal) do
+    _G[globalName] = getAddressSafe(scanKey)
+    if _G[globalName] then
+        _G[globalName] = _G[globalName] + 8
+    else
+        showMessage("Some of required addresses were not found!\nPlease restart the game.")
+        error()
+        return
+    end
+end
+
+function getMaxID(countMaxIDAddresses)
+  local maxID      = nil
+  local lastID     = 0
+  local countMaxID = 0
+
+  while true do
+    local IDpointer = readPointer(countMaxIDAddresses + 8 * countMaxID)
+    local IDvalue   = readInteger(IDpointer)
+
+    if not IDvalue or IDvalue &lt;= 0 then
+      break
+    end
+
+    if IDvalue ~= lastID + 1 then
+      break
+    end
+
+    maxID      = IDvalue
+    lastID     = IDvalue
+    countMaxID = countMaxID + 1
+  end
+
+  if maxID == nil then
+    return 1
+  else
+    return maxID
+  end
+end
+
+function calculateMaxIDs()
+    maxDamageID     = getMaxID(countDamageMaxIDaddr)
+    maxExplosionID  = getMaxID(countExplosionMaxIDaddr)
+    maxProjectileID = getMaxID(countProjectileMaxIDaddr)
+    maxArcID        = getMaxID(countArcMaxIDaddr)
+    maxBeamID       = getMaxID(countBeamMaxIDaddr)
+    maxStratID      = getMaxID(countStratMaxIDaddr)
+    maxStatusID     = getMaxID(countStatusMaxIDaddr)
+end
+
+createThread(calculateMaxIDs)
+
+[DISABLE]
+
+local delete_symbols = {
+
+  'damageAddrFindScan',
+  'explosionAddrFindScan',
+  'projAddrFindScan',
+  'arcAddrFindScan',
+  'beamAddrFindScan',
+  'stratAddrFindScan',
+  'statusAddrFindScan',
+
+  'damageAddrFind',
+  'explosionAddrFind',
+  'projAddrFind',
+  'arcAddrFind',
+  'beamAddrFind',
+  'stratAddrFind',
+  'statusAddrFind',
+
+  'damageAddr',
+  'explosionAddr',
+  'address_proj',
+  'address_arc',
+  'address_beam',
+  'stratAddr',
+  'statusAddr'
+}
+
+for _, delete_symbol in ipairs(delete_symbols) do
+  unregisterSymbol(delete_symbol)
+end
+
+--[[
+//Original Instructions:
+//game.dll+DC8876 - CC                      - int 3
+//game.dll+DC8877 - CC                      - int 3
+//game.dll+DC8878 - CC                      - int 3
+//game.dll+DC8879 - CC                      - int 3
+//game.dll+DC887A - CC                      - int 3
+//game.dll+DC887B - CC                      - int 3
+//game.dll+DC887C - CC                      - int 3
+//game.dll+DC887D - CC                      - int 3
+//game.dll+DC887E - CC                      - int 3
+//game.dll+DC887F - CC                      - int 3
+//------------------------------------------------------------------------------
+//game.dll+DC8880 - 85 C9                   - test ecx,ecx
+//------------------------------------------------------------------------------
+//game.dll+DC8882 - 75 08                   - jne game.dll+DC888C
+//game.dll+DC8884 - 48 8D 05 A5F14B01       - lea rax,[game.dll+2287A30]
+//game.dll+DC888B - C3                      - ret
+//game.dll+DC888C - 8B C1                   - mov eax,ecx
+//game.dll+DC888E - 48 8D 0D FBE14B01       - lea rcx,[game.dll+2286A90]
+//game.dll+DC8895 - 48 8B 04 C1             - mov rax,[rcx+rax*8]
+//game.dll+DC8899 - C3                      - ret
+//game.dll+DC889A - CC                      - int 3
+//game.dll+DC889B - CC                      - int 3
+//game.dll+DC889C - CC                      - int 3
+{
+}
+//Original Instructions:
+//game.dll+DC64E6 - CC                      - int 3
+//game.dll+DC64E7 - CC                      - int 3
+//game.dll+DC64E8 - CC                      - int 3
+//game.dll+DC64E9 - CC                      - int 3
+//game.dll+DC64EA - CC                      - int 3
+//game.dll+DC64EB - CC                      - int 3
+//game.dll+DC64EC - CC                      - int 3
+//game.dll+DC64ED - CC                      - int 3
+//game.dll+DC64EE - CC                      - int 3
+//game.dll+DC64EF - CC                      - int 3
+//------------------------------------------------------------------------------
+//game.dll+DC64F0 - 85 C9                   - test ecx,ecx
+//------------------------------------------------------------------------------
+//game.dll+DC64F2 - 75 08                   - jne game.dll+DC64FC
+//game.dll+DC64F4 - 48 8D 05 A5524C01       - lea rax,[game.dll+228B7A0]
+//game.dll+DC64FB - C3                      - ret
+//game.dll+DC64FC - 8B C1                   - mov eax,ecx
+//game.dll+DC64FE - 48 8D 0D 1B534C01       - lea rcx,[game.dll+228B820]
+//game.dll+DC6505 - 48 8B 04 C1             - mov rax,[rcx+rax*8]
+//game.dll+DC6509 - C3                      - ret
+//game.dll+DC650A - CC                      - int 3
+//game.dll+DC650B - CC                      - int 3
+//game.dll+DC650C - CC                      - int 3
+{
+}
+//Original Instructions:
+//game.dll+DC66D6 - C3                      - ret
+//game.dll+DC66D7 - CC                      - int 3
+//game.dll+DC66D8 - CC                      - int 3
+//game.dll+DC66D9 - CC                      - int 3
+//game.dll+DC66DA - CC                      - int 3
+//game.dll+DC66DB - CC                      - int 3
+//game.dll+DC66DC - CC                      - int 3
+//game.dll+DC66DD - CC                      - int 3
+//game.dll+DC66DE - CC                      - int 3
+//game.dll+DC66DF - CC                      - int 3
+//------------------------------------------------------------------------------
+//game.dll+DC66E0 - 85 C9                   - test ecx,ecx
+//------------------------------------------------------------------------------
+//game.dll+DC66E2 - 75 08                   - jne game.dll+DC66EC
+//game.dll+DC66E4 - 48 8D 05 95134C01       - lea rax,[game.dll+2287A80]
+//game.dll+DC66EB - C3                      - ret
+//game.dll+DC66EC - 8B C1                   - mov eax,ecx
+//game.dll+DC66EE - 48 8D 0D 9B144C01       - lea rcx,[game.dll+2287B90]
+//game.dll+DC66F5 - 48 8B 04 C1             - mov rax,[rcx+rax*8]
+//game.dll+DC66F9 - C3                      - ret
+//game.dll+DC66FA - CC                      - int 3
+//game.dll+DC66FB - CC                      - int 3
+//game.dll+DC66FC - CC                      - int 3
+{
+}
+//Original Instructions:
+//game.dll+DB6F24 - 49 8B E3                - mov rsp,r11
+//game.dll+DB6F27 - 5F                      - pop rdi
+//game.dll+DB6F28 - C3                      - ret
+//game.dll+DB6F29 - CC                      - int 3
+//game.dll+DB6F2A - CC                      - int 3
+//game.dll+DB6F2B - CC                      - int 3
+//game.dll+DB6F2C - CC                      - int 3
+//game.dll+DB6F2D - CC                      - int 3
+//game.dll+DB6F2E - CC                      - int 3
+//game.dll+DB6F2F - CC                      - int 3
+//------------------------------------------------------------------------------
+//game.dll+DB6F30 - 85 C9                   - test ecx,ecx
+//------------------------------------------------------------------------------
+//game.dll+DB6F32 - 75 08                   - jne game.dll+DB6F3C
+//game.dll+DB6F34 - 48 8D 05 45FA4C01       - lea rax,[game.dll+2286980]
+//game.dll+DB6F3B - C3                      - ret
+//game.dll+DB6F3C - 8B C1                   - mov eax,ecx
+//game.dll+DB6F3E - 48 8D 0D BBF94C01       - lea rcx,[game.dll+2286900]
+//game.dll+DB6F45 - 48 8B 04 C1             - mov rax,[rcx+rax*8]
+//game.dll+DB6F49 - C3                      - ret
+//game.dll+DB6F4A - CC                      - int 3
+//game.dll+DB6F4B - CC                      - int 3
+//game.dll+DB6F4C - CC                      - int 3
+{
+}
+//Original Instructions:
+//game.dll+DB5DD6 - CC                      - int 3
+//game.dll+DB5DD7 - CC                      - int 3
+//game.dll+DB5DD8 - CC                      - int 3
+//game.dll+DB5DD9 - CC                      - int 3
+//game.dll+DB5DDA - CC                      - int 3
+//game.dll+DB5DDB - CC                      - int 3
+//game.dll+DB5DDC - CC                      - int 3
+//game.dll+DB5DDD - CC                      - int 3
+//game.dll+DB5DDE - CC                      - int 3
+//game.dll+DB5DDF - CC                      - int 3
+//------------------------------------------------------------------------------
+//game.dll+DB5DE0 - 85 C9                   - test ecx,ecx
+//------------------------------------------------------------------------------
+//game.dll+DB5DE2 - 75 08                   - jne game.dll+DB5DEC
+//game.dll+DB5DE4 - 48 8D 05 C5264D01       - lea rax,[game.dll+22884B0]
+//game.dll+DB5DEB - C3                      - ret
+//game.dll+DB5DEC - 8B C1                   - mov eax,ecx
+//game.dll+DB5DEE - 48 8D 0D 1B274D01       - lea rcx,[game.dll+2288510]
+//game.dll+DB5DF5 - 48 8B 04 C1             - mov rax,[rcx+rax*8]
+//game.dll+DB5DF9 - C3                      - ret
+//game.dll+DB5DFA - CC                      - int 3
+//game.dll+DB5DFB - CC                      - int 3
+//game.dll+DB5DFC - CC                      - int 3
+{
+}
+//Original Instructions:
+//game.dll+DB24A2 - 80 E1 01                - and cl,01
+//game.dll+DB24A5 - 0FB6 C1                 - movzx eax,cl
+//game.dll+DB24A8 - C3                      - ret
+//game.dll+DB24A9 - CC                      - int 3
+//game.dll+DB24AA - CC                      - int 3
+//game.dll+DB24AB - CC                      - int 3
+//game.dll+DB24AC - CC                      - int 3
+//game.dll+DB24AD - CC                      - int 3
+//game.dll+DB24AE - CC                      - int 3
+//game.dll+DB24AF - CC                      - int 3
+//------------------------------------------------------------------------------
+//game.dll+DB24B0 - 85 C9                   - test ecx,ecx
+//------------------------------------------------------------------------------
+//game.dll+DB24B2 - 75 08                   - jne game.dll+DB24BC
+//game.dll+DB24B4 - 48 8D 05 35824D01       - lea rax,[game.dll+228A6F0]
+//game.dll+DB24BB - C3                      - ret
+//game.dll+DB24BC - 8B C1                   - mov eax,ecx
+//game.dll+DB24BE - 48 8D 0D BB834D01       - lea rcx,[game.dll+228A880]
+//game.dll+DB24C5 - 48 8B 04 C1             - mov rax,[rcx+rax*8]
+//game.dll+DB24C9 - C3                      - ret
+//game.dll+DB24CA - CC                      - int 3
+//game.dll+DB24CB - CC                      - int 3
+//game.dll+DB24CC - CC                      - int 3
+{
+}
+//Original Instructions:
+//game.dll+DB7936 - CC                      - int 3
+//game.dll+DB7937 - CC                      - int 3
+//game.dll+DB7938 - CC                      - int 3
+//game.dll+DB7939 - CC                      - int 3
+//game.dll+DB793A - CC                      - int 3
+//game.dll+DB793B - CC                      - int 3
+//game.dll+DB793C - CC                      - int 3
+//game.dll+DB793D - CC                      - int 3
+//game.dll+DB793E - CC                      - int 3
+//game.dll+DB793F - CC                      - int 3
+//------------------------------------------------------------------------------
+//game.dll+DB7940 - 48 63 C1                - movsxd  rax,ecx
+//------------------------------------------------------------------------------
+//game.dll+DB7943 - 48 8D 0D C6EC4C01       - lea rcx,[game.dll+2286610]
+//game.dll+DB794A - 48 8B 04 C1             - mov rax,[rcx+rax*8]
+//game.dll+DB794E - C3                      - ret
+//game.dll+DB794F - CC                      - int 3
+//game.dll+DB7950 - CC                      - int 3
+//game.dll+DB7951 - CC                      - int 3
+//game.dll+DB7952 - CC                      - int 3
+//game.dll+DB7953 - CC                      - int 3
+//game.dll+DB7954 - CC                      - int 3
+//game.dll+DB7955 - CC                      - int 3
+]]
+</AssemblerScript>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>118038</ID>
+          <Description>"Enable All"</Description>
+          <Options moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
+          <Color>FF8000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[ENABLE]
+{
+  Never gonna give you up
+  let you down
+  turn around
+  and desert you
+}
+[DISABLE]
+
+//https://discord.com/vanityurl/dotcom/steakpants/flour/flower/index11.html
+</AssemblerScript>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>151509</ID>
+              <Description>"Mission Time"</Description>
+              <Options moHideChildren="1" moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>//Author : Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.002.200
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+8075A4
+//Date   : 19/03/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(m_timer,game.dll,F3 43 0F 11 ? ? ? ? ? ? 75 ? 48 8B) //Unique
+alloc(newmem,48,m_timer)
+label(codem_timer MTimerValue return)
+registersymbol(m_timer MTimerValue codem_timer)
+
+newmem:
+  push rax
+  push rbx
+  db 4B 8D
+  readmem(m_timer+4,6)//lea rax,[r12+r15*8+000425C0]
+  mov rbx,MTimerValue
+  mov [rbx],rax
+  pop rbx
+  pop rax
+
+codem_timer:
+  reassemble(m_timer)
+  jmp return
+
+MTimerValue:
+  dq 0
+  align 10 CC
+
+m_timer:
+  jmp newmem
+  nop 5
+return:
+
+[DISABLE]
+
+m_timer:
+  reassemble(codem_timer)
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+80756E - 0F84 B0050000           - je game.dll+807B24
+//game.dll+807574 - 84 C0                   - test al,al
+//game.dll+807576 - 0F85 A8050000           - jne game.dll+807B24
+//game.dll+80757C - 43 38 84 FC C5250400    - cmp [r12+r15*8+000425C5],al
+//game.dll+807584 - 0F85 9A050000           - jne game.dll+807B24
+//game.dll+80758A - 83 7D A4 00             - cmp dword ptr [rbp-5C],00
+//game.dll+80758E - F3 43 0F10 B4 FC C0250400 - movss xmm6,[r12+r15*8+000425C0]
+//game.dll+807598 - 0F28 C6                 - movaps xmm0,xmm6
+//game.dll+80759B - F3 0F5C C7              - subss xmm0,xmm7
+//game.dll+80759F - F3 41 0F5F C7           - maxss xmm0,xmm15
+//------------------------------------------------------------------------------
+//game.dll+8075A4 - F3 43 0F11 84 FC C0250400 - movss [r12+r15*8+000425C0],xmm0
+//------------------------------------------------------------------------------
+//game.dll+8075AE - 75 28                   - jne game.dll+8075D8
+//game.dll+8075B0 - 48 8B 05 097C2601       - mov rax,[game.dll+1A6F1C0]
+//game.dll+8075B7 - 48 8D 0D 8280A400       - lea rcx,[game.dll+124F640]
+//game.dll+8075BE - F3 41 0F10 8C 24 C0250400 - movss xmm1,[r12+000425C0]
+//game.dll+8075C8 - FF 90 90000000          - call qword ptr [rax+00000090]
+//game.dll+8075CE - F3 43 0F10 84 FC C0250400 - movss xmm0,[r12+r15*8+000425C0]
+//game.dll+8075D8 - 41 0F2F F7              - comiss xmm6,xmm15
+//game.dll+8075DC - 0F86 11050000           - jbe game.dll+807AF3
+//game.dll+8075E2 - 44 0F2F F8              - comiss xmm15,xmm0
+//game.dll+8075E6 - 0F82 07050000           - jb game.dll+807AF3
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>151510</ID>
+                  <Description>"Freeze Mission Time"</Description>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>//Author : Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.002.203
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+80767B
+//Date   : 17/04/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(FreezeTimer,game.dll,F3 0F 5C C7 F3 41 0F 5F C7) //Unique
+registersymbol(FreezeTimer)
+
+FreezeTimer:
+  nop 4
+
+[DISABLE]
+
+FreezeTimer:
+  db F3 0F 5C C7
+
+unregistersymbol(FreezeTimer)
+
+//Original Instructions
+//game.dll+8198B7 - B0 01                   - mov al,01
+//game.dll+8198B9 - 84 C9                   - test cl,cl
+//game.dll+8198BB - 0F84 83050000           - je game.dll+819E44
+//game.dll+8198C1 - 84 C0                   - test al,al
+//game.dll+8198C3 - 0F85 7B050000           - jne game.dll+819E44
+//game.dll+8198C9 - 43 38 84 EF BDF20300    - cmp [r15+r13*8+0003F2BD],al
+//game.dll+8198D1 - 0F85 6D050000           - jne game.dll+819E44
+//game.dll+8198D7 - 83 7D A0 00             - cmp dword ptr [rbp-60],00
+//game.dll+8198DB - F3 43 0F10 B4 EF B8F20300 - movss xmm6,[r15+r13*8+0003F2B8]
+//game.dll+8198E5 - 0F28 C6                 - movaps xmm0,xmm6
+//------------------------------------------------------------------------------
+//game.dll+8198E8 - F3 0F5C C7              - subss xmm0,xmm7
+//------------------------------------------------------------------------------
+//game.dll+8198EC - F3 41 0F5F C2           - maxss xmm0,xmm10
+//game.dll+8198F1 - F3 43 0F11 84 EF B8F20300 - movss [r15+r13*8+0003F2B8],xmm0
+//game.dll+8198FB - 75 27                   - jne game.dll+819924
+//game.dll+8198FD - 48 8B 05 EC9C2801       - mov rax,[game.dll+1AA35F0]
+//game.dll+819904 - 48 8D 0D 952EA500       - lea rcx,[game.dll+126C7A0]
+//game.dll+81990B - F3 41 0F10 8F B8F20300  - movss xmm1,[r15+0003F2B8]
+//game.dll+819914 - FF 90 90000000          - call qword ptr [rax+00000090]
+//game.dll+81991A - F3 43 0F10 84 EF B8F20300 - movss xmm0,[r15+r13*8+0003F2B8]
+//game.dll+819924 - 41 0F2F F2              - comiss xmm6,xmm10
+//game.dll+819928 - 0F86 F0040000           - jbe game.dll+819E1E
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>151511</ID>
+                      <Description>"Expire Mission Timer"</Description>
+                      <VariableType>Auto Assembler Script</VariableType>
+                      <AssemblerScript>//Author : Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.002.203
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+807678
+//Date   : 12/04/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(TimerExp,game.dll,0F 28 C6 ? ? ? ? F3 41 0F 5F C7) //Unique
+registersymbol(TimerExp)
+
+TimerExp:
+  nop 3
+
+[DISABLE]
+
+TimerExp:
+  db 0F 28 C6
+
+unregistersymbol(TimerExp)
+
+//Original Instructions:
+//game.dll+807648 - EB 02                   - jmp game.dll+80764C
+//game.dll+80764A - B0 01                   - mov al,01
+//game.dll+80764C - 84 C9                   - test cl,cl
+//game.dll+80764E - 0F84 B0050000           - je game.dll+807C04
+//game.dll+807654 - 84 C0                   - test al,al
+//game.dll+807656 - 0F85 A8050000           - jne game.dll+807C04
+//game.dll+80765C - 43 38 84 FC C5250400    - cmp [r12+r15*8+000425C5],al
+//game.dll+807664 - 0F85 9A050000           - jne game.dll+807C04
+//game.dll+80766A - 83 7D A4 00             - cmp dword ptr [rbp-5C],00
+//game.dll+80766E - F3 43 0F10 B4 FC C0250400 - movss xmm6,[r12+r15*8+000425C0]
+//------------------------------------------------------------------------------
+//game.dll+807678 - 0F28 C6                 - movaps xmm0,xmm6
+//------------------------------------------------------------------------------
+//game.dll+80767B - F3 0F5C C7              - subss xmm0,xmm7
+//game.dll+80767F - F3 41 0F5F C7           - maxss xmm0,xmm15
+//game.dll+807684 - F3 43 0F11 84 FC C0250400 - movss [r12+r15*8+000425C0],xmm0
+//game.dll+80768E - 75 28                   - jne game.dll+8076B8
+//game.dll+807690 - 48 8B 05 A97A2601       - mov rax,[game.dll+1A6F140]
+//game.dll+807697 - 48 8D 0D B27FA400       - lea rcx,[game.dll+124F650]
+//game.dll+80769E - F3 41 0F10 8C 24 C0250400 - movss xmm1,[r12+000425C0]
+//game.dll+8076A8 - FF 90 90000000          - call qword ptr [rax+00000090]
+//game.dll+8076AE - F3 43 0F10 84 FC C0250400 - movss xmm0,[r12+r15*8+000425C0]
+//game.dll+8076B8 - 41 0F2F F7              - comiss xmm6,xmm15
+</AssemblerScript>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>151512</ID>
+                      <Description>"Time"</Description>
+                      <ShowAsSigned>1</ShowAsSigned>
+                      <VariableType>Float</VariableType>
+                      <Address>MTimerValue</Address>
+                      <Offsets>
+                        <Offset>0</Offset>
+                      </Offsets>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>118043</ID>
+              <Description>"Reduce Aggro | Disable Turret"</Description>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>//Author : Rei
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.002.200
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+8AA1E0
+//Date   : 23/03/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(EnemyAggro,game.dll,48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 41 56 3B 15 ? ? ? ? 4D 8B F0) //Unique
+registersymbol(EnemyAggro)
+
+EnemyAggro:
+  db 30 C0 C3 CC CC
+
+[DISABLE]
+
+EnemyAggro:
+  db 48 89 5C 24 08
+
+unregistersymbol(EnemyAggro)
+
+//Original Instructions:
+//game.dll+8AA1D4 - 41 5D                   - pop r13
+//game.dll+8AA1D6 - 41 5C                   - pop r12
+//game.dll+8AA1D8 - C3                      - ret
+//game.dll+8AA1D9 - CC                      - int 3
+//game.dll+8AA1DA - CC                      - int 3
+//game.dll+8AA1DB - CC                      - int 3
+//game.dll+8AA1DC - CC                      - int 3
+//game.dll+8AA1DD - CC                      - int 3
+//game.dll+8AA1DE - CC                      - int 3
+//game.dll+8AA1DF - CC                      - int 3
+//------------------------------------------------------------------------------
+//game.dll+8AA1E0 - 48 89 5C 24 08          - mov [rsp+08],rbx
+//------------------------------------------------------------------------------
+//game.dll+8AA1E5 - 48 89 6C 24 10          - mov [rsp+10],rbp
+//game.dll+8AA1EA - 48 89 74 24 18          - mov [rsp+18],rsi
+//game.dll+8AA1EF - 48 89 7C 24 20          - mov [rsp+20],rdi
+//game.dll+8AA1F4 - 41 56                   - push r14
+//game.dll+8AA1F6 - 3B 15 885E2801          - cmp edx,[game.dll+1B30084]
+//game.dll+8AA1FC - 4D 8B F0                - mov r14,r8
+//game.dll+8AA1FF - 4C 8B 1D 52581C01       - mov r11,[game.dll+1A6FA58]
+//game.dll+8AA206 - 74 49                   - je game.dll+8AA251
+//game.dll+8AA208 - 45 8B 53 38             - mov r10d,[r11+38]
+//game.dll+8AA20C - 33 C0                   - xor eax,eax
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>173439</ID>
+              <Description>"Zero Enemy Perception | Disable Turret"</Description>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>//Author : Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.003.201
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+5A3AD8
+//Date   : 01/08/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(retarded_enemy,game.dll,F3 0F 59 00 F3 0F 11 44 DF ? F3) //Unique
+registersymbol(retarded_enemy)
+
+retarded_enemy+3:
+  db +C4
+
+[DISABLE]
+
+retarded_enemy+3:
+  db -C4
+  
+unregistersymbol(retarded_enemy)
+
+//Original Instructions:
+//game.dll+5A3AB4 - 8B 44 CB 04             - mov eax,[rbx+rcx*8+04]
+//game.dll+5A3AB8 - 83 F8 FF                - cmp eax,-01
+//game.dll+5A3ABB - 74 59                   - je game.dll+5A3B16
+//game.dll+5A3ABD - 49 8B 4A 48             - mov rcx,[r10+48]
+//game.dll+5A3AC1 - 48 8D 1C 80             - lea rbx,[rax+rax*4]
+//game.dll+5A3AC5 - 49 8B 7A 58             - mov rdi,[r10+58]
+//game.dll+5A3AC9 - 48 8B 0C C1             - mov rcx,[rcx+rax*8]
+//game.dll+5A3ACD - E8 DE73F3FF             - call game.dll+4DAEB0
+//game.dll+5A3AD2 - 0F28 C2                 - movaps xmm0,xmm2
+//game.dll+5A3AD5 - 0F57 E4                 - xorps xmm4,xmm4
+//------------------------------------------------------------------------------
+//game.dll+5A3AD8 - F3 0F59 00              - mulss xmm0,[rax]
+//------------------------------------------------------------------------------
+//game.dll+5A3ADC - F3 0F11 44 DF 0C        - movss [rdi+rbx*8+0C],xmm0
+//game.dll+5A3AE2 - F3 0F10 48 04           - movss xmm1,[rax+04]
+//game.dll+5A3AE7 - 0F2F E1                 - comiss xmm4,xmm1
+//game.dll+5A3AEA - 76 03                   - jna game.dll+5A3AEF
+//game.dll+5A3AEC - 0F28 C8                 - movaps xmm1,xmm0
+//game.dll+5A3AEF - F3 0F59 CA              - mulss xmm1,xmm2
+//game.dll+5A3AF3 - F3 0F11 4C DF 10        - movss [rdi+rbx*8+10],xmm1
+//game.dll+5A3AF9 - F3 0F10 58 08           - movss xmm3,[rax+08]
+//game.dll+5A3AFE - 0F2F E3                 - comiss xmm4,xmm3
+//game.dll+5A3B01 - 77 03                   - ja game.dll+5A3B06
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>171978</ID>
+              <Description>"Movement Speed"</Description>
+              <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript Async="1">//Author : Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.003.102
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+7315B7
+//Date   : 12/06/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+{$STRICT}
+aobscanmodule(speeeeed,game.dll,F3 0F 59 4B ? F3 0F 59 4B ? 0F 28 D9 F3 0F 5C DC) //Unique
+alloc(speed_newmem,352,speeeeed)
+label(applyplayerspeed playerspeedfinalapply applyshipspeed applymechspeed extraplayerchecks extrachecks applyenemiesspeed applycivilspeed applysoldierspeed speedcode spd_label speedreturn)
+registersymbol(speeeeed spd_label)
+
+speed_newmem:
+  push rax
+  push rcx
+  pushfq
+  mov rax,spd_label //rax - label container
+  mov ecx,[rbx+14]
+  cmp ecx,(float)8.0 //bots
+  je applyenemiesspeed
+  cmp ecx,(float)15.0 //illuminati
+  je applyenemiesspeed
+  cmp ecx,(float)5.0 //civilians
+  je applycivilspeed
+  mov ecx,[rbx+10]
+  cmp ecx,5
+  jne applymechspeed
+  mov ecx,[rbx+14]
+  cmp ecx,(float)10.0 //mech
+  je applymechspeed
+  cmp ecx,(float)100.0 //player
+  je @f
+  cmp ecx,(float)30.0 //ship
+  je applyshipspeed
+  jmp extrachecks
+
+applyplayerspeed:
+  mov ecx,[rbx+14]
+  cmp ecx,(float)100.0
+  jne extraplayerchecks
+  mov ecx,[rbx+18]
+  cmp ecx,(float)100.0
+  jne applyenemiesspeed
+  mov ecx,[rbx+2C]
+  cmp ecx,(float)80.0 //jummpack second checl
+  je @f
+  cmp ecx,(float)100.0 //player second check
+  jne applyenemiesspeed
+
+playerspeedfinalapply:
+  mov ecx,[rax]
+  jmp speedcode
+
+applyshipspeed:
+  mov ecx,[rax+4]
+  jmp speedcode
+
+applymechspeed:
+  mov ecx,[rbx+10]
+  cmp ecx,1
+  je applyplayerspeed
+  mov ecx,[rbx+18]
+  cmp ecx,(float)50.0
+  je applysoldierspeed
+  cmp ecx,(float)30.0 //mech check
+  jne applyenemiesspeed
+  mov ecx,[rax+8]
+  jmp speedcode
+
+extraplayerchecks:
+  mov ecx,[rbx+2C]
+  cmp ecx,(float)80.0 //jummpack second checl
+  je playerspeedfinalapply
+  jmp applyenemiesspeed
+
+extrachecks:
+  mov ecx,[rbx+28]
+  cmp ecx,(float)15.0 //jumppack check
+  je applyplayerspeed
+
+applyenemiesspeed:
+  mov ecx,[rax+C]
+  jmp speedcode
+
+applycivilspeed:
+  mov ecx,[rbx+18]
+  cmp ecx,(float)10.0
+  je applyenemiesspeed
+  mov ecx,[rax+10]
+  jmp speedcode
+
+applysoldierspeed:
+  mov ecx,[rbx+2C]
+  cmp ecx,(float)110.0 //flying bugs
+  je applyenemiesspeed
+  mov ecx,[rax+14]
+
+speedcode:
+  mov [rbx+78],ecx
+  popfq
+  pop rcx
+  pop rax
+  mulss xmm1,[rbx+78]
+  jmp speedreturn
+  align 10
+
+spd_label:
+  dd (float)4.0 //player speed mult
+  dd (float)2.5 //ship speed mult
+  dd (float)2.0 //mech speed mult
+  dd (float)0.0 //enemies speed mult
+  dd (float)1.5 //civil speed mult
+  dd (float)3.0 //soldier speed mult
+  align 10 CC
+
+speeeeed:
+  jmp speed_newmem
+speedreturn:
+
+[DISABLE]
+
+speeeeed:
+  db F3 0F 59 4B 78
+  
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+731913 - 41 0F28 F1              - movaps xmm6,xmm9
+//game.dll+731917 - F3 0F5D F0              - minss xmm6,xmm0
+//game.dll+73191B - EB 06                   - jmp game.dll+731923
+//game.dll+73191D - F3 0F10 7C 24 40        - movss xmm7,[rsp+40]
+//game.dll+731923 - F3 0F10 4B 70           - movss xmm1,[rbx+70]
+//game.dll+731928 - F3 0F59 4B 6C           - mulss xmm1,[rbx+6C]
+//game.dll+73192D - F3 0F10 A3 80000000     - movss xmm4,[rbx+00000080]
+//game.dll+731935 - F2 0F10 2D 0397CA00     - movsd xmm5,[game.dll+13DB040]
+//game.dll+73193D - F3 0F59 4B 74           - mulss xmm1,[rbx+74]
+//game.dll+731942 - F3 0F10 53 30           - movss xmm2,[rbx+30]
+//------------------------------------------------------------------------------
+//game.dll+731947 - F3 0F59 4B 78           - mulss xmm1,[rbx+78]
+//------------------------------------------------------------------------------
+//game.dll+73194C - F3 0F59 4B 7C           - mulss xmm1,[rbx+7C]
+//game.dll+731951 - 0F28 D9                 - movaps xmm3,xmm1
+//game.dll+731954 - F3 0F5C DC              - subss xmm3,xmm4
+//game.dll+731958 - 0F5A C3                 - cvtps2pd xmm0,xmm3
+//game.dll+73195B - 0F54 05 7EDCCA00        - andps xmm0,[game.dll+13DF5E0]
+//game.dll+731962 - 66 0F2F E8              - comisd xmm5,xmm0
+//game.dll+731966 - 77 20                   - ja game.dll+731988
+//game.dll+731968 - F3 0F59 D7              - mulss xmm2,xmm7
+//game.dll+73196C - 44 0F2F E2              - comiss xmm12,xmm2
+//game.dll+731970 - 76 06                   - jna game.dll+731978
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>171979</ID>
+                  <Description>"Player Multiplier"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>Float</VariableType>
+                  <Address>spd_label</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>171980</ID>
+                  <Description>"Player Multiplier On Ship"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>Float</VariableType>
+                  <Address>spd_label+4</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>171981</ID>
+                  <Description>"Exosuit Multiplier"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>Float</VariableType>
+                  <Address>spd_label+8</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>171982</ID>
+                  <Description>"Enemy Multiplier"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>Float</VariableType>
+                  <Address>spd_label+C</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>171983</ID>
+                  <Description>"Civilian Multiplier"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>Float</VariableType>
+                  <Address>spd_label+10</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>172214</ID>
+                  <Description>"Soldier Multiplier"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>Float</VariableType>
+                  <Address>spd_label+14</Address>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>170890</ID>
+              <Description>"Instant Standup From Fall (Beta)"</Description>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>//Author : Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.002.201
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+786DE4
+//Date   : 26/03/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(InstantStandup,game.dll,43 8B ? ? ? ? ? ? 43 39 ? ? ? ? ? ? 75 ? 84) //Unique
+alloc(InstantStandupmem,32,InstantStandup)
+label(InstantStandupret)
+registersymbol(InstantStandup)
+
+InstantStandupmem:
+  push rax
+  pushfq
+  xor eax,eax
+  db 43 89
+  readmem(InstantStandup+2,6) //mov [r14+r15+00545B80],eax
+  popfq
+  pop rax
+
+InstantStandupC:
+  reassemble(InstantStandup)
+  jmp InstantStandupret
+  align 10 CC
+
+InstantStandup:
+  jmp InstantStandupmem
+  nop 3
+InstantStandupret:
+
+[DISABLE]
+
+InstantStandup:
+  reassemble(InstantStandupC)
+  
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+786DB5 - D1 EB                   - shr ebx,1
+//game.dll+786DB7 - 80 E3 01                - and bl,01
+//game.dll+786DBA - 41 8B 54 24 08          - mov edx,[r12+08]
+//game.dll+786DBF - 48 8B 0D 828A2E01       - mov rcx,[game.dll+1A6F848]
+//game.dll+786DC6 - E8 C507F4FF             - call game.dll+6C7590
+//game.dll+786DCB - 47 8B 84 37 605B5400    - mov r8d,[r15+r14+00545B60]
+//game.dll+786DD3 - 41 8B 54 24 08          - mov edx,[r12+08]
+//game.dll+786DD8 - 41 D1 E8                - shr r8d,1
+//game.dll+786DDB - 41 80 E0 01             - and r8b,01
+//game.dll+786DDF - E8 CC3F1100             - call game.dll+89ADB0
+//------------------------------------------------------------------------------
+//game.dll+786DE4 - 43 8B 84 3E 805B5400    - mov eax,[r14+r15+00545B80]
+//------------------------------------------------------------------------------
+//game.dll+786DEC - 43 39 84 35 944E5400    - cmp [r13+r14+00544E94],eax
+//game.dll+786DF4 - 75 08                   - jne game.dll+786DFE
+//game.dll+786DF6 - 84 DB                   - test bl,bl
+//game.dll+786DF8 - 0F84 B4000000           - je game.dll+786EB2
+//game.dll+786DFE - 41 8B 44 24 08          - mov eax,[r12+08]
+//game.dll+786E03 - 3B 05 7B923A01          - cmp eax,[game.dll+1B30084]
+//game.dll+786E09 - 4C 8B 3D 388A2E01       - mov r15,[game.dll+1A6F848]
+//game.dll+786E10 - 74 58                   - je game.dll+786E6A
+//game.dll+786E12 - 45 8B 4F 28             - mov r9d,[r15+28]
+//game.dll+786E16 - 33 D2                   - xor edx,edx
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>118047</ID>
+              <Description>"Inf. Stragagems"</Description>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>//Author : Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.003.000
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+AA4C93
+//Date   : 15/05/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(aob_Stragemens,game.dll,0F 86 ? ? ? ? 0F 29 ? ? F3 0F 10 3D ? ? ? ? 44 0F) //Unique
+registersymbol(aob_Stragemens)
+
+aob_Stragemens:
+  db 90 E9
+
+[DISABLE]
+
+aob_Stragemens:
+  db 0F 86
+
+unregistersymbol(aob_Stragemens)
+
+//Original Instructions:
+//game.dll+AA4C6B - 41 55                   - push r13
+//game.dll+AA4C6D - 41 57                   - push r15
+//game.dll+AA4C6F - 48 81 EC 90000000       - sub rsp,00000090
+//game.dll+AA4C76 - 4C 8B 3D 0BC82F01       - mov r15,[game.dll+1DA1488]
+//game.dll+AA4C7D - 33 ED                   - xor ebp,ebp
+//game.dll+AA4C7F - 4D 8B E9                - mov r13,r9
+//game.dll+AA4C82 - 44 8B E2                - mov r12d,edx
+//game.dll+AA4C85 - 45 0FB6 C8              - movzx r9d,r8b
+//game.dll+AA4C89 - 48 8B D9                - mov rbx,rcx
+//game.dll+AA4C8C - 41 39 AF 68620000       - cmp [r15+00006268],ebp
+//------------------------------------------------------------------------------
+//game.dll+AA4C93 - 0F86 B1010000           - jbe game.dll+AA4E4A
+//------------------------------------------------------------------------------
+//game.dll+AA4C99 - 0F29 78 B8              - movaps [rax-48],xmm7
+//game.dll+AA4C9D - F3 0F10 3D 3F7A9300     - movss xmm7,[game.dll+13DC6E4]
+//game.dll+AA4CA5 - 44 0F29 40 A8           - movaps [rax-58],xmm8
+//game.dll+AA4CAA - F3 44 0F10 05 21799300  - movss xmm8,[game.dll+13DC5D4]
+//game.dll+AA4CB3 - 48 89 70 08             - mov [rax+08],rsi
+//game.dll+AA4CB7 - 48 89 78 10             - mov [rax+10],rdi
+//game.dll+AA4CBB - 4C 89 70 20             - mov [rax+20],r14
+//game.dll+AA4CBF - 0F29 70 C8              - movaps [rax-38],xmm6
+//game.dll+AA4CC3 - 8B C5                   - mov eax,ebp
+//game.dll+AA4CC5 - 48 05 27060000          - add rax,00000627
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>118048</ID>
+              <Description>"Stratagems Call-in Time"</Description>
+              <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>//Author : Zodiac
+//CE     : 7.61
+//Game   : HELLDIVERS™ 2
+//Version: 01.004.001
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+688BFB
+//Date   : 10/09/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(ISDrop,game.dll,F3 0F 11 04 06 48 8B 47) //Unique
+alloc(newmem,64,ISDrop)
+label(stratMax return)
+registersymbol(ISDrop stratMax)
+
+newmem:
+  push rax
+  pushfq
+  mov rax,stratMax
+  comiss xmm0,[rax]
+  jbe short @f
+  movss xmm0,[rax]
+
+@@:
+  popfq
+  pop rax
+  movss [rsi+rax],xmm0
+  jmp return
+  align 10
+
+stratMax:
+  dd (float)0.0
+  align 10 CC
+
+ISDrop:
+  jmp newmem
+return:
+
+[DISABLE]
+
+ISDrop:
+  db F3 0F 11 04 06 48 8B 47 60
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+688BCF - 48 8B 8C CE 68150000    - mov rcx,[rsi+rcx*8+00001568]
+//game.dll+688BD7 - E8 C4670E00             - call game.dll+76F3A0
+//game.dll+688BDC - FF C3                   - inc ebx
+//game.dll+688BDE - 3B 9E 60150000          - cmp ebx,[rsi+00001560]
+//game.dll+688BE4 - 72 DA                   - jb game.dll+688BC0
+//game.dll+688BE6 - E9 89010000             - jmp game.dll+688D74
+//game.dll+688BEB - 48 8B 47 78             - mov rax,[rdi+78]
+//game.dll+688BEF - 0F28 C6                 - movaps xmm0,xmm6
+//game.dll+688BF2 - F3 0F5C C3              - subss xmm0,xmm3
+//game.dll+688BF6 - BA 66F70961             - mov edx,6109F766
+//------------------------------------------------------------------------------
+//game.dll+688BFB - F3 0F11 04 06           - movss [rsi+rax],xmm0
+//------------------------------------------------------------------------------
+//game.dll+688C00 - 48 8B 47 60             - mov rax,[rdi+60]
+//game.dll+688C04 - 4C 8B 47 78             - mov r8,[rdi+78]
+//game.dll+688C08 - 4C 03 C6                - add r8,rsi
+//game.dll+688C0B - 4A 8B 0C F8             - mov rcx,[rax+r15*8]
+//game.dll+688C0F - 8B 49 10                - mov ecx,[rcx+10]
+//game.dll+688C12 - E8 C91D6200             - call game.dll+CAA9E0
+//game.dll+688C17 - F3 42 0F10 04 36        - movss xmm0,[rsi+r14]
+//game.dll+688C1D - F3 42 0F10 4C 36 04     - movss xmm1,[rsi+r14+04]
+//game.dll+688C24 - 0F2F C8                 - comiss xmm1,xmm0
+//game.dll+688C27 - 0F86 5E010000           - jbe game.dll+688D8B
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>118049</ID>
+                  <Description>"Max Call-in Time (Seconds)"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>Float</VariableType>
+                  <Address>stratMax</Address>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>172758</ID>
+              <Description>"Remove Stratagem Requirements"</Description>
+              <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>//Author : Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.003.000
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+592602
+//Date   : 15/05/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+aobscanmodule(removeReq,game.dll,41 F6 47 ? 20 0F 84 ? ? ? ? 8B) //Unique
+aobscanmodule(stratUnblock,game.dll,80 B8 ? ? ? ? 00 75 ? 4? 8? ? ? ? ? ? ? 48 8D) //Unique
+aobscanmodule(illuminatiDecoder,game.dll,48 8B 43 ? 80 3C 07 00 0F 84) //Unique
+alloc(removeReq_newmem,48,removeReq)
+alloc(stratUnblock_newmem,32,stratUnblock)
+alloc(illuminatiDecoder_newmem,32,illuminatiDecoder)
+label(removeReqcode stratsflagslabel removeReq_return stratUnblock_code stratunblock_return illuminatiDecoder_return)
+registersymbol(removeReq removeReqcode stratsflagslabel stratUnblock stratUnblock_code illuminatiDecoder)
+
+removeReq_newmem:
+  push rax
+  push rbx
+  pushfq
+  mov rax,stratsflagslabel
+  mov al,[rax]
+  xor bl,bl
+  db 41 88 5F
+  readmem(removeReq+3,1) //mov [r15+68],00
+  cmp al,4 //switch for Mission Strat Flags
+  jne short @f
+  movzx eax,al
+  db 42 88 5C 38
+  readmem(removeReq+3,1) //mov [rax+r15+68],00
+
+@@:
+  popfq
+  pop rbx
+  pop rax
+
+removeReqcode:
+  reassemble(removeReq)
+  jmp removeReq_return
+  align 10
+
+stratsflagslabel:
+  db 0
+  align 10 CC
+
+removeReq:
+  jmp removeReq_newmem
+removeReq_return:
+
+//------------------------------------------------------------------------------
+
+stratUnblock_newmem:
+  push rbx
+  pushfq
+  xor bl,bl
+  db 88 98
+  readmem(stratUnblock+2,4) //mov [rax+000425C4],bl
+  popfq
+  pop rbx
+
+stratUnblock_code:
+  reassemble(stratUnblock)
+  jmp stratunblock_return
+  align 10 CC
+
+stratUnblock:
+  jmp stratUnblock_newmem
+  nop 2
+stratunblock_return:
+
+//------------------------------------------------------------------------------
+
+illuminatiDecoder_newmem:
+  mov rax,[rbx+40]
+  push rbx
+  pushfq
+  xor bl,bl
+  mov [rdi+rax],bl
+  popfq
+  pop rbx
+  cmp byte ptr [rdi+rax],00
+  jmp illuminatiDecoder_return
+  align 10 CC
+
+illuminatiDecoder:
+  jmp illuminatiDecoder_newmem
+  nop 3
+illuminatiDecoder_return:
+
+[DISABLE]
+
+removeReq:
+  reassemble(removeReqcode)
+
+stratUnblock:
+  reassemble(stratUnblock_code)
+
+illuminatiDecoder:
+  db 48 8B 43 40 80 3C 07 00
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+83D190 - 48 89 44 24 30          - mov [rsp+30],rax
+//game.dll+83D195 - 3B 15 11815701          - cmp edx,[game.dll+1DB52AC]
+//game.dll+83D19B - 45 8B E0                - mov r12d,r8d
+//game.dll+83D19E - 0F84 37020000           - je game.dll+83D3DB
+//game.dll+83D1A4 - 45 85 C0                - test r8d,r8d
+//game.dll+83D1A7 - 75 09                   - jne game.dll+83D1B2
+//game.dll+83D1A9 - 4C 8D 3D 10ECA101       - lea r15,[game.dll+225BDC0]
+//game.dll+83D1B0 - EB 16                   - jmp game.dll+83D1C8
+//game.dll+83D1B2 - 4C 8D 3D 97EDA101       - lea r15,[game.dll+225BF50]
+//game.dll+83D1B9 - 4F 8B 3C E7             - mov r15,[r15+r12*8]
+//------------------------------------------------------------------------------
+//game.dll+83D1BD - 41 F6 47 68 20          - test byte ptr [r15+68],20
+//------------------------------------------------------------------------------
+//game.dll+83D1C2 - 0F84 13020000           - je game.dll+83D3DB
+//game.dll+83D1C8 - 8B 1D A6805701          - mov ebx,[game.dll+1DB5274]
+//game.dll+83D1CE - 4C 8B 35 43444B01       - mov r14,[game.dll+1CF1618]
+//game.dll+83D1D5 - 3B D3                   - cmp edx,ebx
+//game.dll+83D1D7 - 74 4B                   - je game.dll+83D224
+//game.dll+83D1D9 - 45 8B 4E 48             - mov r9d,[r14+48]
+//game.dll+83D1DD - 33 C9                   - xor ecx,ecx
+//game.dll+83D1DF - 45 8B 56 50             - mov r10d,[r14+50]
+//game.dll+83D1E3 - 44 0FAF D2              - imul r10d,edx
+//game.dll+83D1E7 - 41 8D 71 FF             - lea esi,[r9-01]
+{
+}
+//Original Instructions:
+//game.dll+5925D6 - 75 09                   - jne game.dll+5925E1
+//game.dll+5925D8 - 48 8D 05 E197CC01       - lea rax,[game.dll+225BDC0]
+//game.dll+5925DF - EB 0B                   - jmp game.dll+5925EC
+//game.dll+5925E1 - 48 8D 15 6899CC01       - lea rdx,[game.dll+225BF50]
+//game.dll+5925E8 - 48 8B 04 CA             - mov rax,[rdx+rcx*8]
+//game.dll+5925EC - F6 40 68 40             - test byte ptr [rax+68],40
+//game.dll+5925F0 - 75 19                   - jne game.dll+59260B
+//game.dll+5925F2 - 48 8B 05 67EE7501       - mov rax,[game.dll+1CF1460]
+//game.dll+5925F9 - 83 B8 80060000 00       - cmp dword ptr [rax+00000680],00
+//game.dll+592600 - 74 09                   - je game.dll+59260B
+//------------------------------------------------------------------------------
+//game.dll+592602 - 80 B8 449C0400 00       - cmp byte ptr [rax+00049C44],00
+//------------------------------------------------------------------------------
+//game.dll+592609 - 75 1D                   - jne game.dll+592628
+//game.dll+59260B - 42 8B 84 CF 5C010000    - mov eax,[rdi+r9*8+0000015C]
+//game.dll+592613 - 48 8D 54 24 40          - lea rdx,[rsp+40]
+//game.dll+592618 - 89 44 24 40             - mov [rsp+40],eax
+//game.dll+59261C - E8 BF375100             - call game.dll+AA5DE0
+//game.dll+592621 - 83 7C 24 40 00          - cmp dword ptr [rsp+40],00
+//game.dll+592626 - 75 12                   - jne game.dll+59263A
+//game.dll+592628 - 32 C0                   - xor al,al
+//game.dll+59262A - 48 8B 5C 24 30          - mov rbx,[rsp+30]
+//game.dll+59262F - 48 8B 74 24 38          - mov rsi,[rsp+38]
+{
+}
+//Original Instructions:
+//game.dll+7C93B4 - 48 8B 0C F8             - mov rcx,[rax+rdi*8]
+//game.dll+7C93B8 - 8B 49 0C                - mov ecx,[rcx+0C]
+//game.dll+7C93BB - 85 C9                   - test ecx,ecx
+//game.dll+7C93BD - 0F84 C2000000           - je game.dll+7C9485
+//game.dll+7C93C3 - 48 8B 05 D65D2A01       - mov rax,[game.dll+1A6F1A0]
+//game.dll+7C93CA - 48 8B 50 18             - mov rdx,[rax+18]
+//game.dll+7C93CE - FF 92 00070000          - call qword ptr [rdx+00000700]
+//game.dll+7C93D4 - 84 C0                   - test al,al
+//game.dll+7C93D6 - 0F84 A2000000           - je game.dll+7C947E
+//game.dll+7C93DC - 48 8B 1D F5652A01       - mov rbx,[game.dll+1A6F9D8]
+//------------------------------------------------------------------------------
+//game.dll+7C93E3 - 48 8B 43 40             - mov rax,[rbx+40]
+//------------------------------------------------------------------------------
+//game.dll+7C93E7 - 80 3C 07  00            - cmp byte ptr [rdi+rax],00
+//game.dll+7C93EB - 0F84 94000000           - je game.dll+7C9485
+//game.dll+7C93F1 - 48 8B 43 30             - mov rax,[rbx+30]
+//game.dll+7C93F5 - 48 8B 2C F8             - mov rbp,[rax+rdi*8]
+//game.dll+7C93F9 - 48 8B CD                - mov rcx,rbp
+//game.dll+7C93FC - E8 8FE1CBFF             - call game.dll+487590
+//game.dll+7C9401 - 48 8B F0                - mov rsi,rax
+//game.dll+7C9404 - 45 85 E4                - test r12d,r12d
+//game.dll+7C9407 - 74 0D                   - je game.dll+7C9416
+//game.dll+7C9409 - 8B 00                   - mov eax,[rax]
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>172759</ID>
+                  <Description>"Activate Mission Stratagems Unblocker"</Description>
+                  <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>//Author : Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.003.104
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : ~
+//Date   : 10/07/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+stratsflagslabel:
+  db 4
+
+[DISABLE]
+
+stratsflagslabel:
+  db -1
+</AssemblerScript>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>11</ID>
+              <Description>"No Fall Damage"</Description>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>//Author : Zodiac
+//CE     : 7.61
+//Game   : HELLDIVERS™ 2
+//Version: 01.004.000
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+96F4CE
+//Date   : 02/09/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+//48 81 EC 90 01 00 00 48 8B 05  ? ? ? ? 48 33 C4 48 89 45 ? 48 8B F9 - reserve AoB
+aobscanmodule(FallDMG,game.dll,48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 85 ? ? ? ? 3B 15 ? ? ? ? 8B DA) //Unique
+alloc(NoFallnewmem,48,FallDMG)
+label(NoFallcode NoFallreturn)
+registersymbol(FallDMG NoFallcode)
+assert(FallDMG-E,4C 8B DC 55 53 41 56 49 8D AB) //push correct registers check
+
+NoFallnewmem:
+  push rax
+  pushfq
+  mov eax,[rbp+AC8]
+  cmp eax,E32E9832 //local check for fall damage
+  jne short @f
+  popfq
+  pop rax
+  pop r14
+  pop rbx
+  pop rbp
+  ret
+
+NoFallcode:
+  popfq
+  pop rax
+  reassemble(FallDMG)
+  jmp NoFallreturn
+  align 10 CC
+
+FallDMG:
+  jmp NoFallnewmem
+  nop 2
+NoFallreturn:
+
+[DISABLE]
+
+FallDMG:
+  reassemble(NoFallcode+2)
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+96F4BB - CC                      - int 3
+//game.dll+96F4BC - CC                      - int 3
+//game.dll+96F4BD - CC                      - int 3
+//game.dll+96F4BE - CC                      - int 3
+//game.dll+96F4BF - CC                      - int 3
+//game.dll+96F4C0 - 4C 8B DC                - mov r11,rsp
+//game.dll+96F4C3 - 55                      - push rbp
+//game.dll+96F4C4 - 53                      - push rbx
+//game.dll+96F4C5 - 41 56                   - push r14
+//game.dll+96F4C7 - 49 8D AB B8F5FFFF       - lea rbp,[r11-00000A48]
+//------------------------------------------------------------------------------
+//game.dll+96F4CE - 48 81 EC 400B0000       - sub rsp,00000B40
+//------------------------------------------------------------------------------
+//game.dll+96F4D5 - 48 8B 05 34DBC600       - mov rax,[game.dll+15DD010]
+//game.dll+96F4DC - 48 33 C4                - xor rax,rsp
+//game.dll+96F4DF - 48 89 85 90090000       - mov [rbp+00000990],rax
+//game.dll+96F4E6 - 3B 15 50614E01          - cmp edx,[game.dll+1E5563C]
+//game.dll+96F4EC - 8B DA                   - mov ebx,edx
+//game.dll+96F4EE - 8B 85 700A0000          - mov eax,[rbp+00000A70]
+//game.dll+96F4F4 - 4C 8B F1                - mov r14,rcx
+//game.dll+96F4F7 - 89 45 0C                - mov [rbp+0C],eax
+//game.dll+96F4FA - 8B 85 780A0000          - mov eax,[rbp+00000A78]
+//game.dll+96F500 - 89 45 08                - mov [rbp+08],eax
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>118058</ID>
+              <Description>"Inf. Stamina"</Description>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>//Author : Zodiac
+//CE     : 7.61
+//Game   : HELLDIVERS™ 2
+//Version: 01.004.000
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+5B1D8D
+//Date   : 02/09/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(StaminaRegen,game.dll,F3 41 0F 11 10 49) // Unique; stamina regen (1 for instant fill)
+aobscanmodule(aobSprintWrite,game.dll,F3 41 0F 11 08 48 8B 84 F8) // stamina drain on sprint
+aobscanmodule(StaminaStab,game.dll,F3 41 0F 11 00 BA) // stamina drain on terminid stab
+aobscanmodule(StaminaProne,game.dll,F3 42 0F ? ? ? ? ? ? ? 41 8B ? ? 8B 0D) // stamina drain on prone
+aobscanmodule(StaminaJump,game.dll,F3 0F 11 8C ? ? ? ? ? 41 8B ? ? ? 8B 0D ? ? ? ? 3B C1 74 ? 44 8B ? ? ? ? ? 45 8B) // stamina drain on jump
+aobscanmodule(StaminaSlide,game.dll,F3 0F 11 8C ? ? ? ? ? 41 8B ? ? ? 8B 0D ? ? ? ? 3B C1 74 * 44 8B ? ? ? ? ? 44 8B C6) // stamina drain on slide
+aobscanmodule(StaminaEMS,game.dll,42 C7 84 ? ? ? ? ? ? ? ? ? 41 8B ? ? 8B 3D) // stamina drain on any slow shit (EMS, iceplant)
+alloc(staminamem,64,StaminaRegen)
+label(staminacode Stamina_bkps staminareturn)
+registersymbol(StaminaRegen Stamina_bkps aobSprintWrite StaminaStab StaminaProne StaminaJump StaminaSlide StaminaEMS)
+
+staminamem:
+  push rax
+  mov eax,1
+  cvtsi2ss xmm2,eax
+  pop rax
+
+staminacode:
+  movss [r8],xmm2
+  jmp staminareturn
+
+Stamina_bkps:
+  reassemble(StaminaProne)
+  reassemble(StaminaJump)
+  reassemble(StaminaSlide)
+  reassemble(StaminaEMS)
+  align 10 CC
+
+StaminaRegen:
+  jmp staminamem
+staminareturn:
+
+//------------------------------------------------------------------------------
+
+aobSprintWrite:
+  nop 5
+
+//------------------------------------------------------------------------------
+
+StaminaStab:
+  nop 5
+
+//------------------------------------------------------------------------------
+
+StaminaProne:
+  nop A
+
+//------------------------------------------------------------------------------
+
+StaminaJump:
+  nop 9
+
+//------------------------------------------------------------------------------
+
+StaminaSlide:
+  nop 9
+
+//------------------------------------------------------------------------------
+
+StaminaEMS:
+  nop C
+
+[DISABLE]
+
+StaminaRegen:
+  db F3 41 0F 11 10
+
+aobSprintWrite:
+  db F3 41 0F 11 08
+
+StaminaStab:
+  db F3 41 0F 11 00
+
+StaminaProne:
+  reassemble(Stamina_bkps)
+
+StaminaJump:
+  reassemble(Stamina_bkps+A)
+
+StaminaSlide:
+  reassemble(Stamina_bkps+13)
+
+StaminaEMS:
+  reassemble(Stamina_bkps+1C)
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+7DB7DB - F3 0F10 40 3C           - movss xmm0,[rax+3C]
+//game.dll+7DB7E0 - 48 8B 4D 98             - mov rcx,[rbp-68]
+//game.dll+7DB7E4 - BA 31BB7078             - mov edx,7870BB31
+//game.dll+7DB7E9 - 4C 8B 45 A0             - mov r8,[rbp-60]
+//game.dll+7DB7ED - F3 0F5E D0              - divss xmm2,xmm0
+//game.dll+7DB7F1 - 49 81 C0 845B5400       - add r8,00545B84
+//game.dll+7DB7F8 - 4D 03 C4                - add r8,r12
+//game.dll+7DB7FB - F3 41 0F59 D2           - mulss xmm2,xmm10
+//game.dll+7DB800 - F3 41 0F58 56 24        - addss xmm2,[r14+24]
+//game.dll+7DB806 - F3 41 0F5D D5           - minss xmm2,xmm13
+//------------------------------------------------------------------------------
+//game.dll+7DB80B - F3 41 0F11 10           - movss [r8],xmm2
+//------------------------------------------------------------------------------
+//game.dll+7DB810 - 49 8B 84 CC 00010000    - mov rax,[r12+rcx*8+00000100]
+//game.dll+7DB818 - 8B 48 10                - mov ecx,[rax+10]
+//game.dll+7DB81B - E8 F0853C00             - call game.dll+BA3E10
+//game.dll+7DB820 - F3 0F10 86 300D0000     - movss xmm0,[rsi+00000D30]
+//game.dll+7DB828 - 41 0F2F C7              - comiss xmm0,xmm15
+//game.dll+7DB82C - 76 0D                   - jna game.dll+7DB83B
+//game.dll+7DB82E - F3 41 0F5C C2           - subss xmm0,xmm10
+//game.dll+7DB833 - F3 0F11 86 300D0000     - movss [rsi+00000D30],xmm0
+//game.dll+7DB83B - F3 0F10 86 340D0000     - movss xmm0,[rsi+00000D34]
+//game.dll+7DB843 - 41 0F2F C7              - comiss xmm0,xmm15
+{
+}
+//Original Instructions:
+//game.dll+783B99 - F3 41 0F5E 56 34        - divss xmm2,[r14+34]
+//game.dll+783B9F - 48 8B 05 CABC2E01       - mov rax,[game.dll+1A6F870]
+//game.dll+783BA6 - 4C 8D 80 845B5400       - lea r8,[rax+00545B84]
+//game.dll+783BAD - 4C 03 C6                - add r8,rsi
+//game.dll+783BB0 - F3 0F10 8C 1E 845B5400  - movss xmm1,[rsi+rbx+00545B84]
+//game.dll+783BB9 - F3 0F59 D6              - mulss xmm2,xmm6
+//game.dll+783BBD - F3 0F5E D0              - divss xmm2,xmm0
+//game.dll+783BC1 - 0F57 C0                 - xorps xmm0,xmm0
+//game.dll+783BC4 - F3 0F5C CA              - subss xmm1,xmm2
+//game.dll+783BC8 - F3 0F5F C8              - maxss xmm1,xmm0
+//------------------------------------------------------------------------------
+//game.dll+783BCC - F3 41 0F11 08           - movss [r8],xmm1
+//------------------------------------------------------------------------------
+//game.dll+783BD1 - 48 8B 84 F8 00010000    - mov rax,[rax+rdi*8+00000100]
+//game.dll+783BD9 - 8B 48 10                - mov ecx,[rax+10]
+//game.dll+783BDC - E8 8F024200             - call game.dll+BA3E70
+//game.dll+783BE1 - 41 8B 46 48             - mov eax,[r14+48]
+//game.dll+783BE5 - 4C 8B 74 24 58          - mov r14,[rsp+58]
+//game.dll+783BEA - 89 84 2B E4E55300       - mov [rbx+rbp+0053E5E4],eax
+//game.dll+783BF1 - 48 8B 6C 24 40          - mov rbp,[rsp+40]
+//game.dll+783BF6 - 48 8B 7C 24 50          - mov rdi,[rsp+50]
+//game.dll+783BFB - 48 8B 74 24 48          - mov rsi,[rsp+48]
+//game.dll+783C00 - 0F28 74 24 20           - movaps xmm6,[rsp+20]
+{
+}
+//Original Instructions:
+//game.dll+BDE887 - 74 5A                   - je game.dll+BDE8E3
+//game.dll+BDE889 - 48 6B C3 78             - imul rax,rbx,78
+//game.dll+BDE88D - 0F57 C0                 - xorps xmm0,xmm0
+//game.dll+BDE890 - 4D 8D 82 845B5400       - lea r8,[r10+00545B84]
+//game.dll+BDE897 - 4C 03 C0                - add r8,rax
+//game.dll+BDE89A - F3 41 0F58 08           - addss xmm1,[r8]
+//game.dll+BDE89F - 0F2F C1                 - comiss xmm0,xmm1
+//game.dll+BDE8A2 - 77 0C                   - ja game.dll+BDE8B0
+//game.dll+BDE8A4 - F3 0F10 05 84AD6B00     - movss xmm0,[game.dll+1299630]
+//game.dll+BDE8AC - F3 0F5D C1              - minss xmm0,xmm1
+//------------------------------------------------------------------------------
+//game.dll+BDE8B0 - F3 41 0F11 00           - movss [r8],xmm0
+//------------------------------------------------------------------------------
+//game.dll+BDE8B5 - BA 31BB7078             - mov edx,7870BB31
+//game.dll+BDE8BA - 49 8B 84 DA 00010000    - mov rax,[r10+rbx*8+00000100]
+//game.dll+BDE8C2 - 8B 48 10                - mov ecx,[rax+10]
+//game.dll+BDE8C5 - E8 E657FCFF             - call game.dll+BA40B0
+//game.dll+BDE8CA - 48 8B 05 9F0FE900       - mov rax,[game.dll+1A6F870]
+//game.dll+BDE8D1 - 48 69 CB B80E0000       - imul rcx,rbx,00000EB8
+//game.dll+BDE8D8 - C7 84 01 E4E55300 0000003F- mov [rcx+rax+0053E5E4],3F000000
+//game.dll+BDE8E3 - 48 8B 5C 24 38          - mov rbx,[rsp+38]
+//game.dll+BDE8E8 - 48 8B 6C 24 40          - mov rbp,[rsp+40]
+//game.dll+BDE8ED - 48 8B 74 24 48          - mov rsi,[rsp+48]
+{
+}
+//Original Instructions:
+//game.dll+8F10BA - 42 8B 0C C7             - mov ecx,[rdi+r8*8]
+//game.dll+8F10BE - 41 3B CE                - cmp ecx,r14d
+//game.dll+8F10C1 - 0F84 12020000           - je game.dll+8F12D9
+//game.dll+8F10C7 - 3B C8                   - cmp ecx,eax
+//game.dll+8F10C9 - 0F84 12020000           - je game.dll+8F12E1
+//game.dll+8F10CF - FF C2                   - inc edx
+//game.dll+8F10D1 - 41 3B D1                - cmp edx,r9d
+//game.dll+8F10D4 - 72 DA                   - jb game.dll+8F10B0
+//game.dll+8F10D6 - 8B C3                   - mov eax,ebx
+//game.dll+8F10D8 - 48 6B C8 78             - imul rcx,rax,78
+//------------------------------------------------------------------------------
+//game.dll+8F10DC - F3 42 0F11 8C 11 845B5400 - movss [rcx+r10+00545B84],xmm1
+//------------------------------------------------------------------------------
+//game.dll+8F10E6 - 41 8B 45 00             - mov eax,[r13+00]
+//game.dll+8F10EA - 8B 0D 94EF2301          - mov ecx,[game.dll+1B30084]
+//game.dll+8F10F0 - 3B C1                   - cmp eax,ecx
+//game.dll+8F10F2 - 74 53                   - je game.dll+8F1147
+//game.dll+8F10F4 - 45 8B 9A F0000000       - mov r11d,[r10+000000F0]
+//game.dll+8F10FB - 45 33 C0                - xor r8d,r8d
+//game.dll+8F10FE - 41 8B BA F8000000       - mov edi,[r10+000000F8]
+//game.dll+8F1105 - 0FAF F8                 - imul edi,eax
+//game.dll+8F1108 - 45 8D 63 FF             - lea r12d,[r11-01]
+//game.dll+8F110C - 45 85 DB                - test r11d,r11d
+{
+}
+//Original Instructions:
+//game.dll+9639C9 - 43 8B 0C C3             - mov ecx,[r11+r8*8]
+//game.dll+9639CD - 3B CF                   - cmp ecx,edi
+//game.dll+9639CF - 0F84 AE010000           - je game.dll+963B83
+//game.dll+9639D5 - 3B C8                   - cmp ecx,eax
+//game.dll+9639D7 - 0F84 AE010000           - je game.dll+963B8B
+//game.dll+9639DD - FF C2                   - inc edx
+//game.dll+9639DF - 41 3B D1                - cmp edx,r9d
+//game.dll+9639E2 - 72 DC                   - jb game.dll+9639C0
+//game.dll+9639E4 - B8 FFFFFFFF             - mov eax,FFFFFFFF
+//game.dll+9639E9 - 48 6B C8 78             - imul rcx,rax,78
+//------------------------------------------------------------------------------
+//game.dll+9639ED - F3 0F11 8C 19 445F5400  - movss [rcx+rbx+00545F44],xmm1
+//------------------------------------------------------------------------------
+//game.dll+9639F6 - 41 8B 44 24 14          - mov eax,[r12+14]
+//game.dll+9639FB - 8B 0D 73184501          - mov ecx,[game.dll+1DB5274]
+//game.dll+963A01 - 3B C1                   - cmp eax,ecx
+//game.dll+963A03 - 74 50                   - je game.dll+963A55
+//game.dll+963A05 - 44 8B 93 F0000000       - mov r10d,[rbx+000000F0]
+//game.dll+963A0C - 45 8B C7                - mov r8d,r15d
+//game.dll+963A0F - 44 8B 9B F8000000       - mov r11d,[rbx+000000F8]
+//game.dll+963A16 - 44 0FAF D8              - imul r11d,eax
+//game.dll+963A1A - 41 8D 6A FF             - lea ebp,[r10-01]
+//game.dll+963A1E - 45 85 D2                - test r10d,r10d
+{
+}
+//Original Instructions:
+//game.dll+95F269 - 43 8B 0C C3             - mov ecx,[r11+r8*8]
+//game.dll+95F26D - 3B CB                   - cmp ecx,ebx
+//game.dll+95F26F - 0F84 7C020000           - je game.dll+95F4F1
+//game.dll+95F275 - 3B C8                   - cmp ecx,eax
+//game.dll+95F277 - 0F84 7C020000           - je game.dll+95F4F9
+//game.dll+95F27D - FF C2                   - inc edx
+//game.dll+95F27F - 41 3B D1                - cmp edx,r9d
+//game.dll+95F282 - 72 DC                   - jb game.dll+95F260
+//game.dll+95F284 - B8 FFFFFFFF             - mov eax,FFFFFFFF
+//game.dll+95F289 - 48 6B C8 78             - imul rcx,rax,78
+//------------------------------------------------------------------------------
+//game.dll+95F28D - F3 0F11 8C 39 445F5400  - movss [rcx+rdi+00545F44],xmm1
+//------------------------------------------------------------------------------
+//game.dll+95F296 - 41 8B 44 24 08          - mov eax,[r12+08]
+//game.dll+95F29B - 8B 0D D35F4501          - mov ecx,[game.dll+1DB5274]
+//game.dll+95F2A1 - 3B C1                   - cmp eax,ecx
+//game.dll+95F2A3 - 74 51                   - je game.dll+95F2F6
+//game.dll+95F2A5 - 44 8B 97 F0000000       - mov r10d,[rdi+000000F0]
+//game.dll+95F2AC - 44 8B C6                - mov r8d,esi
+//game.dll+95F2AF - 44 8B 9F F8000000       - mov r11d,[rdi+000000F8]
+//game.dll+95F2B6 - 44 0FAF D8              - imul r11d,eax
+//game.dll+95F2BA - 45 8D 72 FF             - lea r14d,[r10-01]
+//game.dll+95F2BE - 45 85 D2                - test r10d,r10d
+{
+}
+//Original Instructions:
+//game.dll+5B1D6A - 49 8D 8F E8000000       - lea rcx,[r15+000000E8]
+//game.dll+5B1D71 - E8 5A97AA00             - call game.dll+105B4D0
+//game.dll+5B1D76 - 48 85 C0                - test rax,rax
+//game.dll+5B1D79 - 74 09                   - je game.dll+5B1D84
+//game.dll+5B1D7B - 39 18                   - cmp [rax],ebx
+//game.dll+5B1D7D - 75 05                   - jne game.dll+5B1D84
+//game.dll+5B1D7F - 8B 40 04                - mov eax,[rax+04]
+//game.dll+5B1D82 - EB 05                   - jmp game.dll+5B1D89
+//game.dll+5B1D84 - B8 FFFFFFFF             - mov eax,FFFFFFFF
+//game.dll+5B1D89 - 48 6B C8 78             - imul rcx,rax,78
+//------------------------------------------------------------------------------
+//game.dll+5B1D8D - 42 C7 84 39 84755400 00000000- mov [rcx+r15+00547584],00000000
+//------------------------------------------------------------------------------
+//game.dll+5B1D99 - 41 8B 5D 08             - mov ebx,[r13+08]
+//game.dll+5B1D9D - 8B 3D 61388A01          - mov edi,[game.dll+1E55604]
+//game.dll+5B1DA3 - 3B DF                   - cmp ebx,edi
+//game.dll+5B1DA5 - 74 1F                   - je game.dll+5B1DC6
+//game.dll+5B1DA7 - 41 B0 01                - mov r8b,01
+//game.dll+5B1DAA - 49 8D 8F E8000000       - lea rcx,[r15+000000E8]
+//game.dll+5B1DB1 - 8B D3                   - mov edx,ebx
+//game.dll+5B1DB3 - E8 1897AA00             - call game.dll+105B4D0
+//game.dll+5B1DB8 - 48 85 C0                - test rax,rax
+//game.dll+5B1DBB - 74 09                   - je game.dll+5B1DC6
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>119236</ID>
+              <Description>"Inf. Health"</Description>
+              <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>//Author : Zodiac, Rei
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.003.201
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : ~
+//Date   : 28/07/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+{$STRICT}
+aobscanmodule(aobReadHealth,game.dll,45 8B 50 ? 44 0F AF D3 44 8D 72 ? 85 D2 74 ? 4D 8B 48 ? 45 ) //Unique - old pointer based function
+aobscanmodule(removeIntegerLimit_scan,$process,7F ? 41 3B C6 8B F8 41 0F 4C FE 89 3E) //Unique, // helldivers2.exe+3210D3
+aobscanmodule(removeHealthLimit,game.dll,0F 4F E8 83 FF ? 74 ? F3) //Unique
+aobscanmodule(aobWriteHealth,game.dll,41 89 2C 00 48 8B 46 ? 4C) //Unique
+aobscanmodule(aobReadLocalPlayerHealth,game.dll,41 8B 47 ? 4C 8B 7C 24 ? 4C) //Unique
+alloc(newmem,64,aobReadHealth)
+alloc(newmem2,48,aobWriteHealth)
+alloc(newmem3,48,aobReadLocalPlayerHealth)
+label(return pHealth return2 code3 return3)
+registersymbol(aobReadHealth removeIntegerLimit_scan removeIntegerLimit removeHealthLimit aobWriteHealth pHealth aobReadLocalPlayerHealth)
+define(removeIntegerLimit,removeIntegerLimit_scan+B)
+
+
+//------------------------------------------------------------------------------
+
+removeIntegerLimit:
+  nop 2
+
+//------------------------------------------------------------------------------
+
+removeHealthLimit+2:
+  db +5 //cmovg ebp,ebp
+
+//------------------------------------------------------------------------------
+
+newmem:
+  push rax
+  push rbx
+  pushfq
+  mov rbx,[r8+50] //health pointer
+  test rbx,rbx
+  jz short @f
+  mov rax,pHealth
+  mov eax,[rax+8]
+  mov [rbx],eax
+
+@@:
+  popfq
+  pop rbx
+  pop rax
+  mov r10d,[r8+30]
+  imul r10d,ebx
+  jmp return
+  align 10
+
+pHealth:
+  dq 0 //health pointer
+  dd #99999 //set max &amp; current health
+  align 10 CC
+
+aobReadHealth:
+  jmp newmem
+  nop 3
+return:
+
+//------------------------------------------------------------------------------
+
+newmem2:
+  push rax
+  push rbx
+  push rcx
+  pushfq
+  lea rax,[r8+rax]
+  mov rbx,pHealth
+  mov rcx,[rbx]
+  cmp rax,rcx
+  jne short @f
+  mov ebp,[rbx+8]
+
+@@:
+  popfq
+  pop rcx
+  pop rbx
+  pop rax
+  mov [r8+rax],ebp
+  mov rax,[rsi+38]
+  jmp return2
+  align 10 CC
+
+aobWriteHealth:
+  jmp newmem2
+  nop 3
+return2:
+
+//------------------------------------------------------------------------------
+
+newmem3:
+  push rax
+  push rbx
+  push rcx
+  lea rax,[rax+rcx*8]
+  mov rbx,pHealth
+  mov [rbx],rax
+  mov ecx,[rbx+8]
+  mov [rax],ecx
+  pop rcx
+  pop rbx
+  pop rax
+
+code3:
+  mov eax,[r15+18]
+  mov r15,[rsp+20]
+  jmp return3
+  align 10 CC
+
+aobReadLocalPlayerHealth:
+  jmp newmem3
+  nop 4
+return3:
+
+[DISABLE]
+
+
+removeIntegerLimit:
+  mov [rsi],edi
+
+removeHealthLimit+2:
+  db -5
+
+aobReadHealth:
+  db 45 8B 50 30 44 0F AF D3
+
+aobWriteHealth:
+  db 41 89 2C 00 48 8B 46 38
+
+aobReadLocalPlayerHealth:
+  db 41 8B 47 18 4C 8B 7C 24 20
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+7BD453 - 45 3B C1                - cmp r8d,r9d
+//game.dll+7BD456 - 72 D8                   - jb game.dll+7BD430
+//game.dll+7BD458 - 4D 8B C4                - mov r8,r12
+//game.dll+7BD45B - 41 8B 00                - mov eax,[r8]
+//game.dll+7BD45E - 41 89 47 04             - mov [r15+04],eax
+//game.dll+7BD462 - 3B 05 9C2B3701          - cmp eax,[game.dll+1B30004]
+//game.dll+7BD468 - 0F84 F7000000           - je game.dll+7BD565
+//game.dll+7BD46E - 48 8B 1D D3232B01       - mov rbx,[game.dll+1A6F848]
+//game.dll+7BD475 - 45 33 C9                - xor r9d,r9d
+//game.dll+7BD478 - 4C 89 74 24 60          - mov [rsp+60],r14
+//------------------------------------------------------------------------------
+//game.dll+7BD47D - 44 8B 53 28             - mov r10d,[rbx+28]
+//------------------------------------------------------------------------------
+//game.dll+7BD481 - 8B 7B 30                - mov edi,[rbx+30]
+//game.dll+7BD484 - 0FAF F8                 - imul edi,eax
+//game.dll+7BD487 - 45 8D 72 FF             - lea r14d,[r10-01]
+//game.dll+7BD48B - 45 85 D2                - test r10d,r10d
+//game.dll+7BD48E - 0F84 CC000000           - je game.dll+7BD560
+//game.dll+7BD494 - 48 8B 73 20             - mov rsi,[rbx+20]
+//game.dll+7BD498 - 8B 6B 2C                - mov ebp,[rbx+2C]
+//game.dll+7BD49B - 0F1F 44 00 00           - nop dword ptr [rax+rax+00]
+//game.dll+7BD4A0 - 41 8B CE                - mov ecx,r14d
+//game.dll+7BD4A3 - 45 8D 04 39             - lea r8d,[r9+rdi]
+{
+}
+//Original Instructions:
+//helldivers2.exe+32109B - 48 8D 0D 9E612D01       - lea rcx,[helldivers2.exe+15F7240]
+//helldivers2.exe+3210A2 - 48 8B D0                - mov rdx,rax
+//helldivers2.exe+3210A5 - 89 7C 24 28             - mov [rsp+28],edi
+//helldivers2.exe+3210A9 - 45 8B CC                - mov r9d,r12d
+//helldivers2.exe+3210AC - 44 89 74 24 20          - mov [rsp+20],r14d
+//helldivers2.exe+3210B1 - E8 3ACD2600             - call noenginelog
+//helldivers2.exe+3210B6 - 40 38 AC 24 D8000000    - cmp [rsp+000000D8],bpl
+//helldivers2.exe+3210BE - 0F84 02060000           - je helldivers2.exe+3216C6
+//helldivers2.exe+3210C4 - 8B 06                   - mov eax,[rsi]
+//helldivers2.exe+3210C6 - 3B C7                   - cmp eax,edi
+//------------------------------------------------------------------------------
+//helldivers2.exe+3210C8 - 7F 09                   - jg helldivers2.exe+3210D3
+//------------------------------------------------------------------------------
+//helldivers2.exe+3210CA - 41 3B C6                - cmp eax,r14d
+//helldivers2.exe+3210CD - 8B F8                   - mov edi,eax
+//helldivers2.exe+3210CF - 41 0F4C FE              - cmovl edi,r14d
+//------------------------------------------------------------------------------
+//helldivers2.exe+3210D3 - 89 3E                   - mov [rsi],edi
+//------------------------------------------------------------------------------
+//helldivers2.exe+3210D5 - E9 EC050000             - jmp helldivers2.exe+3216C6
+//helldivers2.exe+3210DA - 0F29 74 24 70           - movaps [rsp+70],xmm6
+//helldivers2.exe+3210DF - 0F29 7C 24 60           - movaps [rsp+60],xmm7
+//helldivers2.exe+3210E4 - 80 FA 02                - cmp dl,02
+//helldivers2.exe+3210E7 - 0F85 8E000000           - jne helldivers2.exe+32117B
+//helldivers2.exe+3210ED - F3 41 0F10 10           - movss xmm2,[r8]
+{
+}
+//Original Instructions:
+//game.dll+876B3A - 48 8B 4E 40             - mov rcx,[rsi+40]
+//game.dll+876B3E - 8B E8                   - mov ebp,eax
+//game.dll+876B40 - 4C 89 74 24 28          - mov [rsp+28],r14
+//game.dll+876B45 - 48 8B 0C E9             - mov rcx,[rcx+rbp*8]
+//game.dll+876B49 - E8 D248CAFF             - call game.dll+51B420
+//game.dll+876B4E - 3B 1D D8EA5D01          - cmp ebx,[game.dll+1E5562C]
+//game.dll+876B54 - 4C 8B F8                - mov r15,rax
+//game.dll+876B57 - 74 44                   - je game.dll+876B9D
+//game.dll+876B59 - 4C 8B 05 A88B5101       - mov r8,[game.dll+1D8F708]
+//game.dll+876B60 - 41 8B 50 28             - mov edx,[r8+28]
+//------------------------------------------------------------------------------
+//game.dll+876B64 - 45 8B 50 30             - mov r10d,[r8+30]
+//------------------------------------------------------------------------------
+//game.dll+876B68 - 44 0FAF D3              - imul r10d,ebx
+//game.dll+876B6C - 44 8D 72 FF             - lea r14d,[rdx-01]
+//game.dll+876B70 - 85 D2                   - test edx,edx
+//game.dll+876B72 - 74 29                   - je game.dll+876B9D
+//game.dll+876B74 - 4D 8B 48 20             - mov r9,[r8+20]
+//game.dll+876B78 - 45 8B 58 2C             - mov r11d,[r8+2C]
+//game.dll+876B7C - 0F1F 40 00              - nop dword ptr [rax+00]
+//game.dll+876B80 - 41 8B C6                - mov eax,r14d
+//game.dll+876B83 - 42 8D 0C 17             - lea ecx,[rdi+r10]
+//game.dll+876B87 - 48 23 C8                - and rcx,rax
+{
+}
+//Original Instructions:
+//game.dll+56D0C1 - 8B C3                   - mov eax,ebx
+//game.dll+56D0C3 - 41 8B DB                - mov ebx,r11d
+//game.dll+56D0C6 - 41 3B C3                - cmp eax,r11d
+//game.dll+56D0C9 - 0F4F D8                 - cmovg ebx,eax
+//game.dll+56D0CC - BD F1D8FFFF             - mov ebp,FFFFD8F1
+//game.dll+56D0D1 - 3B DD                   - cmp ebx,ebp
+//game.dll+56D0D3 - 7C 0C                   - jl game.dll+56D0E1
+//game.dll+56D0D5 - B8 0F270000             - mov eax,0000270F
+//game.dll+56D0DA - 8B EB                   - mov ebp,ebx
+//game.dll+56D0DC - 3B D8                   - cmp ebx,eax
+//------------------------------------------------------------------------------
+//game.dll+56D0DE - 0F4F E8                 - cmovg ebp,eax
+//------------------------------------------------------------------------------
+//game.dll+56D0E1 - 83 FF FF                - cmp edi,-01
+//game.dll+56D0E4 - 74 14                   - je game.dll+56D0FA
+//game.dll+56D0E6 - F3 43 0F10 8C 32 D0020000 - movss xmm1,[r10+r14+000002D0]
+//game.dll+56D0F0 - 0F57 C0                 - xorps xmm0,xmm0
+//game.dll+56D0F3 - 0F2E C8                 - ucomiss xmm1,xmm0
+//game.dll+56D0F6 - 7A 02                   - jp game.dll+56D0FA
+//game.dll+56D0F8 - 74 68                   - je game.dll+56D162
+//game.dll+56D0FA - 41 89 6D 14             - mov [r13+14],ebp
+//game.dll+56D0FE - 0F57 C9                 - xorps xmm1,xmm1
+//game.dll+56D101 - 41 8B 46 10             - mov eax,[r14+10]
+{
+}
+//Original Instructions:
+//game.dll+506957 - 8D 48 FF                - lea ecx,[rax-01]
+//game.dll+50695A - F3 48 0F2A C8           - cvtsi2ss xmm1,rax
+//game.dll+50695F - 0F5B C0                 - cvtdq2ps xmm0,xmm0
+//game.dll+506962 - F3 0F5E D0              - divss xmm2,xmm0
+//game.dll+506966 - F3 0F59 D1              - mulss xmm2,xmm1
+//game.dll+50696A - F3 48 0F2C C2           - cvttss2si rax,xmm2
+//game.dll+50696F - 3B C1                   - cmp eax,ecx
+//game.dll+506971 - 0F46 C8                 - cmovbe ecx,eax
+//game.dll+506974 - 41 89 4D 10             - mov [r13+10],ecx
+//game.dll+506978 - 48 8B 46 50             - mov rax,[rsi+50]
+//------------------------------------------------------------------------------
+//game.dll+50697C - 41 89 2C 00             - mov [r8+rax],ebp
+//------------------------------------------------------------------------------
+//game.dll+506980 - 48 8B 46 38             - mov rax,[rsi+38]
+//game.dll+506984 - 4C 03 46 50             - add r8,[rsi+50]
+//game.dll+506988 - 4A 8B 0C C8             - mov rcx,[rax+r9*8]
+//game.dll+50698C - 8B 49 10                - mov ecx,[rcx+10]
+//game.dll+50698F - E8 7CD46900             - call game.dll+BA3E10
+//game.dll+506994 - 83 FF FF                - cmp edi,-01
+//game.dll+506997 - 0F84 B3000000           - je game.dll+506A50
+//game.dll+50699D - 4C 8B 54 24 28          - mov r10,[rsp+28]
+//game.dll+5069A2 - 4C 8B 5E 40             - mov r11,[rsi+40]
+//game.dll+5069A6 - 4F 8D 0C 64             - lea r9,[r12+r12*2]
+{
+}
+//Original Instructions:
+//game.dll+7BFBBE - 41 3B C3                - cmp eax,r11d
+//game.dll+7BFBC1 - 74 7E                   - je game.dll+7BFC41
+//game.dll+7BFBC3 - 3B C3                   - cmp eax,ebx
+//game.dll+7BFBC5 - 74 7E                   - je game.dll+7BFC45
+//game.dll+7BFBC7 - FF C7                   - inc edi
+//game.dll+7BFBC9 - 3B FA                   - cmp edi,edx
+//game.dll+7BFBCB - 72 E3                   - jb game.dll+7BFBB0
+//game.dll+7BFBCD - 48 8B 46 50             - mov rax,[rsi+50]
+//game.dll+7BFBD1 - 48 69 CD 78020000       - imul rcx,rbp,00000278
+//game.dll+7BFBD8 - 8B 54 01 14             - mov edx,[rcx+rax+14]
+//------------------------------------------------------------------------------
+//game.dll+7BFBDC - 41 8B 47 18             - mov eax,[r15+18]
+//------------------------------------------------------------------------------
+//game.dll+7BFBE0 - 4C 8B 7C 24 20          - mov r15,[rsp+20]
+//game.dll+7BFBE5 - 4C 8B 74 24 28          - mov r14,[rsp+28]
+//game.dll+7BFBEA - 48 8B 7C 24 30          - mov rdi,[rsp+30]
+//game.dll+7BFBEF - 48 8B 74 24 50          - mov rsi,[rsp+50]
+//game.dll+7BFBF4 - 48 8B 6C 24 48          - mov rbp,[rsp+48]
+//game.dll+7BFBF9 - 48 8B 5C 24 40          - mov rbx,[rsp+40]
+//game.dll+7BFBFE - 85 C0                   - test eax,eax
+//game.dll+7BFC00 - 74 62                   - je game.dll+7BFC64
+//game.dll+7BFC02 - F7 D8                   - neg eax
+//game.dll+7BFC04 - 66 0F6E CA              - movd xmm1,edx
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>171197</ID>
+                  <Description>"Current Health"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>pHealth</Address>
+                  <Offsets>
+                    <Offset>0</Offset>
+                  </Offsets>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>119237</ID>
+                  <Description>"Set Max Health"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>pHealth+8</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>146475</ID>
+                  <Description>"All Damage Reduction"</Description>
+                  <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>//Author : Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.002.203
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+D25330
+//Date   : 12/04/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+//66 0F 6E 59 04 66 0F 6E 49 08 0F 5B C9 0F 5B DB F3 41 0F 59 4E 4C
+aobscanmodule(damageMulti,game.dll,0F 5B DB F3 41 0F 59 4E ? F3) //Unique
+alloc(dmg_newmem,64,damageMulti)
+label(enemydmg_multiplier dmg_return)
+registersymbol(damageMulti enemydmg_multiplier)
+
+dmg_newmem:
+  cvtdq2ps xmm3,xmm3
+  push rax
+  mov rax,enemydmg_multiplier
+  mulss xmm1,[rax]
+  mulss xmm3,[rax]
+  pop rax
+  mulss xmm1,[r14+4C]
+  jmp dmg_return
+  align 10
+
+enemydmg_multiplier:
+  dd (float)1.0
+  align 10 CC
+
+damageMulti:
+  jmp dmg_newmem
+  nop 4
+dmg_return:
+
+[DISABLE]
+
+damageMulti:
+  db 0F 5B DB F3 41 0F 59 4E 4C
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+D252F4 - F3 41 0F11 86 B0000000  - movss [r14+000000B0],xmm0
+//game.dll+D252FD - 0F10 41 2C              - movups xmm0,[rcx+2C]
+//game.dll+D25301 - 41 0F11 86 BC000000     - movups [r14+000000BC],xmm0
+//game.dll+D25309 - 0F10 49 3C              - movups xmm1,[rcx+3C]
+//game.dll+D2530D - F3 0F10 05 FB425700     - movss xmm0,[game.dll+1299610]
+//game.dll+D25315 - F3 41 0F5C 46 4C        - subss xmm0,[r14+4C]
+//game.dll+D2531B - 41 0F11 8E CC000000     - movups [r14+000000CC],xmm1
+//game.dll+D25323 - 66 0F6E 59 04           - movd xmm3,[rcx+04]
+//game.dll+D25328 - 66 0F6E 49 08           - movd xmm1,[rcx+08]
+//game.dll+D2532D - 0F5B C9                 - cvtdq2ps xmm1,xmm1
+//------------------------------------------------------------------------------
+//game.dll+D25330 - 0F5B DB                 - cvtdq2ps xmm3,xmm3
+//------------------------------------------------------------------------------
+//game.dll+D25333 - F3 41 0F59 4E 4C        - mulss xmm1,[r14+4C]
+//game.dll+D25339 - F3 0F59 D8              - mulss xmm3,xmm0
+//game.dll+D2533D - 0F57 C0                 - xorps xmm0,xmm0
+//game.dll+D25340 - F3 0F58 D9              - addss xmm3,xmm1
+//game.dll+D25344 - 0F57 C9                 - xorps xmm1,xmm1
+//game.dll+D25347 - F3 41 0F11 9E 94000000  - movss [r14+00000094],xmm3
+//game.dll+D25350 - 8B 41 0C                - mov eax,[rcx+0C]
+//game.dll+D25353 - F3 48 0F2A C0           - cvtsi2ss xmm0,rax
+//game.dll+D25358 - F3 41 0F11 86 98000000  - movss [r14+00000098],xmm0
+//game.dll+D25361 - 0F57 C0                 - xorps xmm0,xmm0
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>146476</ID>
+                      <Description>"Damage Mult"</Description>
+                      <ShowAsSigned>0</ShowAsSigned>
+                      <VariableType>Float</VariableType>
+                      <Address>enemydmg_multiplier</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>170558</ID>
+              <Description>"Remove Currency Pickup Limit"</Description>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>//Author : Zodiac, HavocBlitz
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.002.200
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+E0BE92
+//Date   : 23/03/25
+//Comment: Script made for Experimental Division.
+
+{$lua}
+if syntaxcheck then return end
+
+[ENABLE]
+
+SCLimitToken = false
+
+local game = getAddressSafe('game.dll')
+
+if game == nil then
+  showMessage("game.dll not found! Please restart the game.")
+  error()
+  return
+end
+
+local patterns = {
+    limitscan = '48 8B E8 4C 8B 89 ? ? ? ? 48 8B C8 41 FF 91 ? ? ? ? 48 8B 0D ? ? ? ? 48 8D 15 ? ? ? ? 45 8B 46 ? 4C'
+}
+
+for AOBNAME, pattern in pairs(patterns) do
+    _G[AOBNAME] = AOBScanModuleUnique('game.dll', pattern)
+    if not _G[AOBNAME] then
+        showMessage("AOB not found! Please restart the game.")
+        error()
+        return
+    else
+        SCLimitToken = true
+    end
+end
+
+local function random_uuid()
+  local template = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+    local result = template:gsub('x', function()
+     return string.format('%x', math.random(0, 15))
+    end)
+  return result
+end
+
+local function uuidToBytes(uuid)
+local bytes = {}
+  for i = 1, #uuid do
+    local char = uuid:sub(i, i)
+      if char ~= '-' then
+        table.insert(bytes, string.byte(char))
+      else
+        table.insert(bytes, 0x2D)
+      end
+    end
+  return bytes
+end
+
+local function printBytesInHex(bytes)
+  local hexString = ""
+    for i, byte in ipairs(bytes) do
+      hexString = hexString .. string.format("%02X ", byte)
+    end
+  return hexString
+end
+
+limitnewmem = allocateMemory(320, game)
+
+limitscan_orig = readBytes(limitscan, 10, true)
+
+limitasm_bkp = limitnewmem + 304
+writeBytes(limitasm_bkp, limitscan_orig) -- backup bytes for correct asm
+
+local regSymbols = {
+    "limitscan",
+    "limitnewmem",
+    "limitasm_bkp"
+}
+
+for _, regSymbol in ipairs(regSymbols) do
+    registerSymbol(regSymbol, _G[regSymbol], true)
+end
+
+local writeint3 = {}
+for i = 1, 6 do
+    writeint3[i] = 0xCC
+end
+
+local writeCCbytes = writeBytes(limitnewmem + 314, writeint3)
+
+local function loopFunctionLimitsSC()
+
+math.randomseed(os.time())
+
+while SCLimitToken do
+local uuid = random_uuid()
+local byteArray = uuidToBytes(uuid)
+
+local assemblyLimitsCode = [[
+label(codelimit returnlimit)
+limitnewmem:
+]]
+
+for i = 1, #byteArray do
+  assemblyLimitsCode = assemblyLimitsCode .. string.format("mov [r8+%X],0x%X\n", i - 1, byteArray[i])
+end
+
+local assemblyLimitsCode = assemblyLimitsCode .. [[
+codelimit:
+  reassemble(limitasm_bkp)
+  reassemble(limitasm_bkp+3)
+  jmp returnlimit
+  align 10
+limitscan:
+  jmp limitnewmem
+  nop 5
+returnlimit:
+]]
+AutoAssemble(assemblyLimitsCode)
+        sleep(1000)
+    end
+end
+
+createThread(loopFunctionLimitsSC)
+
+[DISABLE]
+
+SCLimitToken = false
+
+writeBytes(limitscan, limitscan_orig)
+
+local unRegister = {
+  'limitscan',
+  'limitnewmem',
+  'limitasm_bkp'
+}
+
+for _, symbol in ipairs(unRegister) do
+    unregisterSymbol(symbol)
+end
+
+deAlloc(limitnewmem)
+
+--[[
+//Original Instructions:
+//game.dll+ED75EE - 72 B0                   - jb game.dll+ED75A0
+//game.dll+ED75F0 - 48 8B 05 A997E100       - mov rax,[game.dll+1CF0DA0]
+//game.dll+ED75F7 - 33 D2                   - xor edx,edx
+//game.dll+ED75F9 - 4C 8B 3D 50D2EC00       - mov r15,[game.dll+1DA4850]
+//game.dll+ED7600 - 33 C9                   - xor ecx,ecx
+//game.dll+ED7602 - 4C 8B 88 18010000       - mov r9,[rax+00000118]
+//game.dll+ED7609 - 41 FF 91 30010000       - call qword ptr [r9+00000130]
+//game.dll+ED7610 - 48 8B 0D 8997E100       - mov rcx,[game.dll+1CF0DA0]
+//game.dll+ED7617 - 4D 8D 46 01             - lea r8,[r14+01]
+//game.dll+ED761B - 48 8D 15 6EDB4A00       - lea rdx,[game.dll+1385190]
+//------------------------------------------------------------------------------
+//game.dll+ED7622 - 48 8B E8                - mov rbp,rax
+//------------------------------------------------------------------------------
+//game.dll+ED7625 - 4C 8B 89 18010000       - mov r9,[rcx+00000118]
+//game.dll+ED762C - 48 8B C8                - mov rcx,rax
+//game.dll+ED762F - 41 FF 91 D8000000       - call qword ptr [r9+000000D8]
+//game.dll+ED7636 - 48 8B 0D 6397E100       - mov rcx,[game.dll+1CF0DA0]
+//game.dll+ED763D - 48 8D 15 CCA24F00       - lea rdx,[game.dll+13D1910]
+//game.dll+ED7644 - 45 8B 46 28             - mov r8d,[r14+28]
+//game.dll+ED7648 - 4C 8B 89 18010000       - mov r9,[rcx+00000118]
+//game.dll+ED764F - 48 8B CD                - mov rcx,rbp
+//game.dll+ED7652 - 41 FF 91 E8000000       - call qword ptr [r9+000000E8]
+//game.dll+ED7659 - 48 8B 0D 4097E100       - mov rcx,[game.dll+1CF0DA0]
+]]
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>170600</ID>
+                  <Description>"Inf. Notification Duration"</Description>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>//Author : Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.002.200
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+1158979
+//Date   : 20/03/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(SCtimer,game.dll,F3 41 0F 5C C3 F3 41 0F 11 86) //Unique
+registersymbol(SCtimer)
+
+SCtimer:
+  nop 5
+
+[DISABLE]
+
+SCtimer:
+  db F3 41 0F 5C C3
+
+unregistersymbol(SCtimer)
+
+//Original Instructions:
+//game.dll+1158948 - 4C 8B 44 24 70          - mov r8,[rsp+70]
+//game.dll+115894D - E8 EEE1D4FF             - call game.dll+EA6B40
+//game.dll+1158952 - 41 0F28 D9              - movaps xmm3,xmm9
+//game.dll+1158956 - F3 0F11 7C 24 20        - movss [rsp+20],xmm7
+//game.dll+115895C - 41 0F28 D0              - movaps xmm2,xmm8
+//game.dll+1158960 - 49 8D 8E B00A0000       - lea rcx,[r14+00000AB0]
+//game.dll+1158967 - B2 01                   - mov dl,01
+//game.dll+1158969 - E8 822ED5FF             - call game.dll+EAB7F0
+//game.dll+115896E - EB 17                   - jmp game.dll+1158987
+//game.dll+1158970 - F3 41 0F10 86 F0220000  - movss xmm0,[r14+000022F0]
+//------------------------------------------------------------------------------
+//game.dll+1158979 - F3 41 0F5C C3           - subss xmm0,xmm11
+//------------------------------------------------------------------------------
+//game.dll+115897E - F3 41 0F11 86 F0220000  - movss [r14+000022F0],xmm0
+//game.dll+1158987 - 4C 8B BC 24 70010000    - mov r15,[rsp+00000170]
+//game.dll+115898F - 4C 8B AC 24 78010000    - mov r13,[rsp+00000178]
+//game.dll+1158997 - 4C 8B A4 24 B8010000    - mov r12,[rsp+000001B8]
+//game.dll+115899F - 48 8B BC 24 B0010000    - mov rdi,[rsp+000001B0]
+//game.dll+11589A7 - 48 8B 9C 24 A8010000    - mov rbx,[rsp+000001A8]
+//game.dll+11589AF - 44 0F28 94 24 20010000  - movaps xmm10,[rsp+00000120]
+//game.dll+11589B8 - 48 8B 4D 00             - mov rcx,[rbp+00]
+//game.dll+11589BC - 48 33 CC                - xor rcx,rsp
+//game.dll+11589BF - E8 FC9DF6FE             - call game.dll+C27C0
+</AssemblerScript>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>170797</ID>
+              <Description>"Mass SC Packs Drop"</Description>
+              <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>//Author : Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.003.002
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+576094
+//Date   : 23/05/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(MultSCpacksNewScript,game.dll,4C 8D 8D ? ? ? ? 8B D0 48 8B CB E8 ? ? ? ? FF 44 24) //Unique
+aobscanmodule(removemodifiedr15SC,game.dll,41 8B C7 48 8D ? ? 49 8B 86) //Unique
+alloc(scriptmem,96,MultSCpacksNewScript)
+label(code_multSC packCMP scriptreturn)
+registersymbol(MultSCpacksNewScript code_multSC packCMP removemodifiedr15SC)
+
+scriptmem:
+  push rax
+  push rbx
+  push rcx
+  push rdx
+  pushfq
+  mov rax,packCMP
+  mov rbx,-1 //{-1}
+  mov r8,818603ED54533506 //sc hash
+  mov ecx,[rax]
+  mov edx,[rax+4]
+  dec ecx
+  cmp ecx,edx
+  jbe short @f
+  mov r15,rbx
+  inc edx
+  mov [rax+4],edx
+  jmp short code_multSC
+
+@@:
+  xor edx,edx
+  mov [rax+4],edx
+
+code_multSC:
+  popfq
+  pop rdx
+  pop rcx
+  pop rbx
+  pop rax
+  reassemble(MultSCpacksNewScript)
+  jmp scriptreturn
+  align 10
+
+packCMP:
+  dd #200 //sc packs quantity
+  dd 0 //counter
+  align 10 CC
+
+MultSCpacksNewScript:
+  jmp scriptmem
+  nop 2
+scriptreturn:
+
+//------------------------------------------------------------------------------
+
+removemodifiedr15SC:
+  db B0 00 90
+
+[DISABLE]
+
+MultSCpacksNewScript:
+  reassemble(code_multSC+5)
+
+removemodifiedr15SC:
+  db 41 8B C7
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+50A319 - 0F29 8D 60020000        - movaps [rbp+00000260],xmm1
+//game.dll+50A320 - F2 0F10 4D 70           - movsd xmm1,[rbp+70]
+//game.dll+50A325 - F2 0F11 8D 80020000     - movsd [rbp+00000280],xmm1
+//game.dll+50A32D - 0F29 85 70020000        - movaps [rbp+00000270],xmm0
+//game.dll+50A334 - 48 8B 90 B0000000       - mov rdx,[rax+000000B0]
+//game.dll+50A33B - 48 8B 0B                - mov rcx,[rbx]
+//game.dll+50A33E - 48 8B 02                - mov rax,[rdx]
+//game.dll+50A341 - 48 BA 9B7B13FB7A924DB0  - mov rdx,B04D927AFB137B9B
+//game.dll+50A34B - FF 50 18                - call qword ptr [rax+18]
+//game.dll+50A34E - 4C 8B 85 E0000000       - mov r8,[rbp+000000E0]
+//------------------------------------------------------------------------------
+//game.dll+50A355 - 4C 8D 8D 30020000       - lea r9,[rbp+00000230]
+//------------------------------------------------------------------------------
+//game.dll+50A35C - 8B D0                   - mov edx,eax
+//game.dll+50A35E - 48 8B CB                - mov rcx,rbx
+//game.dll+50A361 - E8 BA5E6700             - call game.dll+B80220
+//game.dll+50A366 - FF 44 24 60             - inc [rsp+60]
+//game.dll+50A36A - 8B 4D 84                - mov ecx,[rbp-7C]
+//game.dll+50A36D - 83 F9 FF                - cmp ecx,-01
+//game.dll+50A370 - 74 51                   - je game.dll+50A3C3
+//game.dll+50A372 - 41 8D 47 01             - lea eax,[r15+01]
+//game.dll+50A376 - 41 3B 86 30010000       - cmp eax,[r14+00000130]
+//game.dll+50A37D - 73 1B                   - jae game.dll+50A39A
+{
+}
+//Original Instructions:
+//game.dll+576070 - 8B D0                   - mov edx,eax
+//game.dll+576072 - 48 8B CB                - mov rcx,rbx
+//game.dll+576075 - E8 B6246A00             - call game.dll+C18530
+//game.dll+57607A - FF 44 24 68             - inc [rsp+68]
+//game.dll+57607E - 8B 4C 24 64             - mov ecx,[rsp+64]
+//game.dll+576082 - 83 F9 FF                - cmp ecx,-01
+//game.dll+576085 - 74 4E                   - je game.dll+5760D5
+//game.dll+576087 - 41 8D 47 01             - lea eax,[r15+01]
+//game.dll+57608B - 41 3B 86 38010000       - cmp eax,[r14+00000138]
+//game.dll+576092 - 73 18                   - jae game.dll+5760AC
+//------------------------------------------------------------------------------
+//game.dll+576094 - 41 8B C7                - mov eax,r15d
+//------------------------------------------------------------------------------
+//game.dll+576097 - 48 8D 0C 40             - lea rcx,[rax+rax*2]
+//game.dll+57609B - 49 8B 86 30010000       - mov rax,[r14+00000130]
+//game.dll+5760A2 - 48 8D 14 88             - lea rdx,[rax+rcx*4]
+//game.dll+5760A6 - 8B 4C 24 64             - mov ecx,[rsp+64]
+//game.dll+5760AA - EB 07                   - jmp game.dll+5760B3
+//game.dll+5760AC - 48 8D 15 7DF1C901       - lea rdx,[game.dll+2215230]
+//game.dll+5760B3 - 8B 42 08                - mov eax,[rdx+08]
+//game.dll+5760B6 - 89 85 08010000          - mov [rbp+00000108],eax
+//game.dll+5760BC - 8B 44 24 40             - mov eax,[rsp+40]
+//game.dll+5760C0 - FF C8                   - dec eax
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>170798</ID>
+                  <Description>"Packs Amount"</Description>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>packCMP</Address>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>101</ID>
+              <Description>"Map Hack"</Description>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript Async="1">//Author : HavocBlitz
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.002.200
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : ~
+//Date   : 23/03/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+//aobscanmodule(aob_CheckIfAlienHiveSeen,game.dll,0F 84 ? ? ? ? 83 7C 24 40 ? 0F)
+//aobscanmodule(aob_GetMinorInterestBlipIcon,game.dll,0F 84 ? ? ? ? 48 8B 54 24 ? F3 42 0F 10 ? ? ? F3 42)
+//aobscanmodule(aob_CheckIfAlienHiveVisible,game.dll,75 ? 41 80 BF ? ? ? ? ? 0F 85)
+//aobscanmodule(aob_CheckIfAlienHivesAreObstructedNew,game.dll,41 80 BC ? ? ? ? ? ? F2 44 0F 11 ? ? F3)
+//aobscanmodule(aob_CheckIfAlienHivesAreObstructedOld,game.dll,41 80 ? ? ? ? ? ? 0F 85 ? ? ? ? F3 41) //Unique
+//registersymbol(aob_CheckIfAlienHiveSeen aob_GetMinorInterestBlipIcon aob_CheckIfAlienHiveVisible)
+aobscanmodule(aob_CheckIsBlipSeen,game.dll,44 0F B6 68 ? F3 0F 59 C2) //Unique
+aobscanmodule(aob_CheckIfAlienHivesAreObstructed,game.dll,0F 85 ? ? ? ? F3 41 0F 10 97 ? ? ?  ? 41 8B 45 ? 0F 28 DA) //Unique
+aobscanmodule(aob_CheckIfMinorInterestBlipIsDiscovered,game.dll,0F 85 ? ? ? ? 48 8B 44 24 ? 80 78) //Unique
+aobscanmodule(aob_CheckMissionBlip,game.dll,0F 85 ? ? ? ? 48 8D BE ? ? ? ? 41 0F 28 CE) //Unique
+alloc(maphack_bkp,16,game.dll)
+registersymbol(aob_CheckIsBlipSeen aob_CheckIfAlienHivesAreObstructed aob_CheckIfMinorInterestBlipIsDiscovered aob_CheckMissionBlip maphack_bkp)
+
+maphack_bkp:
+  reassemble(aob_CheckIsBlipSeen)
+  align 10 CC
+
+//------------------------------------------------------------------------------
+
+aob_CheckIsBlipSeen:
+  mov r13w,1
+{
+  mov al,1
+  cdq
+  nop 2
+}
+//------------------------------------------------------------------------------
+
+aob_CheckIfAlienHivesAreObstructed:
+  db EB 04
+
+//------------------------------------------------------------------------------
+
+aob_CheckIfMinorInterestBlipIsDiscovered:
+  db 90 E9
+
+//------------------------------------------------------------------------------
+
+aob_CheckMissionBlip:
+  db 90 E9
+
+//------------------------------------------------------------------------------
+{
+aob_CheckIfAlienHiveSeen:
+  db 0F 87
+
+//------------------------------------------------------------------------------
+
+aob_GetMinorInterestBlipIcon:
+  db 0F 84
+
+//------------------------------------------------------------------------------
+
+aob_CheckIfAlienHiveVisible:
+  db EB
+
+//------------------------------------------------------------------------------
+
+aob_CheckIfAlienHivesAreObstructedNew+8:
+  db 02
+
+//------------------------------------------------------------------------------
+
+aob_CheckIfAlienHivesAreObstructed:
+  clc
+  nop 7
+}
+
+[DISABLE]
+
+aob_CheckIsBlipSeen:
+  reassemble(maphack_bkp)
+
+aob_CheckIfAlienHivesAreObstructed:
+  db 0F 85
+
+aob_CheckIfMinorInterestBlipIsDiscovered:
+  db 0F 85
+
+aob_CheckMissionBlip:
+  db 0F 85
+
+unregistersymbol(*)
+dealloc(*)
+
+{
+aob_CheckIfAlienHiveSeen:
+  db 0F 84
+
+aob_GetMinorInterestBlipIcon:
+  db 0F 84
+
+aob_CheckIfAlienHiveVisible:
+  db 75
+
+aob_CheckIfAlienHivesAreObstructedNew+8:
+  db 00
+}
+
+//Original Instructions:
+//game.dll+10F498A - 89 45 A0                - mov [rbp-60],eax
+//game.dll+10F498D - 41 80 BC 24 97020000 00 - cmp byte ptr [r12+00000297],00
+//game.dll+10F4996 - F2 44 0F11 65 D8        - movsd [rbp-28],xmm12
+//game.dll+10F499C - F3 44 0F10 6D DC        - movss xmm13,[rbp-24]
+//game.dll+10F49A2 - 41 0F28 C5              - movaps xmm0,xmm13
+//game.dll+10F49A6 - F3 0F59 CA              - mulss xmm1,xmm2
+//game.dll+10F49AA - 89 45 E0                - mov [rbp-20],eax
+//game.dll+10F49AD - F3 41 0F5C 87 24010000  - subss xmm0,[r15+00000124]
+//game.dll+10F49B6 - 48 8B 44 24 68          - mov rax,[rsp+68]
+//game.dll+10F49BB - F3 0F58 CB              - addss xmm1,xmm3
+//------------------------------------------------------------------------------
+//game.dll+10F49BF - 44 0FB6 68 33           - movzx r13d,byte ptr [rax+33]
+//------------------------------------------------------------------------------
+//game.dll+10F49C4 - F3 0F59 C2              - mulss xmm0,xmm2
+//game.dll+10F49C8 - F3 0F11 4D B0           - movss [rbp-50],xmm1
+//game.dll+10F49CD - F3 0F58 C4              - addss xmm0,xmm4
+//game.dll+10F49D1 - F3 0F11 45 B4           - movss [rbp-4C],xmm0
+//game.dll+10F49D6 - 48 8B 7D B0             - mov rdi,[rbp-50]
+//game.dll+10F49DA - 48 89 7C 24 70          - mov [rsp+70],rdi
+//game.dll+10F49DF - 0F84 3C030000           - je game.dll+10F4D21
+//game.dll+10F49E5 - 83 7C 24 40 20          - cmp dword ptr [rsp+40],20
+//game.dll+10F49EA - 0F83 31030000           - jae game.dll+10F4D21
+//game.dll+10F49F0 - 8B CB                   - mov ecx,ebx
+{
+}
+//Original Instructions:
+//game.dll+10F49A5 - B8 FFFFFFFF             - mov eax,FFFFFFFF
+//game.dll+10F49AA - 8B C8                   - mov ecx,eax
+//game.dll+10F49AC - 48 69 C1 A8020000       - imul rax,rcx,000002A8
+//game.dll+10F49B3 - 42 0FB6 8C 20 8C020000  - movzx ecx,byte ptr [rax+r12+0000028C]
+//game.dll+10F49BC - 48 8D 05 3DB6F0FE       - lea rax,[game.dll]
+//game.dll+10F49C3 - 48 C1 E1 05             - shl rcx,05
+//game.dll+10F49C7 - 80 BC 01 DD2FA601 00    - cmp byte ptr [rcx+rax+01A62FDD],00
+//game.dll+10F49CF - 75 1C                   - jne game.dll+10F49ED
+//game.dll+10F49D1 - 41 80 BF 04D80500 00    - cmp byte ptr [r15+0005D804],00
+//game.dll+10F49D9 - 0F85 AC050000           - jne game.dll+10F4F8B
+//------------------------------------------------------------------------------
+//game.dll+10F49DF - 41 80 BF 3CC80500 00    - cmp byte ptr [r15+0005C83C],00
+//------------------------------------------------------------------------------
+//game.dll+10F49E7 - 0F85 9E050000           - jne game.dll+10F4F8B
+//game.dll+10F49ED - F3 41 0F10 97 48010000  - movss xmm2,[r15+00000148]
+//game.dll+10F49F6 - 41 8B 45 08             - mov eax,[r13+08]
+//game.dll+10F49FA - 0F28 DA                 - movaps xmm3,xmm2
+//game.dll+10F49FD - F2 45 0F10 65 00        - movsd xmm12,[r13+00]
+//game.dll+10F4A03 - 0F28 E2                 - movaps xmm4,xmm2
+//game.dll+10F4A06 - F3 41 0F59 9F 30010000  - mulss xmm3,[r15+00000130]
+//game.dll+10F4A0F - 41 0F28 CC              - movaps xmm1,xmm12
+//game.dll+10F4A13 - 4C 8B 64 24 60          - mov r12,[rsp+60]
+//game.dll+10F4A18 - F3 41 0F5C 8F 20010000  - subss xmm1,[r15+00000120]
+{
+}
+//Original Instructions:
+//game.dll+10F354A - 3D 00000C00             - cmp eax,000C0000
+//game.dll+10F354F - 75 14                   - jne game.dll+10F3565
+//game.dll+10F3551 - 4D 8D 86 34010000       - lea r8,[r14+00000134]
+//game.dll+10F3558 - BA 365CC5D5             - mov edx,D5C55C36
+//game.dll+10F355D - 49 8B CE                - mov rcx,r14
+//game.dll+10F3560 - E8 BB97D7FF             - call game.dll+E6CD20
+//game.dll+10F3565 - 48 8B D7                - mov rdx,rdi
+//game.dll+10F3568 - 49 8B CE                - mov rcx,r14
+//game.dll+10F356B - E8 50BDD7FF             - call game.dll+E6F2C0
+//game.dll+10F3570 - 42 80 3C EB  00         - cmp byte ptr [rbx+r13*8],00
+//------------------------------------------------------------------------------
+//game.dll+10F3575 - 0F85 A6010000           - jne game.dll+10F3721
+//------------------------------------------------------------------------------
+//game.dll+10F357B - 48 8B 44 24 58          - mov rax,[rsp+58]
+//game.dll+10F3580 - 80 78 29 00             - cmp byte ptr [rax+29],00
+//game.dll+10F3584 - 0F84 F2010000           - je game.dll+10F377C
+//game.dll+10F358A - F3 44 0F5C 45 A0        - subss xmm8,[rbp-60]
+//game.dll+10F3590 - F3 0F10 44 24 78        - movss xmm0,[rsp+78]
+//game.dll+10F3596 - F3 41 0F5C FF           - subss xmm7,xmm15
+//game.dll+10F359B - F3 41 0F5C C1           - subss xmm0,xmm9
+//game.dll+10F35A0 - F3 45 0F59 C0           - mulss xmm8,xmm8
+//game.dll+10F35A5 - F3 0F59 FF              - mulss xmm7,xmm7
+//game.dll+10F35A9 - F3 0F59 C0              - mulss xmm0,xmm0
+{
+}
+//Original Instructions:
+//game.dll+10F5CB7 - 41 C6 84 34 ECFB0000 00 - mov byte ptr [r12+rsi+0000FBEC],00
+//game.dll+10F5CC0 - 42 83 7C 02 34 01       - cmp dword ptr [rdx+r8+34],01
+//game.dll+10F5CC6 - F3 0F58 CB              - addss xmm1,xmm3
+//game.dll+10F5CCA - F3 0F59 C2              - mulss xmm0,xmm2
+//game.dll+10F5CCE - F3 0F11 4D 10           - movss [rbp+10],xmm1
+//game.dll+10F5CD3 - F3 0F58 C4              - addss xmm0,xmm4
+//game.dll+10F5CD7 - F3 0F11 45 14           - movss [rbp+14],xmm0
+//game.dll+10F5CDC - 4C 8B 75 10             - mov r14,[rbp+10]
+//game.dll+10F5CE0 - 4C 89 75 28             - mov [rbp+28],r14
+//game.dll+10F5CE4 - 4C 89 74 24 48          - mov [rsp+48],r14
+//------------------------------------------------------------------------------
+//game.dll+10F5CE9 - 0F85 0A020000           - jne game.dll+10F5EF9
+//------------------------------------------------------------------------------
+//game.dll+10F5CEF - 48 8D BE 90FA0000       - lea rdi,[rsi+0000FA90]
+//game.dll+10F5CF6 - 41 0F28 CE              - movaps xmm1,xmm14
+//game.dll+10F5CFA - 49 03 FC                - add rdi,r12
+//game.dll+10F5CFD - 48 8B CF                - mov rcx,rdi
+//game.dll+10F5D00 - E8 DB7CD7FF             - call game.dll+E6D9E0
+//game.dll+10F5D05 - F2 0F10 15 B3D41000     - movsd xmm2,[game.dll+12031C0]
+//game.dll+10F5D0D - 4C 8D AE 38F90000       - lea r13,[rsi+0000F938]
+//game.dll+10F5D14 - 33 C0                   - xor eax,eax
+//game.dll+10F5D16 - F2 0F11 55 70           - movsd [rbp+70],xmm2
+//game.dll+10F5D1B - 89 84 9E B8240100       - mov [rsi+rbx*4+000124B8],eax
+{
+}
+//Original Instructions:
+//game.dll+11E4C8A - F3 41 0F5C 87 24010000  - subss xmm0,[r15+00000124]
+//game.dll+11E4C93 - 48 8B 44 24 68          - mov rax,[rsp+68]
+//game.dll+11E4C98 - F3 0F58 CB              - addss xmm1,xmm3
+//game.dll+11E4C9C - 44 0FB6 68 33           - movzx r13d,byte ptr [rax+33]
+//game.dll+11E4CA1 - F3 0F59 C2              - mulss xmm0,xmm2
+//game.dll+11E4CA5 - F3 0F11 4D B0           - movss [rbp-50],xmm1
+//game.dll+11E4CAA - F3 0F58 C4              - addss xmm0,xmm4
+//game.dll+11E4CAE - F3 0F11 45 B4           - movss [rbp-4C],xmm0
+//game.dll+11E4CB3 - 48 8B 7D B0             - mov rdi,[rbp-50]
+//game.dll+11E4CB7 - 48 89 7C 24 70          - mov [rsp+70],rdi
+//------------------------------------------------------------------------------
+//game.dll+11E4CBC - 0F84 3E030000           - je game.dll+11E5000
+//------------------------------------------------------------------------------
+//game.dll+11E4CC2 - 83 7C 24 40 20          - cmp dword ptr [rsp+40],20
+//game.dll+11E4CC7 - 0F83 33030000           - jae game.dll+11E5000
+//game.dll+11E4CCD - 8B CB                   - mov ecx,ebx
+//game.dll+11E4CCF - E8 DCE7A4FF             - call game.dll+C334B0
+//game.dll+11E4CD4 - 48 8B 0D 95C7B000       - mov rcx,[game.dll+1CF1470]
+//game.dll+11E4CDB - 45 33 C0                - xor r8d,r8d
+//game.dll+11E4CDE - 44 8B 49 60             - mov r9d,[rcx+60]
+//game.dll+11E4CE2 - 45 85 C9                - test r9d,r9d
+//game.dll+11E4CE5 - 74 27                   - je game.dll+11E4D0E
+//game.dll+11E4CE7 - 48 81 C1 805F5400       - add rcx,00545F80
+{
+}
+//Original Instructions:
+//game.dll+11E36C0 - 49 69 CC 60010000       - imul rcx,r12,00000160
+//game.dll+11E36C7 - 4D 8D B7 50690400       - lea r14,[r15+00046950]
+//game.dll+11E36CE - 48 8B D3                - mov rdx,rbx
+//game.dll+11E36D1 - 4C 03 F1                - add r14,rcx
+//game.dll+11E36D4 - 48 89 4D B0             - mov [rbp-50],rcx
+//game.dll+11E36D8 - 42 88 84 39 AC6A0400    - mov [rcx+r15+00046AAC],al
+//game.dll+11E36E0 - 49 8B CE                - mov rcx,r14
+//game.dll+11E36E3 - E8 F887D5FF             - call game.dll+F3BEE0
+//game.dll+11E36E8 - 48 8B 5C 24 50          - mov rbx,[rsp+50]
+//game.dll+11E36ED - 42 80 3C EB  00         - cmp byte ptr [rbx+r13*8],00
+//------------------------------------------------------------------------------
+//game.dll+11E36F2 - 0F84 00020000           - je game.dll+11E38F8
+//------------------------------------------------------------------------------
+//game.dll+11E36F8 - 48 8B 54 24 58          - mov rdx,[rsp+58]
+//game.dll+11E36FD - F3 42 0F10 4C EB 04     - movss xmm1,[rbx+r13*8+04]
+//game.dll+11E3704 - F3 42 0F10 54 EB 08     - movss xmm2,[rbx+r13*8+08]
+//game.dll+11E370B - 80 7A 20 00             - cmp byte ptr [rdx+20],00
+//game.dll+11E370F - 74 3C                   - je game.dll+11E374D
+//game.dll+11E3711 - F3 41 0F10 87 48010000  - movss xmm0,[r15+00000148]
+//game.dll+11E371A - F3 0F59 C8              - mulss xmm1,xmm0
+//game.dll+11E371E - F3 0F59 D0              - mulss xmm2,xmm0
+//game.dll+11E3722 - F3 0F11 4D 88           - movss [rbp-78],xmm1
+//game.dll+11E3727 - F3 0F11 55 8C           - movss [rbp-74],xmm2
+{
+}
+//Original Instructions:
+//game.dll+10F48FE - FF C1                   - inc ecx
+//game.dll+10F4900 - 41 3B C8                - cmp ecx,r8d
+//game.dll+10F4903 - 72 DB                   - jb game.dll+10F48E0
+//game.dll+10F4905 - B8 FFFFFFFF             - mov eax,FFFFFFFF
+//game.dll+10F490A - 8B C8                   - mov ecx,eax
+//game.dll+10F490C - 48 69 C1 A8020000       - imul rax,rcx,000002A8
+//game.dll+10F4913 - 42 0FB6 8C 20 8C020000  - movzx ecx,byte ptr [rax+r12+0000028C]
+//game.dll+10F491C - 48 8D 05 DDB6F0FE       - lea rax,[game.dll]
+//game.dll+10F4923 - 48 C1 E1 05             - shl rcx,05
+//game.dll+10F4927 - 80 BC 01 5D30A601 00    - cmp byte ptr [rcx+rax+01A6305D],00
+//------------------------------------------------------------------------------
+//game.dll+10F492F - 75 1C                   - jne game.dll+10F494D
+//------------------------------------------------------------------------------
+//game.dll+10F4931 - 41 80 BF 04D80500 00    - cmp byte ptr [r15+0005D804],00
+//game.dll+10F4939 - 0F85 AC050000           - jne game.dll+10F4EEB
+//game.dll+10F493F - 41 80 BF 3CC80500 00    - cmp byte ptr [r15+0005C83C],00
+//game.dll+10F4947 - 0F85 9E050000           - jne game.dll+10F4EEB
+//game.dll+10F494D - F3 41 0F10 97 48010000  - movss xmm2,[r15+00000148]
+//game.dll+10F4956 - 41 8B 45 08             - mov eax,[r13+08]
+//game.dll+10F495A - 0F28 DA                 - movaps xmm3,xmm2
+//game.dll+10F495D - F2 45 0F10 65 00        - movsd xmm12,[r13+00]
+//game.dll+10F4963 - 0F28 E2                 - movaps xmm4,xmm2
+//game.dll+10F4966 - F3 41 0F59 9F 30010000  - mulss xmm3,[r15+00000130]
+{
+}
+//Original Instructions:
+//game.dll+11E4C33 - 41 8B 45 08             - mov eax,[r13+08]
+//game.dll+11E4C37 - 0F28 DA                 - movaps xmm3,xmm2
+//game.dll+11E4C3A - F2 45 0F10 65 00        - movsd xmm12,[r13+00]
+//game.dll+11E4C40 - 0F28 E2                 - movaps xmm4,xmm2
+//game.dll+11E4C43 - F3 41 0F59 9F 30010000  - mulss xmm3,[r15+00000130]
+//game.dll+11E4C4C - 41 0F28 CC              - movaps xmm1,xmm12
+//game.dll+11E4C50 - 4C 8B 64 24 60          - mov r12,[rsp+60]
+//game.dll+11E4C55 - F3 41 0F5C 8F 20010000  - subss xmm1,[r15+00000120]
+//game.dll+11E4C5E - F3 41 0F59 A7 34010000  - mulss xmm4,[r15+00000134]
+//game.dll+11E4C67 - 89 45 A0                - mov [rbp-60],eax
+//------------------------------------------------------------------------------
+//game.dll+11E4C6A - 41 80 BC 24 97020000 00 - cmp byte ptr [r12+00000297],00
+//------------------------------------------------------------------------------
+//game.dll+11E4C73 - F2 44 0F11 65 D8        - movsd [rbp-28],xmm12
+//game.dll+11E4C79 - F3 44 0F10 6D DC        - movss xmm13,[rbp-24]
+//game.dll+11E4C7F - 41 0F28 C5              - movaps xmm0,xmm13
+//game.dll+11E4C83 - F3 0F59 CA              - mulss xmm1,xmm2
+//game.dll+11E4C87 - 89 45 E0                - mov [rbp-20],eax
+//game.dll+11E4C8A - F3 41 0F5C 87 24010000  - subss xmm0,[r15+00000124]
+//game.dll+11E4C93 - 48 8B 44 24 68          - mov rax,[rsp+68]
+//game.dll+11E4C98 - F3 0F58 CB              - addss xmm1,xmm3
+//game.dll+11E4C9C - 44 0FB6 68 33           - movzx r13d,byte ptr [rax+33]
+//game.dll+11E4CA1 - F3 0F59 C2              - mulss xmm0,xmm2
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>175064</ID>
+              <Description>"Samples, Exp and Medals scripts"</Description>
+              <GroupHeader>1</GroupHeader>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>128755</ID>
+                  <Description>"Replace Pick Ups"</Description>
+                  <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>//Author : Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.002.200
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+E0BD76
+//Date   : 22/03/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(lootreplacer,game.dll,41 0F 11 46 ? 41 89 56 ? 48) //Unique
+alloc(lootreplacer_mem,48,lootreplacer)
+label(dropRPL lootreplacer_ret)
+registersymbol(lootreplacer dropRPL)
+
+lootreplacer_mem:
+  movups [r14+40],xmm0
+  mov rdx,dropRPL
+  mov edx,[rdx]
+  jmp lootreplacer_ret
+  align 10
+
+dropRPL:
+  dd 7F8FCE26  //2140130854 - SC
+  align 10 CC
+
+lootreplacer:
+  jmp lootreplacer_mem
+lootreplacer_ret:
+
+[DISABLE]
+
+lootreplacer:
+  db 41 0F 11 46 40
+  
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+ED74C6 - 0F57 C0                 - xorps xmm0,xmm0
+//game.dll+ED74C9 - 48 89 9C 24 C00C0000    - mov [rsp+00000CC0],rbx
+//game.dll+ED74D1 - 41 0F11 06              - movups [r14],xmm0
+//game.dll+ED74D5 - 48 89 AC 24 C80C0000    - mov [rsp+00000CC8],rbp
+//game.dll+ED74DD - 41 0F11 46 10           - movups [r14+10],xmm0
+//game.dll+ED74E2 - 48 89 B4 24 D00C0000    - mov [rsp+00000CD0],rsi
+//game.dll+ED74EA - 41 0F11 46 20           - movups [r14+20],xmm0
+//game.dll+ED74EF - 48 89 BC 24 D80C0000    - mov [rsp+00000CD8],rdi
+//game.dll+ED74F7 - 41 0F11 46 30           - movups [r14+30],xmm0
+//game.dll+ED74FC - 4C 89 A4 24 A80C0000    - mov [rsp+00000CA8],r12
+//------------------------------------------------------------------------------
+//game.dll+ED7504 - 41 0F11 46 40           - movups [r14+40],xmm0
+//------------------------------------------------------------------------------
+//game.dll+ED7509 - 41 89 56 28             - mov [r14+28],edx
+//game.dll+ED750D - 48 8B 15 44D3EC00       - mov rdx,[game.dll+1DA4858]
+//game.dll+ED7514 - 4C 89 BC 24 A00C0000    - mov [rsp+00000CA0],r15
+//game.dll+ED751C - 41 C6 06 01             - mov byte ptr [r14],01
+//game.dll+ED7520 - 45 89 46 2C             - mov [r14+2C],r8d
+//game.dll+ED7524 - 48 81 C2 A4867C00       - add rdx,007C86A4
+//game.dll+ED752B - 74 5A                   - je game.dll+ED7587
+//game.dll+ED752D - 80 3A 00                - cmp byte ptr [rdx],00
+//game.dll+ED7530 - 74 55                   - je game.dll+ED7587
+//game.dll+ED7532 - 41 B8 25000000          - mov r8d,00000025
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>170876</ID>
+                      <Description>"Replace With"</Description>
+                      <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">2140130854:Super Credits
+1967761220:Requisitions
+170839374:Medals
+</DropDownList>
+                      <ShowAsSigned>0</ShowAsSigned>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>dropRPL</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>137392</ID>
+                  <Description>"Set Samples On Pickup"</Description>
+                  <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>//Author : Rei, Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.002.200
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+6C2539
+//Date   : 23/03/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+//01 41 04 49 8B 46 30 4D 8B 46 40 4C 03 C3
+aobscanmodule(aobAddSamples,game.dll,01 41 ? 49 8B 46 ? 4D) //Unique
+alloc(newmem,128,aobAddSamples)
+label(AddSamples_val return)
+registersymbol(aobAddSamples AddSamples_val)
+
+newmem:
+  push rax
+  push rbx
+  push rcx
+  pushfq
+  mov rbx,[r14+40]
+  mov rcx,AddSamples_val
+  mov eax,[rcx]
+  add [rbx+4],eax // common
+  mov eax,[rcx+4]
+  add [rbx+8],eax // rare
+  mov eax,[rcx+8]
+  add [rbx+C],eax // super
+  mov eax,[rbx+4]
+  add eax,[rbx+8]
+  add eax,[rbx+C]
+  cmp eax,#100
+  jbe short @f
+  mov [rcx],#34
+  mov eax,[rcx]
+  mov [rbx+4],eax
+  mov [rcx+4],#33
+  mov eax,[rcx]
+  mov [rbx+8],eax
+  mov [rcx+8],#33
+  mov eax,[rcx]
+  mov [rbx+C],eax
+
+@@:
+  popfq
+  pop rcx
+  pop rbx
+  pop rax
+  mov rax,[r14+30]
+  jmp return
+  align 10 CC
+
+AddSamples_val:
+  dd #34 //common
+  dd #33 //rare
+  dd #33 //super rare
+  align 10 CC
+
+aobAddSamples:
+  jmp newmem
+  nop 2
+return:
+
+[DISABLE]
+
+aobAddSamples:
+  db 01 41 04 49 8B 46 30
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+728961 - FF CD                   - dec ebp
+//game.dll+728963 - 8B D0                   - mov edx,eax
+//game.dll+728965 - 48 6B C2 13             - imul rax,rdx,13
+//game.dll+728969 - 48 6B DA 4C             - imul rbx,rdx,4C
+//game.dll+72896D - 48 03 E8                - add rbp,rax
+//game.dll+728970 - 48 8D 34 D5 00000000    - lea rsi,[rdx*8+00000000]
+//game.dll+728978 - 49 8B 46 40             - mov rax,[r14+40]
+//game.dll+72897C - BA 944C7492             - mov edx,92744C94
+//game.dll+728981 - 48 8D 0C A8             - lea rcx,[rax+rbp*4]
+//game.dll+728985 - 41 8D 04 3F             - lea eax,[r15+rdi]
+//------------------------------------------------------------------------------
+//game.dll+728989 - 01 41 04                - add [rcx+04],eax
+//------------------------------------------------------------------------------
+//game.dll+72898C - 49 8B 46 30             - mov rax,[r14+30]
+//game.dll+728990 - 4D 8B 46 40             - mov r8,[r14+40]
+//game.dll+728994 - 4C 03 C3                - add r8,rbx
+//game.dll+728997 - 48 8B 0C 30             - mov rcx,[rax+rsi]
+//game.dll+72899B - 8B 49 10                - mov ecx,[rcx+10]
+//game.dll+72899E - E8 FDAD5000             - call game.dll+C337A0
+//game.dll+7289A3 - 49 8B 46 40             - mov rax,[r14+40]
+//game.dll+7289A7 - BA 32B82620             - mov edx,2026B832
+//game.dll+7289AC - 01 7C A8 28             - add [rax+rbp*4+28],edi
+//game.dll+7289B0 - 49 8B 46 30             - mov rax,[r14+30]
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>137393</ID>
+                      <Description>"Common Samples"</Description>
+                      <ShowAsSigned>0</ShowAsSigned>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>AddSamples_val</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>137394</ID>
+                      <Description>"Rare Samples"</Description>
+                      <ShowAsSigned>0</ShowAsSigned>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>AddSamples_val+4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>137395</ID>
+                      <Description>"Super Samples"</Description>
+                      <ShowAsSigned>0</ShowAsSigned>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>AddSamples_val+8</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>137380</ID>
+                  <Description>"Add Samples Instantly"</Description>
+                  <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>//Author : Zodiac, Rei
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.002.200
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+104FF67
+//Date   : 23/03/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(SetSameples,game.dll,8B 4B ? 48 8D 04 ? ? ? ? ? 48) //Unique
+alloc(newmem,128,SetSameples)
+label(sample_instant return)
+registersymbol(SetSameples sample_instant)
+
+newmem:
+  push rax
+  push rcx
+  push rdx
+  pushfq
+  mov rcx,sample_instant
+  mov eax,[rcx]
+  mov [rbx+4],eax
+  mov eax,[rcx+4]
+  mov [rbx+8],eax
+  mov eax,[rcx+8]
+  mov [rbx+C],eax
+  mov eax,[rbx+4]
+  add eax,[rbx+8]
+  add eax,[rbx+C]
+  mov edx,#100
+  cmp eax,edx
+  jbe short @f
+  mov edx,#34
+  mov [rcx],edx
+  mov eax,[rcx]
+  mov [rbx+4],eax
+  dec edx
+  mov [rcx+4],edx
+  mov eax,[rcx+4]
+  mov [rbx+8],eax
+  mov [rcx+8],edx
+  mov eax,[rcx+8]
+  mov [rbx+C],eax
+
+@@:
+  popfq
+  pop rdx
+  pop rcx
+  pop rax
+  mov ecx,[rbx+04]
+  lea rax,[rbp*2+00000000]
+  jmp return
+  align 10
+
+sample_instant:
+  dd #34
+  dd #33
+  dd #33
+  align 10 CC
+
+SetSameples:
+  jmp newmem
+  nop 6
+return:
+
+[DISABLE]
+
+SetSameples:
+  db 8B 4B 04 48 8D 04 6D 00 00 00 00
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+113C686 - 74 68                   - je game.dll+113C6F0
+//game.dll+113C688 - 48 8B 0D E150BB00       - mov rcx,[game.dll+1CF1770]
+//game.dll+113C68F - 8B D7                   - mov edx,edi
+//game.dll+113C691 - E8 BA937DFF             - call game.dll+915A50
+//game.dll+113C696 - 84 C0                   - test al,al
+//game.dll+113C698 - 74 0D                   - je game.dll+113C6A7
+//game.dll+113C69A - 41 8B 55 08             - mov edx,[r13+08]
+//game.dll+113C69E - E8 0D3F47FF             - call game.dll+5B05B0
+//game.dll+113C6A3 - 84 C0                   - test al,al
+//game.dll+113C6A5 - 74 49                   - je game.dll+113C6F0
+//------------------------------------------------------------------------------
+//game.dll+113C6A7 - 8B 4B 04                - mov ecx,[rbx+04]
+//------------------------------------------------------------------------------
+//game.dll+113C6AA - 48 8D 04 6D 00000000    - lea rax,[rbp*2+00000000]
+//game.dll+113C6B2 - 48 03 C5                - add rax,rbp
+//game.dll+113C6B5 - 48 8D 14 80             - lea rdx,[rax+rax*4]
+//game.dll+113C6B9 - 41 89 8C D7 B8250000    - mov [r15+rdx*8+000025B8],ecx
+//game.dll+113C6C1 - 48 8D 14 80             - lea rdx,[rax+rax*4]
+//game.dll+113C6C5 - 8B 4B 08                - mov ecx,[rbx+08]
+//game.dll+113C6C8 - 41 89 8C D7 E0250000    - mov [r15+rdx*8+000025E0],ecx
+//game.dll+113C6D0 - 8B 53 0C                - mov edx,[rbx+0C]
+//game.dll+113C6D3 - EB 48                   - jmp game.dll+113C71D
+//game.dll+113C6D5 - 3B C8                   - cmp ecx,eax
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>137381</ID>
+                      <Description>"Common"</Description>
+                      <ShowAsSigned>0</ShowAsSigned>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>sample_instant</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>137382</ID>
+                      <Description>"Rare"</Description>
+                      <ShowAsSigned>0</ShowAsSigned>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>sample_instant+4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>137383</ID>
+                      <Description>"Super"</Description>
+                      <ShowAsSigned>0</ShowAsSigned>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>sample_instant+8</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>170580</ID>
+                  <Description>"Max Mission Reward"</Description>
+                  <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>//Author : Zodiac
+//CE     : 7.61
+//Game   : HELLDIVERS™ 2
+//Version: 01.003.202
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+DABD42
+//Date   : 13/08/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+{$strict}
+aobscanmodule(MaxRewardS,game.dll,F3 41 0F 10 94 F4 ? ? ? ? 4C 8B 81) //Unique
+alloc(newmemR,240,MaxRewardS)
+label(RewardMultsM value_correction medals_flag exp_flag medals_check medals_only exp_check exp_only iteration iteration_end return)
+registersymbol(MaxRewardS iteration_end RewardMultsM)
+
+newmemR:
+  push rax
+  push rbx
+  push rcx
+  push rdx
+  push rsi
+  pushfq
+  sub rsp,10
+  movaps [rsp],xmm0
+  test rsi,rsi
+  jnz iteration
+  db 49 8D 84
+  readmem(MaxRewardS+5,5) //lea rax,[r12+rsi*8+14AC]
+  mov rbx,RewardMultsM
+  mov ecx,[rbx]
+  xor dx,dx
+  mov [rbx+8],dx
+  inc dl
+  mov esi,(float)-1.0 //flag for default multipliers
+  cmp ecx,esi
+  jne short @f
+  mov [rbx+8],dl //flag default Medals
+
+@@:
+  mov ecx,[rbx+4]
+  cmp ecx,esi
+  jne short @f
+  mov [rbx+9],dl //flag default EXP &amp; Reqs
+
+value_correction:
+  mov edx,(float)100.0
+  movd xmm0,edx
+  comiss xmm0,[rbx]
+  jae short @f
+  movss [rbx],xmm0
+
+@@:
+  comiss xmm0,[rbx+4]
+  jae short @f
+  movss [rbx+4],xmm0
+
+@@:
+  xorps xmm0,xmm0
+  comiss xmm0,[rbx]
+  jbe short @f
+  movss [rbx],xmm0
+
+@@:
+  comiss xmm0,[rbx+4]
+  jbe short @f
+  movss [rbx+4],xmm0
+
+medals_flag:
+  mov cl,[rbx+8]
+  test cl,cl
+  jz short @f
+  mov [rbx],esi
+
+exp_flag:
+  mov cl,[rbx+9]
+  test cl,cl
+  jz short @f
+  mov [rbx+4],esi
+
+medals_check:
+  mov ecx,[rbx]
+  cmp ecx,esi
+  je short exp_check
+
+medals_only:
+  mov [rax],ecx
+
+exp_check:
+  mov ecx,[rbx+4]
+  cmp ecx,esi
+  je short iteration
+
+exp_only:
+  mov [rax+8],ecx
+  mov [rax+10],ecx
+  mov [rax+18],ecx
+  mov [rax+20],ecx
+  mov [rax+28],ecx
+  mov [rax+30],ecx
+  mov [rax+38],ecx
+
+iteration:
+  movaps xmm0,[rsp]
+  add rsp,10
+  popfq
+  pop rsi
+  pop rdx
+  pop rcx
+  pop rbx
+  pop rax
+
+iteration_end:
+  reassemble(MaxRewardS)
+  jmp return
+  align 10
+
+RewardMultsM:
+  dq BF800000BF800000 //(float)-1 x2
+  dw 0 //flags buffer
+  align 10 CC
+
+MaxRewardS:
+  jmp newmemR
+  nop 5
+return:
+
+[DISABLE]
+
+MaxRewardS:
+  reassemble(iteration_end)
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+DABD03 - 41 FF 90 48010000       - call qword ptr [r8+00000148]
+//game.dll+DABD0A - 48 8B 0D 6F15F700       - mov rcx,[game.dll+1D1D280]
+//game.dll+DABD11 - 48 8D 15 7C196000       - lea rdx,[game.dll+13AD694]
+//game.dll+DABD18 - 45 8B 84 F4 A8140000    - mov r8d,[r12+rsi*8+000014A8]
+//game.dll+DABD20 - 48 8B F8                - mov rdi,rax
+//game.dll+DABD23 - 4C 8B 89 18010000       - mov r9,[rcx+00000118]
+//game.dll+DABD2A - 48 8B C8                - mov rcx,rax
+//game.dll+DABD2D - 41 FF 91 E8000000       - call qword ptr [r9+000000E8]
+//game.dll+DABD34 - 48 8B 0D 4515F700       - mov rcx,[game.dll+1D1D280]
+//game.dll+DABD3B - 48 8D 15 F2196000       - lea rdx,[game.dll+13AD734]
+//------------------------------------------------------------------------------
+//game.dll+DABD42 - F3 41 0F10 94 F4 AC140000 - movss xmm2,[r12+rsi*8+000014AC]
+//------------------------------------------------------------------------------
+//game.dll+DABD4C - 4C 8B 81 18010000       - mov r8,[rcx+00000118]
+//game.dll+DABD53 - 48 8B CF                - mov rcx,rdi
+//game.dll+DABD56 - 41 FF 90 F0000000       - call qword ptr [r8+000000F0]
+//game.dll+DABD5D - FF C6                   - inc esi
+//game.dll+DABD5F - 41 3B B4 24 A8150000    - cmp esi,[r12+000015A8]
+//game.dll+DABD67 - 72 87                   - jb game.dll+DABCF0
+//game.dll+DABD69 - 48 8B 05 1015F700       - mov rax,[game.dll+1D1D280]
+//game.dll+DABD70 - 48 8D 15 09696000       - lea rdx,[game.dll+13B2680]
+//game.dll+DABD77 - 49 8B CE                - mov rcx,r14
+//game.dll+DABD7A - 4C 8B 80 18010000       - mov r8,[rax+00000118]
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>170581</ID>
+                      <Description>"Medals Multiplier"</Description>
+                      <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">-1:(Default)
+</DropDownList>
+                      <ShowAsSigned>1</ShowAsSigned>
+                      <VariableType>Float</VariableType>
+                      <Address>RewardMultsM</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>170582</ID>
+                      <Description>"EXP &amp; Requisitions Multiplier"</Description>
+                      <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">-1:(Default)
+</DropDownList>
+                      <ShowAsSigned>1</ShowAsSigned>
+                      <VariableType>Float</VariableType>
+                      <Address>RewardMultsM+4</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>170557</ID>
+                  <Description>"Samples Over Limit Reward"</Description>
+                  <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>//Author : Zodiac
+//CE     : 7.61
+//Game   : HELLDIVERS™ 2
+//Version: 01.003.302
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+DBD87F
+//Date   : 26/08/25
+//Comment: Script made for Experimental Division. Sets 100 of each samples after the extraction.
+
+[ENABLE]
+{$STRICT}
+aobscanmodule(MaxSamplesR,game.dll,44 8B C5 4C 8B 89 ? ? ? ? 48 8B CB 41 FF 91 ? ? ? ? 41 FF C6) //Unique
+alloc(newmem,80,MaxSamplesR)
+label(exit_samples MaxSamplesR_code maxsamples_l return)
+registersymbol(MaxSamplesR MaxSamplesR_code maxsamples_l)
+
+newmem:
+  push rax
+  push rbx
+  push rcx
+  pushfq
+  mov rax,maxsamples_l
+  mov ebx,[rax+rdi*4]
+  cmp ebx,-1
+  je short exit_samples
+  mov ecx,(int)100
+  cmp ebx,ecx
+  cmovg ebx,ecx
+  xor ecx,ecx
+  cmp ebx,ecx
+  cmovl ebx,ecx
+  mov [rax+rdi*4],ebx
+  mov ebp,ebx
+
+exit_samples:
+  popfq
+  pop rcx
+  pop rbx
+  pop rax
+
+MaxSamplesR_code:
+  mov r8d,ebp
+  reassemble(MaxSamplesR+3)
+  jmp return
+  align 10
+
+maxsamples_l:
+  dq -1 //coomon &amp; rare
+  dd -1 //super rare
+  align 10 CC
+
+MaxSamplesR:
+  jmp newmem
+  nop 5
+return:
+
+[DISABLE]
+
+MaxSamplesR:
+  db 44 8B C5
+  reassemble(MaxSamplesR_code+3)
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+DBD84F - 48 8B D8                - mov rbx,rax
+//game.dll+DBD852 - 4C 8B 89 28010000       - mov r9,[rcx+00000128]
+//game.dll+DBD859 - 8D 4F 01                - lea ecx,[rdi+01]
+//game.dll+DBD85C - 48 8D 0C 49             - lea rcx,[rcx+rcx*2]
+//game.dll+DBD860 - 48 03 C9                - add rcx,rcx
+//game.dll+DBD863 - 45 8B 04 CC             - mov r8d,[r12+rcx*8]
+//game.dll+DBD867 - 48 8B C8                - mov rcx,rax
+//game.dll+DBD86A - 41 FF 91 E8000000       - call qword ptr [r9+000000E8]
+//game.dll+DBD871 - 48 8B 0D 38E2F700       - mov rcx,[game.dll+1D3BAB0]
+//game.dll+DBD878 - 48 8D 15 D9786000       - lea rdx,[game.dll+13C5158]
+//------------------------------------------------------------------------------
+//game.dll+DBD87F - 44 8B C5                - mov r8d,ebp
+//------------------------------------------------------------------------------
+//game.dll+DBD882 - 4C 8B 89 28010000       - mov r9,[rcx+00000128]
+//game.dll+DBD889 - 48 8B CB                - mov rcx,rbx
+//game.dll+DBD88C - 41 FF 91 E8000000       - call qword ptr [r9+000000E8]
+//game.dll+DBD893 - 41 FF C6                - inc r14d
+//game.dll+DBD896 - FF C7                   - inc edi
+//game.dll+DBD898 - 48 83 C6 04             - add rsi,04
+//game.dll+DBD89C - 83 FF 08                - cmp edi,08
+//game.dll+DBD89F - 0F82 7BFFFFFF           - jb game.dll+DBD820
+//game.dll+DBD8A5 - 4C 8B 64 24 30          - mov r12,[rsp+30]
+//game.dll+DBD8AA - 48 8B 74 24 28          - mov rsi,[rsp+28]
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>175061</ID>
+                      <Description>"Common Samples Reward"</Description>
+                      <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">-1:(Default)
+</DropDownList>
+                      <ShowAsSigned>1</ShowAsSigned>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>maxsamples_l</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>175062</ID>
+                      <Description>"Rare Samples Reward"</Description>
+                      <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">-1:(Default)
+</DropDownList>
+                      <ShowAsSigned>1</ShowAsSigned>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>maxsamples_l+4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>175063</ID>
+                      <Description>"Super Rare Samples Reward"</Description>
+                      <DropDownList DescriptionOnly="1" DisplayValueAsItem="1">-1:(Default)
+</DropDownList>
+                      <ShowAsSigned>1</ShowAsSigned>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>maxsamples_l+8</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>119216</ID>
+                  <Description>"Set Extract Time"</Description>
+                  <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>//Author : Zodiac
+//CE     : 7.61
+//Game   : HELLDIVERS™ 2
+//Version: 01.004.000
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+687E82
+//Date   : 02/09/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(aobWriteShuttleTimer,game.dll,F3 0F 5C ? BA ? ? ? ? F3 0F 11 04 01) //Unique
+alloc(shuttlemem,64,aobWriteShuttleTimer)
+label(ExtractTime return)
+registersymbol(aobWriteShuttleTimer ExtractTime)
+
+shuttlemem:
+  subss xmm0,xmm3
+  push rax
+  pushfq
+  mov rax,ExtractTime
+  comiss xmm0,[rax]
+  jbe short @f
+  movss xmm0,[rax]
+
+@@:
+  popfq
+  pop rax
+  mov edx,6109F766
+  jmp return
+  align 10
+
+ExtractTime:
+  dd (float)0.0
+  align 10 CC
+
+aobWriteShuttleTimer:
+  jmp shuttlemem
+  nop 4
+return:
+
+[DISABLE]
+
+aobWriteShuttleTimer:
+  db F3 0F 5C C3 BA 66 F7 09 61
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//Original Instructions:
+//game.dll+687E66 - 32 DB                   - xor bl,bl
+//game.dll+687E68 - FF C1                   - inc ecx
+//game.dll+687E6A - 48 83 C2 1C             - add rdx,1C
+//game.dll+687E6E - 41 3B C8                - cmp ecx,r8d
+//game.dll+687E71 - 72 DD                   - jb game.dll+687E50
+//game.dll+687E73 - 84 DB                   - test bl,bl
+//game.dll+687E75 - 75 35                   - jne game.dll+687EAC
+//game.dll+687E77 - 48 8B 47 78             - mov rax,[rdi+78]
+//game.dll+687E7B - 0F28 C6                 - movaps xmm0,xmm6
+//game.dll+687E7E - 49 6B CF 3C             - imul rcx,r15,3C
+//------------------------------------------------------------------------------
+//game.dll+687E82 - F3 0F5C C3              - subss xmm0,xmm3
+//------------------------------------------------------------------------------
+//game.dll+687E86 - BA 66F70961             - mov edx,6109F766
+//game.dll+687E8B - F3 0F11 04 01           - movss [rcx+rax],xmm0
+//game.dll+687E90 - 48 8B 47 60             - mov rax,[rdi+60]
+//game.dll+687E94 - 4C 8B 47 78             - mov r8,[rdi+78]
+//game.dll+687E98 - 4C 03 C1                - add r8,rcx
+//game.dll+687E9B - 4A 8B 0C F8             - mov rcx,[rax+r15*8]
+//game.dll+687E9F - 8B 49 10                - mov ecx,[rcx+10]
+//game.dll+687EA2 - E8 A91B6200             - call game.dll+CA9A50
+//game.dll+687EA7 - 49 8B D7                - mov rdx,r15
+//game.dll+687EAA - EB 44                   - jmp game.dll+687EF0
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>119240</ID>
+                      <Description>"Max Extraction Time (Seconds)"</Description>
+                      <ShowAsSigned>0</ShowAsSigned>
+                      <VariableType>Float</VariableType>
+                      <Address>ExtractTime</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>119188</ID>
+                  <Description>"Instant Complete Outposts"</Description>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>//Author : Zodiac
+//CE     : 7.61
+//Game   : HELLDIVERS™ 2
+//Version: 01.004.000
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+955996
+//Date   : 03/09/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(outpostsINST,game.dll,48 89 74 24 ? 0F B6 ? ? ? 38) //Unique
+alloc(newmem,80,outpostsINST)
+label(return)
+registersymbol(outpostsINST)
+
+newmem:
+  mov [rsp+68],rsi
+  pushfq
+  push rdx
+  push rax
+  push rcx
+  push r8
+  push r9
+  push r10
+  push r11
+  mov ecx,49 //"I" button virtual-key code
+  sub rsp,20
+  call far USER32.GetAsyncKeyState
+  add rsp,20
+  cmp ah,80
+  pop r11
+  pop r10
+  pop r9
+  pop r8
+  pop rcx
+  pop rax
+  jne short @f
+  mov dl,1
+  mov [rcx+rax+31],dl
+
+@@:
+  pop rdx
+  popfq
+  jmp return
+  align 10 CC
+
+outpostsINST:
+  jmp newmem
+return:
+
+[DISABLE]
+
+outpostsINST:
+  db 48 89 74 24 60
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+955961 - 49 B8 1986611886611886  - mov r8,8618618618618619
+//game.dll+95596B - F3 0F10 3D F570B100     - movss xmm7,[game.dll+146CA68]
+//game.dll+955973 - 49 8B 47 38             - mov rax,[r15+38]
+//game.dll+955977 - 49 8B 77 48             - mov rsi,[r15+48]
+//game.dll+95597B - 41 8B CB                - mov ecx,r11d
+//game.dll+95597E - 48 69 F9 A8020000       - imul rdi,rcx,000002A8
+//game.dll+955985 - 48 6B C9 38             - imul rcx,rcx,38
+//game.dll+955989 - 4A 8B 1C D8             - mov rbx,[rax+r11*8]
+//game.dll+95598D - 49 8B 47 50             - mov rax,[r15+50]
+//game.dll+955991 - 48 89 7C 24 70          - mov [rsp+70],rdi
+//------------------------------------------------------------------------------
+//game.dll+955996 - 48 89 74 24 68          - mov [rsp+68],rsi
+//------------------------------------------------------------------------------
+//game.dll+95599B - 0FB6 54 01 31           - movzx edx,byte ptr [rcx+rax+31]
+//game.dll+9559A0 - 38 94 37 95020000       - cmp [rdi+rsi+00000295],dl
+//game.dll+9559A7 - 0F84 AE020000           - je game.dll+955C5B
+//game.dll+9559AD - 88 94 37 95020000       - mov [rdi+rsi+00000295],dl
+//game.dll+9559B4 - 48 85 DB                - test rbx,rbx
+//game.dll+9559B7 - 75 07                   - jne game.dll+9559C0
+//game.dll+9559B9 - 33 C0                   - xor eax,eax
+//game.dll+9559BB - E9 7F000000             - jmp game.dll+955A3F
+//game.dll+9559C0 - 48 8B 0B                - mov rcx,[rbx]
+//game.dll+9559C3 - 48 85 C9                - test rcx,rcx
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>119215</ID>
+                  <Description>"Instant Complete Mission (Main+Side)"</Description>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>//Author : Zodiac
+//CE     : 7.6
+//Game   : HELLDIVERS™ 2
+//Version: 01.002.200
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+57A80C
+//Date   : 23/03/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+//45 8B 4A 18 48 8D 8D 48 01 00 00 41 8B D4 66 0F 1F 44 00 00
+//41 8B 47 38 83 E8 02 83 F8 01 8B 83 14 08 00 00
+aobscanmodule(missionA,game.dll,45 8B 4A ? 48 8D 8D ? ? ? ? 41) //Unique
+aobscanmodule(missionB,game.dll,8B 46 ? 83 E8 ? 83 F8 ? 41) //Unique
+alloc(missionA_newmem,96,missionA)
+alloc(missionB_newmem,80,missionB)
+label(missionA_code missionA_return missionB_code missionB_return)
+registersymbol(missionA missionB)
+
+missionA_newmem:
+  pushfq
+  push rax
+  push rcx
+  push rdx
+  push r8
+  push r9
+  push r10
+  push r11
+  mov ecx,49 //"I" button virtual-key code
+  sub rsp,20
+  call far USER32.GetAsyncKeyState
+  add rsp,20
+  cmp ah,80
+  pop r11
+  pop r10
+  pop r9
+  pop r8
+  pop rdx
+  pop rcx
+  jne missionA_code
+
+@@:
+  mov al,1
+  mov [r10+18],al
+
+missionA_code:
+  pop rax
+  popfq
+  mov r9d,[r10+18]
+  lea rcx,[rbp+00000148]
+  jmp missionA_return
+  align 10 CC
+
+missionA:
+  jmp missionA_newmem
+  nop 6
+missionA_return:
+
+//------------------------------------------------------------------------------
+
+missionB_newmem:
+  pushfq
+  push rax
+  push rcx
+  push rdx
+  push r8
+  push r9
+  push r10
+  push r11
+  mov ecx,49 //"I" button virtual-key code
+  sub rsp,20
+  call far USER32.GetAsyncKeyState
+  add rsp,20
+  cmp ah,80
+  pop r11
+  pop r10
+  pop r9
+  pop r8
+  pop rdx
+  pop rcx
+  jne short missionB_code
+
+@@:
+  mov al,2
+  mov [rsi+20],al
+
+missionB_code:
+  pop rax
+  popfq
+  mov eax,[rsi+20]
+  sub eax,02
+  jmp missionB_return
+  align 10 CC
+
+missionB:
+  jmp missionB_newmem
+  nop
+missionB_return:
+
+[DISABLE]
+
+missionA:
+  db 45 8B 4A 18 48 8D 8D 48 01 00 00
+
+missionB:
+  db 8B 46 20 83 E8 02
+
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+5E028B - 44 03 F0                - add r14d,eax
+//game.dll+5E028E - FF C3                   - inc ebx
+//game.dll+5E0290 - 3B 5E 0C                - cmp ebx,[rsi+0C]
+//game.dll+5E0293 - 72 BB                   - jb game.dll+5E0250
+//game.dll+5E0295 - 4C 8B 54 24 68          - mov r10,[rsp+68]
+//game.dll+5E029A - 44 38 A5 CC090000       - cmp [rbp+000009CC],r12b
+//game.dll+5E02A1 - 74 09                   - je game.dll+5E02AC
+//game.dll+5E02A3 - 45 38 62 30             - cmp [r10+30],r12b
+//game.dll+5E02A7 - 75 03                   - jne game.dll+5E02AC
+//game.dll+5E02A9 - 41 FF C6                - inc r14d
+//------------------------------------------------------------------------------
+//game.dll+5E02AC - 45 8B 4A 18             - mov r9d,[r10+18]
+//------------------------------------------------------------------------------
+//game.dll+5E02B0 - 48 8D 8D 48010000       - lea rcx,[rbp+00000148]
+//game.dll+5E02B7 - 41 8B D4                - mov edx,r12d
+//game.dll+5E02BA - 66 0F1F 44 00 00        - nop word ptr [rax+rax+00]
+//game.dll+5E02C0 - 41 3B D1                - cmp edx,r9d
+//game.dll+5E02C3 - 73 34                   - jae game.dll+5E02F9
+//game.dll+5E02C5 - 44 8B 81 F8FEFFFF       - mov r8d,[rcx-00000108]
+//game.dll+5E02CC - 45 85 C0                - test r8d,r8d
+//game.dll+5E02CF - 74 28                   - je game.dll+5E02F9
+//game.dll+5E02D1 - 41 8D 40 FD             - lea eax,[r8-03]
+//game.dll+5E02D5 - 83 F8 02                - cmp eax,02
+{
+}
+//Original Instructions:
+//game.dll+5DFDE5 - 48 8D 54 24 70          - lea rdx,[rsp+70]
+//game.dll+5DFDEA - 4D 69 E8 60080000       - imul r13,r8,00000860
+//game.dll+5DFDF1 - 49 6B F0 54             - imul rsi,r8,54
+//game.dll+5DFDF5 - 4D 03 6A 60             - add r13,[r10+60]
+//game.dll+5DFDF9 - 44 8B C7                - mov r8d,edi
+//game.dll+5DFDFC - 49 8B CA                - mov rcx,r10
+//game.dll+5DFDFF - 4C 89 6C 24 40          - mov [rsp+40],r13
+//game.dll+5DFE04 - 49 03 72 68             - add rsi,[r10+68]
+//game.dll+5DFE08 - 48 89 74 24 68          - mov [rsp+68],rsi
+//game.dll+5DFE0D - E8 0E180000             - call game.dll+5E1620
+//------------------------------------------------------------------------------
+//game.dll+5DFE12 - 8B 46 20                - mov eax,[rsi+20]
+//------------------------------------------------------------------------------
+//game.dll+5DFE15 - 83 E8 02                - sub eax,02
+//game.dll+5DFE18 - 83 F8 01                - cmp eax,01
+//game.dll+5DFE1B - 41 8B 85 14080000       - mov eax,[r13+00000814]
+//game.dll+5DFE22 - 76 16                   - jna game.dll+5DFE3A
+//game.dll+5DFE24 - 8B 56 18                - mov edx,[rsi+18]
+//game.dll+5DFE27 - 45 32 FF                - xor r15b,r15b
+//game.dll+5DFE2A - 89 54 24 30             - mov [rsp+30],edx
+//game.dll+5DFE2E - EB 14                   - jmp game.dll+5DFE44
+//game.dll+5DFE30 - 3B C7                   - cmp eax,edi
+//game.dll+5DFE32 - 75 AC                   - jne game.dll+5DFDE0
+</AssemblerScript>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>171554</ID>
+      <Description>"Kill HD2 &amp; CE"</Description>
+      <Options moDeactivateChildrenAsWell="1"/>
+      <Color>0000FF</Color>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>{$lua}
+if syntaxcheck then return end
+
+local function KillTheGameProcess()
+  local processStillExists = false
+  for i = 1, 10 do
+    os.execute('taskkill /F /IM "helldivers2.exe"')
+    sleep(500)
+    for pid, name in pairs(getProcessList()) do
+      if name == "helldivers2.exe" then
+        processStillExists = true
+        break
+      end
+    end
+    if not processStillExists then
+      return true
+    end
+  end
+  return false
+end
+[ENABLE]
+if KillTheGameProcess() then
+  closeCE()
+else
+  showMessage("Error: Failed to kill the \"helldivers2.exe\" process.\nYou've to do it with Task Manager.")
+end
+[DISABLE]
+
+</AssemblerScript>
+      <Hotkeys>
+        <Hotkey>
+          <Action>Activate</Action>
+          <Keys>
+            <Key>109</Key>
+          </Keys>
+          <ID>0</ID>
+        </Hotkey>
+      </Hotkeys>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols/>
+  <LuaScript>if syntaxcheck then return end
+
+Version = "4.0.0"
+local vNum = Version
+
+function cycleFullCompact( sender, force )
+  local state = not( compactmenuitem.Caption == 'Compact View Mode' )
+    if force ~= nil then
+       state = force
+    end
+  compactmenuitem.Caption = state and 'Compact View Mode' or 'Full View Mode'
+  getMainForm().Splitter1.Visible = state
+  getMainForm().Panel4.Visible = state
+  getMainForm().Panel5.Visible = state
+end
+
+function addCompactMenu()
+  if compactmenualreadyexists then return end
+  local parent = getMainForm().Menu.Items
+  compactmenuitem = createMenuItem( parent )
+  parent.add( compactmenuitem )
+  compactmenuitem.Caption = 'Compact View Mode'
+  compactmenuitem.OnClick = cycleFullCompact
+  compactmenualreadyexists = 'yes'
+end
+
+addCompactMenu()
+cycleFullCompact( nil, true )
+
+function pushCred( sender, force )
+local state = not( credmenuitem.Caption == 'Credits' )
+  if force ~= nil then
+    state = not force
+  end
+  credmenuitem.Caption = state and 'Credits' or 'Credits'
+  if force == nil then
+  local list = "Ω Experimental Division Ω\nRei &amp; Zodiac\n-------------------\nSpecial thanks to:\nDemheadsh0tz\ngir489\nZoDDeL\ncfemen\nKanna\nDestinate\nHavocBlitz\nIronS1ghts\nKael\nDrem Caponera\nand everyone else who supported us!\n-------------------"
+    showMessage("Credits", list)
+  end
+end
+
+function addCredButton()
+  if credmenualreadyexists then credmenuitem.Destroy() end
+  local parent = getMainForm().Menu.Items
+  credmenuitem = createMenuItem( parent )
+  parent.add( credmenuitem )
+  credmenuitem.Caption = 'Credits'
+  credmenuitem.OnClick = pushCred
+  credmenualreadyexists = 'yes'
+end
+
+addCredButton()
+pushCred( nil, true )
+
+MainForm.Caption="Experimental Division's Technology"
+
+local als1=MainForm.Panel4
+if ttLbl then ttLbl.Destroy() end
+  ttLbl=createLabel(als1)
+  ttLbl.AutoSize=false
+  ttLbl.Align=alClient
+  ttLbl.Alignment="taCenter"
+  ttLbl.Height=als1.Height + 15
+  ttLbl.Caption="Farming Only Version "..vNum
+  ttLbl.OptimalFill=false
+  ttLbl.Font.Size=10
+  ttLbl.Font.Style="fsBold"
+  ttLbl.Font.Color = 0x0044D7FF
+
+openProcess("helldivers2.exe")
+
+local bypassASM =[[
+aobscanmodule(bypassP1,$process,48 83 EC 28 8D 81 17 ? ? ? 83) //Unique
+aobscanmodule(bypassP2,$process,E8 ? ? ? ? 3D ? ? ? ? 0F 95 C0 48 83 C4 ? C3 CC CC CC CC CC 48 83) //Unique
+aobscanmodule(bypassP3,$process,E8 ? ? ? ? 3D ? ? ? ? 0F 95 C0 48 83 C4 ? C3 CC CC CC CC CC CC CC 48 89) //Unique
+aobscanmodule(bypassP4,$process,E8 ? ? ? ? 8B D8 3D) //Unique
+aobscanmodule(bypassP5,$process,E8 ? ? ? ? 3D ? ? ? ? 75 ? E8) //Unique
+aobscanmodule(bypassP6,$process,E8 ? ? ? ? 3D ? ? ? ? 0F 84 ? ? ? ? 4C) //Unique
+aobscanmodule(bypassP7,$process,E8 ? ? ? ? 41 0F B6 ? ? ? ? ? 49 8B) //Unique
+aobscanmodule(bypassP8,$process,E8 ? ? ? ? 85 C0 74 ? 48 8D ? ? ? ? ? 48 83 C4 ? C3) //Unique
+registersymbol(bypassP1 bypassP2 bypassP3 bypassP4 bypassP5 bypassP6 bypassP7 bypassP8)
+
+bypassP1:
+  db B8 01 00 00 00 C3 CC CC CC CC
+
+bypassP2:
+  mov eax,755
+
+bypassP3:
+  mov eax,755
+
+bypassP4:
+  mov eax,755
+
+bypassP5:
+  mov eax,755
+
+bypassP6:
+  mov eax,755
+
+bypassP7:
+  mov eax,755
+
+bypassP8:
+  or eax,1
+  nop 2
+]]
+
+if autoAssemble(bypassASM) then
+  sleep(1000)
+  os.execute('taskkill /F /IM "GameMon.des" &amp; taskkill /F /IM "GameMon64.des"')
+  sleep(2000)
+  openProcess("helldivers2.exe")
+
+  autoAssemble([[
+  aobscanmodule(noenginelog,$process,48 89 4C 24 ? 48 89 54 24 ? 4C 89 44 24 ? 4C 89 4C 24 ? 53 56 57 48 83 EC ? 65 48 8B 04 25) //Unique
+
+  registersymbol(noenginelog)
+
+  noenginelog:
+  db C3 CC CC CC CC
+  ]])
+
+  beep()
+else
+  openProcess("helldivers2.exe")
+end
+</LuaScript>
+  <Signature>
+    <SignedHash HashSize="132">0I,}K*dTj,Hi*8!%S;I{EGq+P(^7^7G%v{-*wXDf.cPp9@]P1$Y(m;,--WP?rU:*0,+bb19Xhw40d[yh2wVWK8uQ{pis:g1B];z]7aJ/O+Uz59jjdWHy?ncxa{T+;WIqOG2VV-kTunBQi5^CqWi1[g5wCB4Z8M61/9JU$</SignedHash>
+    <PublicKey Size="4763">6aWAKP.Yl-a%E(7VtF7+XL4[CVQzADi}s?vMMG0HLI3}(0Sb4F=bEq]p62pP4Hn9nEiy:B!;ItR%xr[wyK8!wor?#+IWu/6@YB%*bO3_$?kV,9;Yo@^pDDt0m(*])iwFT7O;F4,6O(4*v,2wtPr/E(ATvKGT.N=z!.^S4ah)ZT3XO/MPXVEI+)_-FU3wj=FKMcczRoFc]8kySc4hHy1ZEKc0EtjeM-2*Z3IG5A4M_8uQUCw_7ytkO7zhFY003[ls.;Y53QuW6Lr[p=Z++@SXm4.JNkc.+aB@;EX;4Tx0C=J,Q*g6D:?vcr-t/CCh:7z!Z(DQqAW{k$fE1A=Dj@9FN^At$+%eX25k+A:8[1xD1CEY;j1@HV42lZa2jn55j*S9!ipu-pd!uXCy!YnK^/YUW:dAOcv)E;;2n=1.Gf[2w45;mM5#WQz#Kz(_E/k_[Bya![2)x4%bNwR$0Qi19JS!r:2fhFSc,)3A0KiR}z%U$#^{1XynOp(YgaN;GkvK}TfD]}gdX7S-06/0ofSs5oQvjd?0AR}wV(ec%EdXFAf9BHwfSvf6djSAjlpz%XppgI_6J;{+0BAb@tj_]8MF3bZ02F3R#5n-iEdVe^S7t}6u)trf(JYW-00.}KFj0twDF6g{0AR:=BX_IWnE)[/?;e_ZE3OddDgXd?nX*^(BsoQaTL;,22Uk{v9w@R97b[GtVFF;AKrX[0nHe(HG!NkO%m4tOkrff)gY+4)(JM25(Nhy:4qq,mzXtyzVq*X_//F}dKmY+YbbitPEHASffI9_(ZT[Mq=gVIF3!ruPi*OM9K)zp%;DpKGaQJ;aJVl_9x!Kv{/mA^(#6nwP%2$2/XTo2:SN({Hemwm5[29nZB!Mzrfky:R.KI!GOr.#pk[m*j,}$u+^I=7L^2kLG#7SbgSSl3bQ4);EM4F8AGNmGkLXs*PCDQ,7.?;R$13uq10I,I40eg]xs9j=N[Dd%aSaiVR[W%I$yKlkNC/p[9XoKO.cmMA^^YRiB0Dxvml5qe4UPL4:RLZkI#_QubM4+8xut6L2!5A#S1^{c!,]$X^U@aw8B+el)5JC!MfE.pQDXfA+D2C0j9V%ci*Ic3Hz*?)1lW-0$!d18qJ#Y^DVF.eVD7:9Q1VP9M6Ja6Rhyh{XSR.-I7nz0lA.Cxl5^o1t$%qtDB1?4qNHJ21R3KGI9r8VL0y(3VM!JzZ$N)}e^D!/oF[eL[Q9aZQwL]h6HyVUSq6@SubTOKb7NDEZa/m#fj5eX=)5q,/,K*a%$1uR=7zZ:NY%ngy!$Pq+ED4ii%dsM=46DW)uvV-CyNUH/(#]v_5]jg*2^r[GLLgxtK{c9kSWehTs3069G!fbfHwgoTQNkx8lc-CyCb_+%#28^SF@5:4EF.zuj{tEtdx%5CHzX2=Loz41kOE1uq+T%p)niv5QX{asshc!N8Y7d+,GK082RW21AS:j*/elWh/TK/O/RS7}3Y{s:aisWD.wVzeYDyX95al%G24$EsK}/xgQr*PbR1r0gT0+U%wo/QAho{:Yb)%TNgBD3krLCfs).8=OX!mKa:ybXf-IX3rm)W,z%jrkxm+?lZcMJ]N6?$l!XDAt*7zY=/8Fv]3m]tV[)}B9$R4[L(;zL:651DUOSSq$Ed:-))3YAKgCY2j1FI1[jrmEhm3sv)}%T$l4UQ;OpMpZLY/EaVMmaA2(olxsj8(hYgJE)]MXQ+#fKcs$H^fP!y!%V_ZL!=olv0vl7#vlu08MAmSA!]k+hIN58#3r%L+=e^=yO^kQyNf-lsi8STGfFd8vr[YvW/Lkxm}r?:bWRE9D5sb6eu}{^=/wLb8;Tc(xiMv2YpRx*mRPGut5K@+;%BIv=Wdily,ylO],+KY$4Vz$Cr4,G(IO)4Q]uA9rwXSQO,7mGt{d!.r5mBUM0dY#r_y]ZzFvTyOmC.(dA.ZQ9DOhSRQ,xGr{ak,SO(8UBnI0I(KNw!HF0k_9WTe+?liuv!$3o(VU:N+.e=U7)LAHoMvX:fjA[PP/0Rv4#%.!/CI%*UCQD7}P41dfO{VBiraMeKOvla4(7#fLnKhd_G1oHZo9CO=o8Px!T6kJ4wy3taWl6H,TBcd/w!ChIS}+#zSXEkGvqr6+ttHmGt-GfYr?2m)POF}QXTz{Zw#l{sw.8bI+aq9Kwr#e3VP_3(XSc/!!_s#4lYP2/jr}0b4Tsqds}uV$esi;P6gpNq-kQ#w=mvCS@p?![XIRe:(*75LwiC-K#A%(Vo6_;U7iYP1gY$?siA#dZE_*$on.XX6$i3uBboFsv.d.^botv_p!tJQrukJSPY3[(IpUgC$DV_v}bI]-cL+P.6)LW2Hl]w1HtbR^JPl0E):OZs.FOgTR+RZ#xcdGYc=-xGyK60PqKI1$$-ZI]/U)7eax5(54Ps4AXUxnX8e/S}7_9bz=0H:T?0cQh:fkA.:0^i%Sd=CM%KRVlG[OjXSL5!feK?}xdf}_t)!L1:@$n21/A?{E*(XLY)4uw#D:,?8(Vdi0r!,s1Wg?:V#hChyQh+%oYF[$%W)cD9G-$eREmPFp0XE9GXuPsV7Dn6/%YCPIEx-[}!#x7:A%,+,)SV=S4962s3t}PFLzTf:q@M}S^.tS)?7nm:_U2u7!(cgJCrxvL$5-d8FKum}EIF#?}5Gtq@j3x3DcO^MrdBPpSXCg1rHqnUKLtH8zPVz]9O=r}-k-Rl_B+inOEaka]C#jIUObtxkn;wBrnsy+/GCexIF?utkka0q*Ax*FEXX/C;W[HW0Wrec-#cqqYFCLW#$!oKatOZ#u3bsO}:u{!L+D43HXJuDrzs-rtIhL!QE6wf9v(!3$H:OUE_LqdO65+1zrG]saEge_qy^u_EvOIBl,X}_q1uKSD2CO]_inc0k*laMKSC[7Sy)W51Yk@,D%7VeQ0c-0ERSM.Wee2xU=Ojh.FInHUVfu!h8$K0?imnvf7nc:)+eKk1/r^{?%D/W1l)ea/#JOb8X3{Qq:H4xyTMm{0m+$raZVlPmv/:??wC)lwMcXfz%[!TugSJDtqrW]3yk*1!(dobNRHRh(RQgml=$X]0Vb{O;)e4_2y!JHg*!SRV[x)P{zS}s,RZZ1q*n*rh]=L2yu8FGY[=G*@U9C:SaqY)g)gXbmBM!FLxzyDi)mhmCkJc.eM-ImyzW$x;cP$Mz4ONYt#@NJzM0w:t[X+$k9t{F$c8q)h.Rn,nb^%IOFKR-X?_s4QQ:0o+Vq3aT%s$c9;fU/%N829^oHRUHc{nwC$!Xf?g42@^@3RN(m7RTlF8SPG,oHC6:VQ+[Y7cMkx*5}X)nbG@:R3SR(Rp]ibn;#;/r7!9SDLRnUv27i;OB6F)?*2^oV%K=xm.[x=s}noduI3P8:g1L-SoYA?fQEq*t*($-M#aAZ{-Lb[1[lVesU-M(da.mcPH,xyidGe@g!*F+,boj*jwPQ,{Q8je];(Yp!3n)NB0JWgU_kv@@Xrj1(@7J%Z3ex;z,71IXU7#a^cN2r$f)V(nBK1^-XZNt]]/Be*!ev+Ur)H)V;@{my@G3e5L+B!0Q;W,s4Ai9:@$VGcjKDR^QP2cieX!?1x%jPvm=ce/:TG]LXp:)5L(88IzO$1Ou4!^9]jM,W-InAY)^UO#lFTB;)[]g8%@e^^R4h:;PzAFaQARU.qF+m.eA5Z/1fdMgRZ=rb$FWRCwA1!Fx}=[W:Ol-_lZ.w_jdp=!f@E$XgBsR1{RGTCK*RHMZ4hO/SY3YOH3eHMYhvF_8ew^+k0iOzLFPbZX2/ZH%!9VXCI25hxD?/o(ukULMCixx0Pb=%r.^4[/zu[Tt[OhQSFEpSiy8!fU7e31r=k][HS#PVXpcZ5#UIPwKW6S}OL(.@6Do*+X4Nws$(pXm5SfhllHPb=?yivYJhEGJ}$NDU3/iG!R%^X5m(J?Bnwq!:b}!+tPTEiQ@6J/r{KjY[5]ceqWXIr-#0CsY6)]@G6SE^:WYyc/aVsw]h0+@z$*pe0(mK]]ymgY3^,$^MloB-{s;0;zRLHYvs8(FYJHuY,{yy$?yKEuQqRSq82C1I]ig(0w:Q8%I}J*af:b^;h)ydTDH1$q/aL7CM4F)*UVCocIZ@i%93EfU%hTk!gIf@:}j8Z/LZ?]gX@rB4ud7rJ}1-=bRpT=bT]*lH=Oa;vusg]]{Mca:TPcoGzCf4kcQNs8};MzEGClN^my}(hjuhxcrz3fR?kVza.m1xC6H]mXVAzhxT:i{c^jSutgHC:Z=F99#XS/F(tAMT:Z]}[Buy0NHWPy$q4C!3f)*s5Fq*WO;YffiTg22A6Cr=QW1/.JXp#6#Ao_rnfDpJF-wbC%f5ZD9x8Co@mZPdB!O^YIS+_^N$y;Djz@e6Yoy?#H.eR.6SJKKec2sAxV:O(C.xVFl9wj#oClf$FwXl=F4%Jn#X:CaB-9Ow1#xN5F+OfXcEWNeb+5CXfN...3s(}peIpZ(3i3%GNND9eV90Hw486:MPEeQ8!.}{1x5Xu]dTC%Ic_GB-V6wcxdeEaZo=_nHKR-]gBHP!bxmnKYcA.$m;1kIx9A^QQuN_KCXW[o-v1ykuVJ:z-/DIRraS]EQRj2s#h([8]OiQGB0BWAXDc[UkjRR@Qzr^_UBaBM-}HE1ibI/shQi4*}CmdVP_sK;)%d(RN;):,b.315K6Q=xPTvyP_RHkM/8Ox9OtlMb6CqP;1@7GzjDjZktZuv{m-gRDl(q7D#NBkEU8tpmQ7;I-,Rb:}RqleA7]%%jW5(2v8pCq/}Y,ArQ1G_{lJFK/8d#%H-KtY4X{swoVWMP5?7(0%EFbczoJ$9:LD#Y{o6z$5l-^g1D-Kfim@bDN4@_KOf*at0cl]TL*+yVTIEMn:!QyrsK*=AZc,+XWXh.%R_n7,PhlTrw3^jB9DlZX]yg!a3FXqtk*nlB{F8=Ay@}dDZH;z0;g3?7LAlW:MK]U@G-!kYTr2dfFdjv_i;V6P9*s+f?Y/79(m4IM60TlCiYHY#}1S.[.ai-{{RdZ5?NlhqqU)AVlb+i9^m$W#]D_O_@af/HvT[aDec^fX.whO$.duEGE/GctYS%1#f-ip)?w9b8O]]u7,zJh:w^cO!Kn:F(c$KGvPgTD;,#i[AKgYdTe3g/hy[MMdYuWT35OXKOdOw9bbGjofKs:ACv#y/vaSy$:VY8#rJPGO@m}7Z+CuBaNIzku*M4Wh3fho;qsbByMEn5NE#a%^pIoBT;Dph(o?2A+?eM4l{#}v0N=p^-;zdPe_7Zdmo7IDKyp^Qyo)45NIRuD@bE_.U;1YHvAIBklW0rf:?UoV9zKdL#!kF=]jxld.TIQvy{]{P?_k-+sH;p4?zW.+j{%4Pw4pA=lr:Ck*z(kpNunnZgA3sZf/gp@0;__Y4?VN^frCeBt0m8s/u0%M%bmNoo:miOp4weGcW)THC0H?R6DaoI2fZIPwzRbO.26HqmFo:$VX-}S7mCDr5kM]$CHtTBj!$=s0g3p-#d#_TRp{b(0_?%:xie0N;Felh^@It^(zrBewk!mLEJd%$%$kmc:VCDoN8;p)9apd+mmn_[s!C[*eTExOjyb.-$R$D4k%XSWKmOaND.-og7/X6a?!BE*K!,1}2FGkP.ad(?0I*2_qzcP1M5YK5QPQ%k0sxB23rJl1/a!5AV-P_N*p^l-$EJaj1}psVHme0e^Cbj[jw{fZ$LR2U,Kkj;yTV+t0ctXpP70z5R1]vnCiOJ+2ND1v0B8UJ0B][g007JA/,P%zil!lQTEz(w+kY+2FeAAc86:J)s/xa:q_zFOkrGf-qJpZ;p6MXj44Z,q8!Unbc$r%Y[?[KRf/zFYDVl[1FjJ=uVweWC^_@8RBRs:,E][ZC0000/MNUMnLSTY}00001=(=^]%NbEqj3SiMcvx*m!$A]py+^^pN1?_P]9D4bGhVyH)uX/+N*+J$PNQo6QV(59Bg#H^67;By3zOdrr}s8uv?9IGpB9%gBkj4m2jTiWEZ8U^$4uj7.}I3mw*wQpLR#cR:974x%Xx97?G)kb;kEI;fA6:2w7a/ZwHYD</PublicKey>
+  </Signature>
+</CheatTable>
