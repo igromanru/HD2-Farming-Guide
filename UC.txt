@@ -6,7 +6,7 @@ It contains only features that you need to farm Super Credits, Samples, Medals a
 [B][SIZE="3"]Required resources[/SIZE][/B]
 [LIST]
 [*]HD2 ED Farming table
-[*]Cheat Engine 7.5 or higher
+[*][URL="https://www.unknowncheats.me/forum/downloads.php?do=file&id=51376"]Cheat Engine 7.5[/URL] or higher
 [*]My AutoIt PickUp Macro or similar
 [*]Installed AutoIt (if you want to use the script)
 [*]Understanding on how the game works
@@ -19,6 +19,7 @@ To reduce any friction, read the guide carefully and follow the steps.
 [B][SIZE="3"]Super Credits Farming[/SIZE][/B]
 [SIZE="2"]Video Tutorial[/SIZE]
 [YOUTUBE_ID]epMbesuXneA[/YOUTUBE_ID]
+
 
 [I]Text based tutorial is on the ToDo list for later[/I]
 
