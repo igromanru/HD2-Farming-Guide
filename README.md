@@ -1,7 +1,8 @@
 # Helldivers 2 Farming Guide by Igromanru
-**Currently based on the Experimental Division Cheat Engine Table v4.0.0**  
-I made an abridge version of the Experimental Division CT v4.0.0 for farming only.  
-It contains only features that you need to farm Super Credits, Medals and Experience.  
+**The guide revolves around the abridged version of the released ED CT, compiled by me for farming**  
+You need the "Farming" Cheat Engine Table from the release to follow the guide!
+Which is an abridge version of the [Experimental Division CT v4.0.0](https://www.unknowncheats.me/forum/helldivers-2-a/717822-experimental-division-ct-game-guard-bypass.html) (credits Zodiac).  
+It contains only features that you need to farm Super Credits, Samples, Medals and Experience.  
 
 ## Required resources
 - HD2 ED Farming table

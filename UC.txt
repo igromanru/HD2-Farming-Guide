@@ -1,6 +1,7 @@
-[B][SIZE="3"]The guide is currently based on the last Experimental Division Cheat Engine Table v4.0.0 release[/SIZE][/B]
-I made an abridge version of the [URL="https://www.unknowncheats.me/forum/helldivers-2-a/717822-experimental-division-ct-game-guard-bypass.html"]Experimental Division CT v4.0.0[/URL] for farming only.  
-It contains only features that you need to farm Super Credits, Medals and Experience.  
+[B][SIZE="3"]The guide revolves around the abridged version of the released ED CT, compiled by me for farming[/SIZE][/B]
+You need the "Farming" Cheat Engine Table from the release to follow the guide.
+Which is an abridge version of the [URL="https://www.unknowncheats.me/forum/helldivers-2-a/717822-experimental-division-ct-game-guard-bypass.html"]Experimental Division CT v4.0.0[/URL] (credits Zodiac).  
+It contains only features that you need to farm Super Credits, Samples, Medals and Experience.  
 
 [B][SIZE="3"]Required resources[/SIZE][/B]
 [LIST]
@@ -23,6 +24,10 @@ To reduce any friction, read the guide carefully and follow the steps.
 
 [B][SIZE="3"]Medals and Experience Farming[/SIZE][/B]
 [I]Guide is on the ToDo list for later[/I]
+
+[B][SIZE="3"]Samples[/SIZE][/B]
+[I]Guide is on the ToDo list for later[/I]
+
 
 [B][SIZE="3"]AutoIt Macro[/SIZE][/B]
 Part of the release includes a simple AutoIt macro script that presses the interaction key with the optimal order and timing to pick up as many Super Credits as possible, as quickly as possible.  
