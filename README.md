@@ -1,7 +1,8 @@
 # Helldivers 2 Farming Guide by Igromanru
+
 **The guide revolves around the abridged version of the released ED CT, compiled by me for farming**  
-You need the "Farming" Cheat Engine Table from the release to follow the guide!
-Which is an abridge version of the [Experimental Division CT v4.0.0](https://www.unknowncheats.me/forum/helldivers-2-a/717822-experimental-division-ct-game-guard-bypass.html) (credits Zodiac).  
+You need the "Farming" Cheat Engine Table from the [release](https://github.com/igromanru/HD2-Farming-Guide/releases) to follow the guide!
+Which is an abridge version of the Experimental Division CT v4.0.0 (credits Zodiac).  
 It contains only features that you need to farm Super Credits, Samples, Medals and Experience.  
 
 ## Required resources
@@ -32,3 +33,6 @@ The CT that I provide contains only features that you need or are useful for far
 You can activate the  `Enable All` script to enable all scripts you need to start farming Super Credits.  
 But the `Samples, Exp and Medals scripts` section contains scripts for Medals and Experience farming as well.  
 I've signed the table with my own signature to allow users to use the option "Execute Lua script: `Only when signed, else ask`", which will execute the Lua script with GameGuard Bypass as soon you open the table.
+
+## Related Discord Server
+<a href="https://discord.gg/jmsAX8kjVJ"><img src='https://discordapp.com/api/guilds/1417474730906095626/widget.png?style=shield'></a>
