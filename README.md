@@ -24,7 +24,7 @@ Steps that you need to do each time, no matter what you want to farm.
 7. Enable the **Enable All Universal features** group header to activate all the scripts inside the group
 
 ## Super Credits Farming
-1. Follow [Required first steps](#required-first-steps-for-each-farming-session)
+1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
 2. Activate the **Enable All features for Super Credits Farming** group header to enable all SC relevant features
 3. Execute the AutoIt script **PickUp-Macro.au3** (just double-click the file, if AutoIt is installed)
 4. Start a **Difficulty 3** - **40 min** mission that is **NOT** a Mega City
@@ -50,18 +50,26 @@ For the AutoIt macro to work properly, you need to drop at least as many SC as t
 The simple formula is: **`$iPickUpsCount` * 13**.
 
 ## Medals and Experience Farming
-*Guide is on the ToDo list for later*
+(Can be combined with [Samples Farming](#samples-farming))
+1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
+2. Activate the **Enable All features for Medals and Experience farming** group header to enable all relevant features
+3. Start a **Difficulty 10**
+4. After landing, use hotkey **I** to activate the feature of the `Instant Complete Mission` script
+5. Extract
+6. Repeat from **step 3.** for more Medals and Exp
+
+## Samples Farming
+(Can be combined with [Medals and Experience Farming](#medals-and-experience-farming))
+1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
+2. Activate the **Enable All features for Samples farming** group header to enable all relevant features
+3. Start any mission
+4. After landing, use hotkey **I** to activate the feature of the `Instant Complete Mission` script
+5. Extract. You will get 100 of each Sample.
+6. Repeat from **step 3.** for more Samples
 
 ## AutoIt Macro script
 Part of the repo and the release includes a simple [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) macro script that presses the interaction key with the optimal order and timing to pick up as many Super Credits as possible, as quickly as possible.  
 You can edit the script to change how many SC you want to pick-up per run, change the interaction key (default `F`) or the hotkey for the Macro (default: `o`, and default `CTRL+Q` to cancel the macro).
-
-
-## Abridged ED CT
-The CT that I provide contains only features that you need or are useful for farming.  
-You can activate the  `Enable All` script to enable all scripts you need to start farming Super Credits.  
-But the `Samples, Exp and Medals scripts` section contains scripts for Medals and Experience farming as well.  
-I've signed the table with my own signature to allow users to use the option "Execute Lua script: `Only when signed, else ask`", which will execute the Lua script with GameGuard Bypass as soon you open the table.
 
 ## Game Crashes
 Hacking is not an "exact science". Removing GameGuard from the game will sometimes cause it to crash. Also, some features might cause crashes under different circumstances.  
