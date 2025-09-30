@@ -6,8 +6,9 @@ Which is an abridge version of the Experimental Division CT v4.0.0 (credits Zodi
 It contains only features that you need to farm Super Credits, Samples, Medals and Experience.  
 
 ## Required resources
+- Basic understanding of how Cheat Engine wroks (watch video tutorials or something)
+- [Cheat Engine 7.5](https://mega.nz/file/HNFRBSrY#rj4oel3UuK9hoj1BtezRVbGhNJBo8mQ3EYl7ioFprcc) or higher
 - HD2 ED Farming table
-- Cheat Engine 7.5 or higher
 - My AutoIt PickUp Macro or similar
 - Installed [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) (if you want to use the script)
 - Understanding on how the game works

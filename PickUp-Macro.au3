@@ -3,7 +3,7 @@
 #include <AutoItConstants.au3>
 
 ; How many loops of 13 pick-ups will be run
-Global Const $iPickUpsCount = 10
+Global Const $iPickUpsCount = 15
 ; Change to the interaction key that you use in the game
 Global Const $sInteractionKey = "F"
 
