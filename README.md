@@ -5,6 +5,19 @@ You need the "Farming" Cheat Engine Table from the [release](https://github.com/
 Which is an abridge version of the [Experimental Division CT v4.0.0](https://www.unknowncheats.me/forum/downloads.php?do=file&id=51228) (credits Zodiac).  
 It contains only features that you need to farm Super Credits, Samples, Medals and Experience.  
 
+## Index
+- [Required resources](#required-resources)
+- [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
+- [Super Credits Farming](#super-credits-farming)
+- [Possible configurations](#possible-configurations)
+  - [AutoIt script](#autoit-script)
+  - [Mass SC Packs Drop](#mass-sc-packs-drop)
+- [Medals and Experience Farming](#medals-and-experience-farming)
+- [Samples Farming](#samples-farming)
+- [AutoIt Macro script](#autoit-macro-script)
+- [Game Crashes](#game-crashes)
+- [Related Discord Server](#related-discord-server)
+
 ## Required resources
 - Basic understanding of how Cheat Engine wroks (watch video tutorials or something)
 - [Cheat Engine 7.5](https://mega.nz/file/HNFRBSrY#rj4oel3UuK9hoj1BtezRVbGhNJBo8mQ3EYl7ioFprcc) or higher
