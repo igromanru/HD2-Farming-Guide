@@ -3,7 +3,7 @@
   <CheatEntries>
     <CheatEntry>
       <ID>118846</ID>
-      <Description>"ED Farming Only v2"</Description>
+      <Description>"ED Farming Only v2.1"</Description>
       <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
       <Color>0482FF</Color>
       <VariableType>Auto Assembler Script</VariableType>
@@ -2799,7 +2799,7 @@ code_multSC:
   align 10
 
 packCMP:
-  dd #200 //sc packs quantity
+  dd #130 //sc packs quantity
   dd 0 //counter
   align 10 CC
 

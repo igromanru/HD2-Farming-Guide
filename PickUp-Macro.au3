@@ -3,11 +3,11 @@
 #include <AutoItConstants.au3>
 
 ; How many loops of 13 pick-ups will be run
-Global Const $iPickUpsCount = 15
+Global Const $iPickUpsCount = 10
 ; Change to the interaction key that you use in the game
 Global Const $sInteractionKey = "F"
 
-HotKeySet("o", "PickUpLoop") ; Hotkey to start the pick up loop
+HotKeySet("{F4}", "PickUpLoop") ; Hotkey to start the pick up loop
 HotKeySet("^q", "_CancelMacro") ; Ctrl + Q to cancel the macro
 
 Global Const $sScriptName = "Helldivers 2 PickUp Macro by Igromanru"
@@ -39,12 +39,12 @@ Func PickUpLoop()
                 ExitLoop
             EndIf
             Send($sInteractionKey)
-            Sleep(1000)
+            Sleep(900)
         Next
         BlockInput($BI_ENABLE)
         ; Sleep loop with ability to cancel
         if $i < $iPickUpsCount Then
-            For $s = 1 To 590 ; 59sec + 1s sleep after input
+            For $s = 1 To 490 ; 49sec + 1s sleep after input
                 If $bCancelMacro Then
                     ExitLoop
                 EndIf
