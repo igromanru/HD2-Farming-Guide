@@ -13,7 +13,7 @@ It contains only features that you need to farm Super Credits, Samples, Medals a
 - Installed [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) (if you want to use the script)
 - Understanding on how the game works
 
-## Required first steps
+## Required first steps for each farming session
 Steps that you need to do each time, no matter what you want to farm.
 1. Start the game and wait until the **Super Earth Ministry of Truth** screen appears
 2. As fast as possible, double-click the Cheat Table (.CT) file, to open it  automatically with Cheat Engine (it should be assigned as default application to open .CT files)
@@ -24,7 +24,7 @@ Steps that you need to do each time, no matter what you want to farm.
 7. Enable the **Enable All Universal features** group header to activate all the scripts inside the group
 
 ## Super Credits Farming
-1. Follow [Required first steps](#required-first-steps)
+1. Follow [Required first steps](#required-first-steps-for-each-farming-session)
 2. Activate the **Enable All features for Super Credits Farming** group header to enable all SC relevant features
 3. Execute the AutoIt script **PickUp-Macro.au3** (just double-click the file, if AutoIt is installed)
 4. Start a **Difficulty 3** - **40 min** mission that is **NOT** a Mega City
