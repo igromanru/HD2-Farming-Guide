@@ -40,7 +40,7 @@ Steps that you need to do each time, no matter what you want to farm.
 1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
 2. Activate the **Enable All features for Super Credits Farming** group header to enable all SC relevant features
 3. Execute the AutoIt script **PickUp-Macro.au3** (just double-click the file, if AutoIt is installed)
-4. Start a **Difficulty 3** - **40 min** mission that is **NOT** a Mega City
+4. Start a **Automatons** or **Illuminate**, **Difficulty 3**, **40 min** mission that is **NOT** a Mega City
 5. Drop into the mission, then call a Resupply Pod **ONCE**, which will "Mass Drop" all the Super Credits you need for the mission
 6. Lay down on top of the SC pile so the interaction to pick it up is available
 7. Press **O** (default hotkey) to start the AutoIt macro and pick up SCs automatically  
