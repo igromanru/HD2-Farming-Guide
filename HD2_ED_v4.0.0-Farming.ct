@@ -2799,7 +2799,7 @@ code_multSC:
   align 10
 
 packCMP:
-  dd #130 //sc packs quantity
+  dd #133 //sc packs quantity
   dd 0 //counter
   align 10 CC
 
@@ -3132,7 +3132,7 @@ unregistersymbol(SCtimer)
             <CheatEntry>
               <ID>170580</ID>
               <Description>"Max Mission Reward"</Description>
-              <Options moHideChildren="1" moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
+              <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
               <VariableType>Auto Assembler Script</VariableType>
               <AssemblerScript>//Author : Zodiac
 //CE     : 7.61
@@ -3253,8 +3253,8 @@ iteration_end:
   align 10
 
 RewardMultsM:
-  dd (float)250
-  dd (float)500
+  dd (float)100 // Medals
+  dd (float)100 // Exp
   // dq BF800000BF800000 //(float)-1 x2
   dw 0 //flags buffer
   align 10 CC
@@ -3315,6 +3315,115 @@ dealloc(*)
                   <ShowAsSigned>1</ShowAsSigned>
                   <VariableType>Float</VariableType>
                   <Address>RewardMultsM+4</Address>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>173472</ID>
+              <Description>"Force Apply Difficulty Multiplier On Reward"</Description>
+              <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>//Author : Zodiac
+//CE     : 7.61
+//Game   : HELLDIVERS™ 2
+//Version: 01.003.202
+//Process: helldivers2.exe
+//Module : game.dll
+//Inject : game.dll+DAB9E5
+//Date   : 13/08/25
+//Comment: Script made for Experimental Division.
+
+[ENABLE]
+
+aobscanmodule(applydif,game.dll,4D 8B E0 4C 89 44 24 38) //Unique
+alloc(scriptmem,80,applydif)
+label(l_applydif scriptreturn)
+registersymbol(applydif l_applydif)
+
+scriptmem:
+  mov r12,r8
+  push rax
+  push rbx
+  push rcx
+  pushfq
+  mov rax,l_applydif
+  mov ebx,[rax]
+  mov ecx,1
+  cmp ebx,ecx
+  cmovl ebx,ecx
+  mov ecx,(int)10
+  cmp ebx,ecx
+  cmova ebx,ecx
+  mov [rax],ebx
+  mov [r12+54],ebx
+  popfq
+  pop rcx
+  pop rbx
+  pop rax
+  mov [rsp+38],r8
+  jmp scriptreturn
+  align 10
+
+l_applydif:
+  dd (int)10
+  align 10 CC
+
+applydif:
+  jmp scriptmem
+  nop 3
+scriptreturn:
+
+[DISABLE]
+
+applydif:
+  db 4D 8B E0 4C 89 44 24 38
+  
+unregistersymbol(*)
+dealloc(*)
+
+//Original Instructions:
+//game.dll+DAB9BA - 41 55                   - push r13
+//game.dll+DAB9BC - 41 56                   - push r14
+//game.dll+DAB9BE - 41 57                   - push r15
+//game.dll+DAB9C0 - 48 81 EC 80000000       - sub rsp,00000080
+//game.dll+DAB9C7 - 48 8B 05 42267C00       - mov rax,[game.dll+156E010]
+//game.dll+DAB9CE - 48 33 C4                - xor rax,rsp
+//game.dll+DAB9D1 - 48 89 44 24 70          - mov [rsp+70],rax
+//game.dll+DAB9D6 - 48 8B 05 D3550201       - mov rax,[game.dll+1DD0FB0]
+//game.dll+DAB9DD - 4C 8B F1                - mov r14,rcx
+//game.dll+DAB9E0 - 48 89 4C 24 48          - mov [rsp+48],rcx
+//------------------------------------------------------------------------------
+//game.dll+DAB9E5 - 4D 8B E0                - mov r12,r8
+//------------------------------------------------------------------------------
+//game.dll+DAB9E8 - 4C 89 44 24 38          - mov [rsp+38],r8
+//game.dll+DAB9ED - 48 8B DA                - mov rbx,rdx
+//game.dll+DAB9F0 - 48 8B 88 90B30000       - mov rcx,[rax+0000B390]
+//game.dll+DAB9F7 - 48 8B 05 AA550201       - mov rax,[game.dll+1DD0FA8]
+//game.dll+DAB9FE - 48 39 88 88645C00       - cmp [rax+005C6488],rcx
+//game.dll+DABA05 - 75 0E                   - jne game.dll+DABA15
+//game.dll+DABA07 - 80 B8 71867C00 00       - cmp byte ptr [rax+007C8671],00
+//game.dll+DABA0E - 74 05                   - je game.dll+DABA15
+//game.dll+DABA10 - 41 B0 01                - mov r8b,01
+//game.dll+DABA13 - EB 03                   - jmp game.dll+DABA18
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>173473</ID>
+                  <Description>"Difficulty | Reward Multiplier"</Description>
+                  <DropDownList DisplayValueAsItem="1">1:0%
+2:0%
+3:25%
+4:50%
+5:75%
+6:100%
+7:150%
+8:200%
+9:250%
+10:300%
+</DropDownList>
+                  <ShowAsSigned>0</ShowAsSigned>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>l_applydif</Address>
                 </CheatEntry>
               </CheatEntries>
             </CheatEntry>
