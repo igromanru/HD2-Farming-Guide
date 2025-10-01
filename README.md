@@ -43,46 +43,49 @@ Steps that you need to do each time, no matter what you want to farm.
 4. Start a **Automatons** or **Illuminate**, **Difficulty 3**, **40 min** mission that is **NOT** a Mega City
 5. Drop into the mission, then call a Resupply Pod **ONCE**, which will "Mass Drop" all the Super Credits you need for the mission
 6. Lay down on top of the SC pile so the interaction to pick it up is available
-7. Press **O** (default hotkey) to start the AutoIt macro and pick up SCs automatically  
-By default, it runs 15 times with 13 SC per pick-up loop. The duration is about 20 minutes, and you can’t use your PC while it’s running.
-8. Wait until the macro is done. It will show a Message Box with the message: *PickUpLoop finished*
-9. If you want to do another run, you need to start a new mission. Otherwise, mass-dropping a second time in the same mission will crash the game.  
+7. Press **F4** (default hotkey) to start the AutoIt macro and pick up SCs automatically  
+By default, it runs 10 times with 13 SC per pick-up loop. The duration is about 12 minutes, and you can’t use your PC while it’s running.
+1. Wait until the macro is done. It will show a Message Box with the message: *PickUpLoop finished*
+2. If you want to do another run, you need to start a new mission. Otherwise, mass-dropping a second time in the same mission will crash the game.  
 Repeat from **step 4.** or use the **Kill HD2 & CE** script to close the game.
+
+**Important Note:** If you want to extract, you have to disable **Enable All features for Super Credits Farming** group before completing the mission!
 
 ### Possible configurations
 #### AutoIt script
-You can configure the AutoIt Macro to your liking, to change hotkeys or reduce how many "pick-up loops" it will run.  
-Open **PickUp-Macro.au3** in any text editor, but preferbly it AutoIt own editor SciTE.  
-`$iPickUpsCount` is the amount of "pick-up loops" the script will run. Each loop takes 13 SC and waits for server's cooldown (1min) before continiung. The amount of loops basically detemrintes how long the Macro will run.  
-`$sInteractionKey` is the interaction key for the pick-up. Default is `F`. If you have change it in the game, you have to change it here as well.  
-`HotKeySet("o", "PickUpLoop")` this line of code defines the hotkey for the Macro. Change `"o"` to another key or read AutoIt documentation how to make a key combination out of it.  
+You can configure the AutoIt Macro to your liking, to change hotkeys or reduce or increase how many "pick-up loops" it will run.  
+Open **PickUp-Macro.au3** in any text editor, but preferably in AutoIt's own editor, SciTE.  
+[Here](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) you can find a documentation on AutoIt keys. It applies to hotkeys as well.  
+**Changeable variables in script:**  
+`$iPickUpsCount` is the number of "pick-up loops" the script will run. Each loop collects 13 SC and then waits for the server’s cooldown (50 sec) before continuing. The number of loops basically determines how long the macro will run.  
+`$sInteractionKey` is the interaction key for picking up items. The default is `F`. If you have changed it in the game, you must change it here as well.  
+`$sMacroHotKey` is the hotkey to start the macro. The default is `F4`.  
+`$sMacroCancelHotKey` is the hotkey to cancel the macro. The default is `CTRL+Q`. You can interrupt the macro at any time with this hotkey.  
 #### Mass SC Packs Drop
 You can change the **Packs Amount** value to change the amount of SC the script will drop at once.  
-But be careful, 200 is pretty much the maximum value, after that it becomes very unstable it increases the chance that your game will crash.  
+But be careful, 200 is pretty much the maximum value, after that it becomes very unstable and increases the chance that your game will crash.  
 For the AutoIt macro to work properly, you need to drop at least as many SC as the macro will try to pick up.  
 The simple formula is: **`$iPickUpsCount` * 13**.
 
 ## Medals and Experience Farming
-(Can be combined with [Samples Farming](#samples-farming))
+Can be combined with [Samples Farming](#samples-farming)
+
 1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
 2. Activate the **Enable All features for Medals and Experience farming** group header to enable all relevant features
-3. Start a **Difficulty 10**
+3. Start any mission
 4. After landing, use hotkey **I** to activate the feature of the `Instant Complete Mission` script
 5. Extract
 6. Repeat from **step 3.** for more Medals and Exp
 
 ## Samples Farming
-(Can be combined with [Medals and Experience Farming](#medals-and-experience-farming))
+Can be combined with [Medals and Experience Farming](#medals-and-experience-farming).  
+
 1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
 2. Activate the **Enable All features for Samples farming** group header to enable all relevant features
 3. Start any mission
 4. After landing, use hotkey **I** to activate the feature of the `Instant Complete Mission` script
 5. Extract. You will get 100 of each Sample.
 6. Repeat from **step 3.** for more Samples
-
-## AutoIt Macro script
-Part of the repo and the release includes a simple [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) macro script that presses the interaction key with the optimal order and timing to pick up as many Super Credits as possible, as quickly as possible.  
-You can edit the script to change how many SC you want to pick-up per run, change the interaction key (default `F`) or the hotkey for the Macro (default: `o`, and default `CTRL+Q` to cancel the macro).
 
 ## Game Crashes
 Hacking is not an "exact science". Removing GameGuard from the game will sometimes cause it to crash. Also, some features might cause crashes under different circumstances.  

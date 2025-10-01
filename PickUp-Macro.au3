@@ -6,16 +6,22 @@
 Global Const $iPickUpsCount = 10
 ; Change to the interaction key that you use in the game
 Global Const $sInteractionKey = "F"
+; Hotkey to start the pick up loop (default: F4)
+Global Const $sMacroHotKey = "{F4}"
+; Hotkey to cancel the macro (default: Ctrl + Q)
+Global Const $sMacroCancelHotKey = "^q"
 
-HotKeySet("{F4}", "PickUpLoop") ; Hotkey to start the pick up loop
-HotKeySet("^q", "_CancelMacro") ; Ctrl + Q to cancel the macro
 
+; -- Don't touch the code below unless you know what you're doing -- 
 Global Const $sScriptName = "Helldivers 2 PickUp Macro by Igromanru"
 Global Const $sGameWindow = "HELLDIVERS™ 2"
 Global $bCancelMacro = False
 
 AutoItSetOption("SendKeyDelay", 10)
 AutoItSetOption("SendKeyDownDelay", 20)
+
+HotKeySet($sMacroHotKey, "PickUpLoop") ; Hotkey to start the pick up loop
+HotKeySet($sMacroCancelHotKey, "_CancelMacro") ; Ctrl + Q to cancel the macro
 
 Func _CancelMacro()
     $bCancelMacro = True
@@ -39,12 +45,12 @@ Func PickUpLoop()
                 ExitLoop
             EndIf
             Send($sInteractionKey)
-            Sleep(900)
+            Sleep(1000)
         Next
         BlockInput($BI_ENABLE)
         ; Sleep loop with ability to cancel
         if $i < $iPickUpsCount Then
-            For $s = 1 To 490 ; 49sec + 1s sleep after input
+            For $s = 1 To 500 ; 50 seconds + 1 from interaction sleep
                 If $bCancelMacro Then
                     ExitLoop
                 EndIf
