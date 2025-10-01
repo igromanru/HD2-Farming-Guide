@@ -49,7 +49,9 @@ By default, it runs 10 times with 13 SC per pick-up loop. The duration is about 
 2. If you want to do another run, you need to start a new mission. Otherwise, mass-dropping a second time in the same mission will crash the game.  
 Repeat from **step 4.** or use the **Kill HD2 & CE** script to close the game.
 
-**Important Note:** If you want to extract, you have to disable **Enable All features for Super Credits Farming** group before completing the mission!
+**Important Notes**
+- If you want to extract, you have to disable **Enable All features for Super Credits Farming** group before completing the mission!  
+- The AutoIt script runs in the background. To exit it, right-click the AutoIt tray icon in the taskbar and select **Exit**
 
 ### Possible configurations
 #### AutoIt script
