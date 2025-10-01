@@ -9,14 +9,14 @@ It contains only features that you need to farm Super Credits, Samples, Medals a
 - [Required resources](#required-resources)
 - [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
 - [Super Credits Farming](#super-credits-farming)
-- [Possible configurations](#possible-configurations)
-  - [AutoIt script](#autoit-script)
-  - [Mass SC Packs Drop](#mass-sc-packs-drop)
+  - [Possible configurations](#possible-configurations)
+    - [AutoIt script](#autoit-script)
+    - [Mass SC Packs Drop](#mass-sc-packs-drop)
 - [Medals and Experience Farming](#medals-and-experience-farming)
 - [Samples Farming](#samples-farming)
-- [AutoIt Macro script](#autoit-macro-script)
 - [Game Crashes](#game-crashes)
 - [Related Discord Server](#related-discord-server)
+
 
 ## Required resources
 - Basic understanding of how Cheat Engine wroks (watch video tutorials or something)
