@@ -10,9 +10,10 @@ Global Const $sInteractionKey = "F"
 Global Const $sMacroHotKey = "{F4}"
 ; Hotkey to cancel the macro (default: Ctrl + Q)
 Global Const $sMacroCancelHotKey = "^q"
+; Exit the script (default: F10)
+Global Const $sExitScriptHotKey = "{F10}"
 
-
-; -- Don't touch the code below unless you know what you're doing -- 
+; -- Don't touch the code below unless you know what you're doing --
 Global Const $sScriptName = "Helldivers 2 PickUp Macro by Igromanru"
 Global Const $sGameWindow = "HELLDIVERS™ 2"
 Global $bCancelMacro = False
@@ -22,9 +23,14 @@ AutoItSetOption("SendKeyDownDelay", 20)
 
 HotKeySet($sMacroHotKey, "PickUpLoop") ; Hotkey to start the pick up loop
 HotKeySet($sMacroCancelHotKey, "_CancelMacro") ; Ctrl + Q to cancel the macro
+HotKeySet($sExitScriptHotKey, "_Exit")
 
 Func _CancelMacro()
     $bCancelMacro = True
+EndFunc
+
+Func _Exit()
+    Exit(0)
 EndFunc
 
 Func PickUpLoop()
