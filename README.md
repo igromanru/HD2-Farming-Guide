@@ -29,7 +29,7 @@ It contains only features that you need to farm Super Credits, Samples, Medals a
 ## Required first steps for each farming session
 Steps that you need to do each time, no matter what you want to farm.
 1. Start the game and wait until the **Super Earth Ministry of Truth** screen appears
-2. As fast as possible, double-click the Cheat Table (.CT) file, to open it  automatically with Cheat Engine (it should be assigned as default application to open .CT files)
+2. As fast as possible, double-click the Cheat Table (.CT) file, to open it automatically with Cheat Engine (it should be assigned as default application to open .CT files)
 3. If Windows asks you to allow Cheat Engine to make changes on your device, always press **Yes**
 4. As soon you see the **Execute this lua script?** dialog window, press **Yes** to execute the GameGaurd Bypass
 5. The Cheat Engine with loaded table should appear
@@ -40,7 +40,7 @@ Steps that you need to do each time, no matter what you want to farm.
 1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
 2. Activate the **Enable All features for Super Credits Farming** group header to enable all SC relevant features
 3. Execute the AutoIt script **PickUp-Macro.au3** (just double-click the file, if AutoIt is installed)
-4. Start a **Automatons** or **Illuminate**, **Difficulty 3**, **40 min** mission
+4. Start a **Terminids** or **Illuminate**, **Difficulty 3**, **40 min** mission
 5. Drop into the mission, then call a Resupply Pod **ONCE**, which will "Mass Drop" all the Super Credits you need for the mission
 6. Lay down on top of the SC pile so the interaction to pick it up is available
 7. Press **F4** (default hotkey) to start the AutoIt macro and pick up SCs automatically  
