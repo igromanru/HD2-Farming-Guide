@@ -37,6 +37,8 @@ Steps that you need to do each time, no matter what you want to farm.
 7. Enable the **Enable All Universal features** group header to activate all the scripts inside the group
 
 ## Super Credits Farming
+**[Video Tutorial](https://www.youtube.com/watch?v=kj150Uf3ljc)**
+
 1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
 2. Activate the **Enable All features for Super Credits Farming** group header to enable all SC relevant features
 3. Execute the AutoIt script **PickUp-Macro.au3** (just double-click the file, if AutoIt is installed)
