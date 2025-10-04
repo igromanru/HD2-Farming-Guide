@@ -27,9 +27,11 @@ HotKeySet($sExitScriptHotKey, "_Exit")
 
 Func _CancelMacro()
     $bCancelMacro = True
+    BlockInput($BI_ENABLE)
 EndFunc
 
 Func _Exit()
+    BlockInput($BI_ENABLE)
     Exit(0)
 EndFunc
 
