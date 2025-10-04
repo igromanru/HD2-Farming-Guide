@@ -14,7 +14,9 @@ It contains only features that you need to farm Super Credits, Samples, Medals a
     - [Mass SC Packs Drop](#mass-sc-packs-drop)
 - [Medals and Experience Farming](#medals-and-experience-farming)
 - [Samples Farming](#samples-farming)
-- [Game Crashes](#game-crashes)
+- [FAQ](#faq)
+  - [Super Credits / Medals limit per mission](#super-credits--medals-limit-per-mission)
+  - [Game Crashes](#game-crashes)
 - [Related Discord Server](#related-discord-server)
 
 
@@ -91,12 +93,20 @@ Can be combined with [Medals and Experience Farming](#medals-and-experience-farm
 5. Extract. You will get 100 of each Sample.
 6. Repeat from **step 3.** for more Samples
 
-## Game Crashes
+## FAQ
+### Super Credits / Medals limit per mission
+Originally, there’s a limit on how many Super Credit or Medal stacks can be picked up in a mission. You should count in stacks, one stack equals one pick-up. The server determines how many resources you get from each stack. One Super Credit stack usually gives you 10 SC, with a 1% chance to get 100 instead. For Medals, the amount is random.  
+The original limit is random between 0 and 15. The limit applies to each player individually.  
+**Remove Currency Pickup Limit**  
+The feature allows bypassing the original limit by changing the current session ID.  
+With the feature enabled, you can pick up exactly 13 stacks every ~50 seconds.
+It’s the server’s cooldown, and there’s currently no known way to skip it.
+
+### Game Crashes
 Hacking is not an "exact science". Removing GameGuard from the game will sometimes cause it to crash. Also, some features might cause crashes under different circumstances.  
 To reduce any friction, read the guide carefully and follow the steps.  
 Sometimes, if the timing is unlucky, GameGaurd will detect Cheat Engine before you can execute the bypass.  
-In such case, try to use it later, on the ship or even in a mission.
-
+In such case, try to use it later on the ship or in a mission.
 
 ## Related Discord Server
 <a href="https://discord.gg/jmsAX8kjVJ"><img src='https://discordapp.com/api/guilds/1417474730906095626/widget.png?style=shield'></a>  
