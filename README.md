@@ -17,6 +17,7 @@ It contains only features that you need to farm Super Credits, Samples, Medals a
 - [FAQ](#faq)
   - [Super Credits / Medals limit per mission](#super-credits--medals-limit-per-mission)
   - [Game Crashes](#game-crashes)
+  - [AntiCheat Details](#anticheat-details)
 - [Related Discord Server](#related-discord-server)
 
 
@@ -107,6 +108,11 @@ Hacking is not an "exact science". Removing GameGuard from the game will sometim
 To reduce any friction, read the guide carefully and follow the steps.  
 Sometimes, if the timing is unlucky, GameGaurd will detect Cheat Engine before you can execute the bypass.  
 In such case, try to use it later on the ship or in a mission.
+
+### AntiCheat Details
+**nProtect GameGuard in Helldivers 2** serves solely as anti-tamper software. Despite what it can do in other games, in HD2 it only attempts to preserve the integrity of the original code and prevent external software from accessing the process. It doesn't even check for foreign DLLs in the process.
+If GameGuard detects ".text" code changes or one of the blacklisted programs like Cheat Engine, it will only close the game, usually with a message.  
+There are no (GameGuard) bans! And until today, no bans for cheaters were reported in any of HD2 related (cheating) communities.
 
 ## Related Discord Server
 <a href="https://discord.gg/jmsAX8kjVJ"><img src='https://discordapp.com/api/guilds/1417474730906095626/widget.png?style=shield'></a>  
