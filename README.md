@@ -9,7 +9,7 @@ It contains only features that you need to farm Super Credits, Samples, Medals a
 - [Required resources](#required-resources)
 - [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
 - [Super Credits Farming](#super-credits-farming)
-  - [Possible configurations](#possible-configurations)
+  - [Configurations](#configurations)
     - [AutoIt script](#autoit-script)
     - [Mass SC Packs Drop](#mass-sc-packs-drop)
 - [Medals and Experience Farming](#medals-and-experience-farming)
@@ -48,8 +48,9 @@ Steps that you need to do each time, no matter what you want to farm.
 4. Start a **Terminids** or **Illuminate**, **Difficulty 3**, **40 min** mission
 5. Drop into the mission, then call a Resupply Pod **ONCE**, which will "Mass Drop" all the Super Credits you need for the mission
 6. Lay down on top of the SC pile so the interaction to pick it up is available
-7. Press **F4** (default hotkey) to start the AutoIt macro and pick up SCs automatically  
-By default, it runs 10 times with 13 SC per pick-up loop. The duration is about 12 minutes, and you can’t use your PC while it’s running.
+7. Press **F4** (default hotkey) to start the AutoIt macro and pick up SCs automatically.  
+By default, it runs 10 times with 13 SC per pick-up loop. The duration is about 12 minutes, and you can’t use your PC while it’s running.  
+**Attention!** The macro uses **F** key for interaction. If you use another key, read the [Configurations -> AutoIt script](#autoit-script) section!
 1. Wait until the macro is done. It will show a Message Box with the message: *PickUpLoop finished*
 2. If you want to do another run, you need to start a new mission. Otherwise, mass-dropping a second time in the same mission will crash the game.  
 Repeat from **step 4.** or use the **Kill HD2 & CE** script to close the game.
@@ -58,7 +59,7 @@ Repeat from **step 4.** or use the **Kill HD2 & CE** script to close the game.
 - If you want to extract, you have to disable **Enable All features for Super Credits Farming** group before completing the mission!  
 - The AutoIt script runs in the background. To exit it, right-click the AutoIt tray icon in the taskbar and select **Exit**
 
-### Possible configurations
+### Configurations
 #### AutoIt script
 You can configure the AutoIt Macro to your liking, to change hotkeys or reduce or increase how many "pick-up loops" it will run.  
 Open **PickUp-Macro.au3** in any text editor, but preferably in AutoIt's own editor, SciTE.  
