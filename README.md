@@ -1,3 +1,7 @@
+
+# Currently Outdated!  
+## Game update 4.1.0 broke the GameGuard Bypass and multiple scripts in the table!  
+
 # Helldivers 2 Farming Guide by Igromanru
 
 **The guide revolves around the abridged version of the released ED CT, compiled by me for farming**  
