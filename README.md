@@ -73,7 +73,7 @@ Open **PickUp-Macro.au3** in any text editor, but preferably in AutoIt's own edi
 `$sMacroCancelHotKey` is the hotkey to cancel the macro. The default is `CTRL+Q`. You can interrupt the macro at any time with this hotkey.  
 #### Mass SC Packs Drop
 You can change the **Packs Amount** value to change the amount of SC the script will drop at once.  
-But be careful, 200 is pretty much the maximum value, after that it becomes very unstable and increases the chance that your game will crash.  
+But be careful, right now, 59 is pretty much the maximum value. Dropping more than that at once will cause the game to crash.  
 For the AutoIt macro to work properly, you need to drop at least as many SC as the macro will try to pick up.  
 The simple formula is: **`$iPickUpsCount` * 13**.
 
