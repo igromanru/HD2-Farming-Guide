@@ -1,6 +1,7 @@
 
 # Currently Outdated!  
-## Game update 4.1.0 broke the GameGuard Bypass and multiple scripts in the table!  
+## Game update 4.1.0 broke the GameGuard Bypass
+Currently you need to get a working GameGuard Bypass somewhere else to be able to use the table.
 
 # Helldivers 2 Farming Guide by Igromanru
 
@@ -35,16 +36,13 @@ It contains only features that you need to farm Super Credits, Samples, Medals a
 
 ## Required first steps for each farming session
 Steps that you need to do each time, no matter what you want to farm.
-1. Start the game and wait until the **Super Earth Ministry of Truth** screen appears
-2. As fast as possible, double-click the Cheat Table (.CT) file, to open it automatically with Cheat Engine (it should be assigned as default application to open .CT files)
-3. If Windows asks you to allow Cheat Engine to make changes on your device, always press **Yes**
-4. As soon you see the **Execute this lua script?** dialog window, press **Yes** to execute the GameGaurd Bypass
-5. The Cheat Engine with loaded table should appear
-6. Activate the initializer script **ED Farming Only**
-7. Enable the **Enable All Universal features** group header to activate all the scripts inside the group
+1. Start the game and use a third-party GameGuard Bypass, that you have to get somewhere first, to remove the Anti-Cheat from the game.  
+3. Open the Farming CT in Cheat Engine. Usually you can simple double-click on the CT to open in directly with CE.
+7. Activate the initializer script **ED Farming Only v(version number here)**
+8. Enable the **Enable All Universal features** group header to activate all the scripts inside the group
 
 ## Super Credits Farming
-**[Video Tutorial](https://www.youtube.com/watch?v=kj150Uf3ljc)**
+ **[Video Tutorial](https://www.youtube.com/watch?v=kj150Uf3ljc)** (Outdated)
 
 1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
 2. Activate the **Enable All features for Super Credits Farming** group header to enable all SC relevant features
@@ -53,11 +51,11 @@ Steps that you need to do each time, no matter what you want to farm.
 5. Drop into the mission, then call a Resupply Pod **ONCE**, which will "Mass Drop" all the Super Credits you need for the mission
 6. Lay down on top of the SC pile so the interaction to pick it up is available
 7. Press **F4** (default hotkey) to start the AutoIt macro and pick up SCs automatically.  
-By default, it runs 10 times with 13 SC per pick-up loop. The duration is about 12 minutes, and you can’t use your PC while it’s running.  
+By default, it runs 4 times with 13 SC per pick-up loop (52 overall). The duration is about 5 minutes, and you can’t use your PC while it’s running.  
 **Attention!** The macro uses **F** key for interaction. If you use another key, read the [Configurations -> AutoIt script](#autoit-script) section!
-1. Wait until the macro is done. It will show a Message Box with the message: *PickUpLoop finished*
-2. If you want to do another run, you need to start a new mission. Otherwise, mass-dropping a second time in the same mission will crash the game.  
-Repeat from **step 4.** or use the **Kill HD2 & CE** script to close the game.
+8. Wait until the macro is done. It will show a Message Box with the message: *PickUpLoop finished*
+9. Repeat from step 5. until your game crashes.
+10. Use the **Kill HD2 & CE** script to terminate the game’s process and close Cheat Engine if it gets stuck.
 
 **Important Notes**
 - If you want to extract, you have to disable **Enable All features for Super Credits Farming** group before completing the mission!  
