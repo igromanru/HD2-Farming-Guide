@@ -1,7 +1,5 @@
-
-# Currently Outdated!  
 ## Game update 4.1.0 broke the GameGuard Bypass
-Currently you need to get a working GameGuard Bypass somewhere else to be able to use the table.
+Currently you need to get a working GameGuard Bypass somewhere, to be able to use the table.
 
 # Helldivers 2 Farming Guide by Igromanru
 
