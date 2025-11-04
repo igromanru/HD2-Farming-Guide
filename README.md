@@ -41,8 +41,6 @@ Steps that you need to do each time, no matter what you want to farm.
 8. Enable the **Enable All Universal features** group header to activate all the scripts inside the group
 
 ## Super Credits Farming
- **[Video Tutorial](https://www.youtube.com/watch?v=kj150Uf3ljc)** (Outdated)
-
 1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
 2. Activate the **Enable All features for Super Credits Farming** group header to enable all SC relevant features
 3. Execute the AutoIt script **PickUp-Macro.au3** (just double-click the file, if AutoIt is installed)
@@ -104,6 +102,11 @@ The original limit is random between 0 and 15. The limit applies to each player 
 The feature allows bypassing the original limit by changing the current session ID.  
 With the feature enabled, you can pick up exactly 13 stacks every ~50 seconds.
 It’s the server’s cooldown, and there’s currently no known way to skip it.
+### Super Credits appear as question "?" mark
+It means the SC model isn’t loaded in the current mission.  
+You can either switch to another mission or install the [Super Credits Cheat Arrows](https://rpghq.org/forums/viewtopic.php?t=3175) mod, which forces the game to always load the model.  
+Use the [HD2 Arsenal – Mod Manager](https://www.nexusmods.com/helldivers2/mods/4664) to manage your mods — it’s better than other HD2 mod managers.
+
 
 ### Game Crashes
 Hacking is not an "exact science". Removing GameGuard from the game will sometimes cause it to crash. Also, some features might cause crashes under different circumstances.  
