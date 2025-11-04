@@ -103,6 +103,14 @@ It’s the server’s cooldown, and there’s currently no known way to skip it.
 It means the SC model isn’t loaded in the current mission.  
 You can either switch to another mission or install the [Super Credits Cheat Arrows](https://rpghq.org/forums/viewtopic.php?t=3175) mod, which forces the game to always load the model.  
 Use the [HD2 Arsenal – Mod Manager](https://www.nexusmods.com/helldivers2/mods/4664) to manage your mods — it’s better than other HD2 mod managers.
+### Cheat Engine closes after attaching to the process
+It's an issue in CE v7.5. You can fix it easily.  
+1. Open Cheat Engine (doesn't matter if with a CT or not)
+2. In context menu at the top, select **Edit**->**Settings**
+3. In CE settings open the **Debugging Options** tab
+4. Enable the checkbox `Do not load external debug symbols like .PDB/.DBG files (Breaks tables that use these symbols)`
+5. Press **OK** at the bottom to save the settings
+6. Done
 
 
 ### Game Crashes
