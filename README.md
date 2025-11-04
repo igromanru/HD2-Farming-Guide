@@ -1,6 +1,3 @@
-## Game update 4.1.0 broke the GameGuard Bypass
-Currently you need to get a working GameGuard Bypass somewhere, to be able to use the table.
-
 # Helldivers 2 Farming Guide by Igromanru
 
 **The guide revolves around the abridged version of the released ED CT, compiled by me for farming**  
@@ -27,7 +24,7 @@ It contains only features that you need to farm Super Credits, Samples, Medals a
 ## Required resources
 - Basic understanding of how Cheat Engine works (watch video tutorials on YT)
 - [Cheat Engine 7.5](https://mega.nz/file/HNFRBSrY#rj4oel3UuK9hoj1BtezRVbGhNJBo8mQ3EYl7ioFprcc) or higher
-- GameGuard Bypass
+- **GameGuard Bypass**
 - HD2 ED Farming table
 - My AutoIt PickUp Macro or similar
 - Installed [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) (if you want to use the script)
