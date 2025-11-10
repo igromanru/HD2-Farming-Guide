@@ -124,6 +124,7 @@ In such case, try to use it later on the ship or in a mission.
 If GameGuard detects ".text" code changes or one of the blacklisted programs like Cheat Engine, it will only close the game, usually with a message.  
 There are no (GameGuard) bans! And until today, no bans for cheaters were reported in any of HD2 related (cheating) communities.
 
-## Related Discord Server
+## Discord Server
+Don't join if you haven't read the guide. People who refuse to read but still ask for help aren’t welcome!  
 <a href="https://discord.gg/jmsAX8kjVJ"><img src='https://discordapp.com/api/guilds/1417474730906095626/widget.png?style=shield'></a>  
-Don’t join if you haven’t read the guide. People who refuse to read but still ask for help aren’t welcome!
+*Free GameGuard Bypass is available on Discord for selected members.*  
