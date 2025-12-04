@@ -127,4 +127,4 @@ There are no (GameGuard) bans! And until today, no bans for cheating were report
 ## Discord Server
 Don't join if you haven't read the guide. People who refuse to read but still ask for help aren’t welcome!  
 <a href="https://discord.gg/jmsAX8kjVJ"><img src='https://discordapp.com/api/guilds/1417474730906095626/widget.png?style=shield'></a>  
-*Free GameGuard Bypass is available on Discord for selected members.*  
+*GameGuard Bypass is available on Discord for selected members.*  
