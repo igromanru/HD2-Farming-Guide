@@ -4,6 +4,7 @@
 You need the "Farming" Cheat Engine Table from the [release](https://github.com/igromanru/HD2-Farming-Guide/releases) to follow the guide!
 Which is an abridge version of the [Experimental Division CT v4.0.0](https://www.unknowncheats.me/forum/downloads.php?do=file&id=51228) (credits Zodiac).  
 It contains only features that you need to farm Super Credits, Samples, Medals and Experience.  
+You also need a working GameGuard Bypass to be able to use Cheat Engine.
 
 ## Index
 - [Required resources](#required-resources)
@@ -21,10 +22,10 @@ It contains only features that you need to farm Super Credits, Samples, Medals a
 
 
 ## Required resources
+- **GameGuard Bypass**
 - Basic understanding of how Cheat Engine works (watch video tutorials on YT)
 - [Cheat Engine 7.5](https://mega.nz/file/HNFRBSrY#rj4oel3UuK9hoj1BtezRVbGhNJBo8mQ3EYl7ioFprcc) or higher
-- **GameGuard Bypass**
-- HD2 ED Farming table
+- [HD2 ED Farming table](https://github.com/igromanru/HD2-Farming-Guide/releases)
 - My AutoIt PickUp Macro or similar
 - Installed [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) (if you want to use the script)
 - Understanding on how the game works
@@ -47,12 +48,14 @@ Steps that you need to do each time, no matter what you want to farm.
 By default, it runs 4 times with 13 SC per pick-up loop (52 overall). The duration is about 5 minutes, and you can’t use your PC while it’s running.  
 **Attention!** The macro uses **F** key for interaction. If you use another key, read the [Configurations -> AutoIt script](#autoit-script) section!
 8. Wait until the macro is done. It will show a Message Box with the message: *PickUpLoop finished*
-9. Repeat from step 5. until your game crashes.
-10. Use the **Kill HD2 & CE** script to terminate the game’s process and close Cheat Engine if it gets stuck.
+9. Switch to another planet, it improves the chance that you can farm longer before your game crashes.
+10. Repeat from step 5. until your game crashes.
+11. (optional) Use the **Kill HD2 & CE** script to terminate the game’s process and close Cheat Engine if it gets stuck.
 
 **Important Notes**
 - If you want to extract, you have to disable **Enable All features for Super Credits Farming** group before completing the mission!  
 - The AutoIt script runs in the background. To exit it, right-click the AutoIt tray icon in the taskbar and select **Exit**
+- I wrote the guide as you could drop 200 SC at once. But after a  "performance" update, you can't drop as much without crashing, which makes the method not as good anymore.  
 
 ### Configurations
 #### AutoIt script
