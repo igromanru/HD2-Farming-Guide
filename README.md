@@ -38,6 +38,10 @@ Steps that you need to do each time, no matter what you want to farm.
 8. Enable the **Enable All Universal features** group header to activate all the scripts inside the group
 
 ## Super Credits Farming
+**Preface:** The SC farming guide is slightly outdated. When I wrote it, you could drop 200 SC at once.  
+Now 52 causes crashes for many. Not for everyone, you can still find planets and missions where it works.  
+But if it crashes for you, you should reduce the value of the Mass SC Pack Drop to 13 and farm manually by dropping 13 SC, picking them up, then dropping the next 13.
+
 1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
 2. Activate the **Enable All features for Super Credits Farming** group header to enable all SC relevant features
 3. Execute the AutoIt script **PickUp-Macro.au3** (just double-click the file, if AutoIt is installed)
