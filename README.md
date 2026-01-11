@@ -120,8 +120,6 @@ It's an issue in CE v7.5. You can fix it easily.
 ### Game Crashes
 Hacking is not an "exact science". Removing GameGuard from the game will sometimes cause it to crash. Also, some features might cause crashes under different circumstances.  
 To reduce any friction, read the guide carefully and follow the steps.  
-Sometimes, if the timing is unlucky, GameGaurd will detect Cheat Engine before you can execute the bypass.  
-In such case, try to use it later on the ship or in a mission.
 
 ### AntiCheat Details
 **nProtect GameGuard in Helldivers 2** serves solely as anti-tamper software. Despite what it can do in other games, in HD2 it only attempts to preserve the integrity of the original code and prevent external software from accessing the process. It doesn't even check for foreign DLLs in the process.
