@@ -2,8 +2,8 @@
 
 **The guide revolves around the abridged version of the released ED CT, compiled by me for farming**  
 You need the "Farming" Cheat Engine Table from the [release](https://github.com/igromanru/HD2-Farming-Guide/releases) to follow the guide!
-Which is an abridge version of the [Experimental Division CT v4.0.0](https://www.unknowncheats.me/forum/downloads.php?do=file&id=51228) (credits Zodiac).  
-It contains only features that you need to farm Super Credits, Samples, Medals and Experience.  
+Which is an abridge version of the Experimental Division CT v4.0.0 (credits Zodiac, Havoc and anyone else who provided scripts for it).  
+The Farming CT contains only features that you need to farm Super Credits, Samples, Medals and Experience.  
 
 ## Index
 - [Required resources](#required-resources)
