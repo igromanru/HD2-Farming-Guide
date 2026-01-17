@@ -104,7 +104,7 @@ The original limit is random between 0 and 15. The limit applies to each player 
 The feature allows bypassing the original limit.  
 With the feature enabled, you can pick up exactly 13 stacks every ~45 seconds.
 It’s the server’s cooldown, and there’s currently no known way to skip it.  
-If the host of the lobby uses the script, the limit will be bypassed for all players. But you should make sure that nobody picks up SC or Medals during the 45s cooldown.
+If the host of the lobby uses the script, the limit will be bypassed for all players. But they won’t be able to see the pick-up notification. Also, you should make sure that nobody picks up SC or Medals during the 45s cooldown. 
 ### Super Credits appear as question "?" mark
 It means the SC model isn’t loaded in the current mission.  
 You can either switch to another mission or install the [Super Credits Cheat Arrows](https://rpghq.org/forums/viewtopic.php?t=3175) mod, which forces the game to always load the model.  
