@@ -3,7 +3,7 @@
   <CheatEntries>
     <CheatEntry>
       <ID>118846</ID>
-      <Description>"ED Farming Only v2.4"</Description>
+      <Description>"ED Farming Only v2.5"</Description>
       <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
       <Color>0482FF</Color>
       <VariableType>Auto Assembler Script</VariableType>
@@ -364,209 +364,118 @@ unregistersymbol(retardedEnemyBackUp)
 </AssemblerScript>
             </CheatEntry>
             <CheatEntry>
-              <ID>171978</ID>
-              <Description>"Movement Speed"</Description>
+              <ID>114023</ID>
+              <Description>"Speedhack"</Description>
               <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
               <VariableType>Auto Assembler Script</VariableType>
-              <AssemblerScript Async="1">//Author : Zodiac
-//CE     : 7.6
-//Game   : HELLDIVERS™ 2
-//Version: 01.003.102
-//Process: helldivers2.exe
-//Module : game.dll
-//Inject : game.dll+7315B7
-//Date   : 12/06/25
-//Comment: Script made for Experimental Division.
+              <AssemblerScript>{ Game   : helldivers2.exe
+  Version: 
+  Date   : 2026-02-03
+  Author : cfemen
+
+  Speedhack
+
+  Fixed by Igromanru
+}
 
 [ENABLE]
-{$STRICT}
-aobscanmodule(speeeeed,game.dll,F3 0F 59 4B ? F3 0F 59 4B ? 0F 28 D9 F3 0F 5C DC) //Unique
-alloc(speed_newmem,352,speeeeed)
-label(applyplayerspeed playerspeedfinalapply applyshipspeed applymechspeed extraplayerchecks extrachecks applyenemiesspeed applycivilspeed applysoldierspeed speedcode spd_label speedreturn)
-registersymbol(speeeeed spd_label)
+aobscanmodule(aobPlayerSpeed,game.dll,F3 0F 59 4B ? F3 0F 59 4B)
+alloc(newmem,$100)
 
-speed_newmem:
-  push rax
-  push rcx
-  pushfq
-  mov rax,spd_label //rax - label container
-  mov ecx,[rbx+14]
-  cmp ecx,(float)8.0 //bots
-  je applyenemiesspeed
-  cmp ecx,(float)15.0 //illuminati
-  je applyenemiesspeed
-  cmp ecx,(float)5.0 //civilians
-  je applycivilspeed
-  mov ecx,[rbx+10]
-  cmp ecx,5
-  jne applymechspeed
-  mov ecx,[rbx+14]
-  cmp ecx,(float)10.0 //mech
-  je applymechspeed
-  cmp ecx,(float)100.0 //player
-  je @f
-  cmp ecx,(float)30.0 //ship
-  je applyshipspeed
-  jmp extrachecks
+label(code)
+label(return)
+label(bFreeze)
+label(fSpeed)
+label(aobPlayerSpeedBackUp)
+registersymbol(bFreeze)
+registersymbol(fSpeed)
+registersymbol(aobPlayerSpeed aobPlayerSpeedBackUp)
 
-applyplayerspeed:
-  mov ecx,[rbx+14]
-  cmp ecx,(float)100.0
-  jne extraplayerchecks
-  mov ecx,[rbx+18]
-  cmp ecx,(float)100.0
-  jne applyenemiesspeed
-  mov ecx,[rbx+2C]
-  cmp ecx,(float)80.0 //jummpack second checl
-  je @f
-  cmp ecx,(float)100.0 //player second check
-  jne applyenemiesspeed
+newmem:
+ cmp [rbx+10],1
+ je Player
+ cmp [rbx+10],5
+ je Player
+ jmp Enemy
+Player:
+ mov rax,fSpeed
+ mulss xmm1,[rax]
+aobPlayerSpeedBackUp:
+ readMem(aobPlayerSpeed, 17)
+ jmp return
+Enemy:
+ cmp byte ptr[bFreeze],1
+ jne code
+ xorps xmm1,xmm1
+code:
+  readMem(aobPlayerSpeed, 17)
+  jmp return
+bFreeze:
+db 0
+fSpeed:
+dd (float)2.0
 
-playerspeedfinalapply:
-  mov ecx,[rax]
-  jmp speedcode
-
-applyshipspeed:
-  mov ecx,[rax+4]
-  jmp speedcode
-
-applymechspeed:
-  mov ecx,[rbx+10]
-  cmp ecx,1
-  je applyplayerspeed
-  mov ecx,[rbx+18]
-  cmp ecx,(float)50.0
-  je applysoldierspeed
-  cmp ecx,(float)30.0 //mech check
-  jne applyenemiesspeed
-  mov ecx,[rax+8]
-  jmp speedcode
-
-extraplayerchecks:
-  mov ecx,[rbx+2C]
-  cmp ecx,(float)80.0 //jummpack second checl
-  je playerspeedfinalapply
-  jmp applyenemiesspeed
-
-extrachecks:
-  mov ecx,[rbx+28]
-  cmp ecx,(float)15.0 //jumppack check
-  je applyplayerspeed
-
-applyenemiesspeed:
-  mov ecx,[rax+C]
-  jmp speedcode
-
-applycivilspeed:
-  mov ecx,[rbx+18]
-  cmp ecx,(float)10.0
-  je applyenemiesspeed
-  mov ecx,[rax+10]
-  jmp speedcode
-
-applysoldierspeed:
-  mov ecx,[rbx+2C]
-  cmp ecx,(float)110.0 //flying bugs
-  je applyenemiesspeed
-  mov ecx,[rax+14]
-
-speedcode:
-  mov [rbx+78],ecx
-  popfq
-  pop rcx
-  pop rax
-  mulss xmm1,[rbx+78]
-  jmp speedreturn
-  align 10
-
-spd_label:
-  dd (float)4.0 //player speed mult
-  dd (float)2.5 //ship speed mult
-  dd (float)2.0 //mech speed mult
-  dd (float)0.0 //enemies speed mult
-  dd (float)1.5 //civil speed mult
-  dd (float)3.0 //soldier speed mult
-  align 10 CC
-
-speeeeed:
-  jmp speed_newmem
-speedreturn:
+aobPlayerSpeed:
+  jmp far newmem
+  nop 3
+return:
 
 [DISABLE]
+aobPlayerSpeed:
+  readMem(aobPlayerSpeedBackUp, 17)
 
-speeeeed:
-  db F3 0F 59 4B 78
-  
 unregistersymbol(*)
 dealloc(*)
+{
+// ORIGINAL CODE - INJECTION POINT: game.dll+86C949
 
-//Original Instructions:
-//game.dll+731913 - 41 0F28 F1              - movaps xmm6,xmm9
-//game.dll+731917 - F3 0F5D F0              - minss xmm6,xmm0
-//game.dll+73191B - EB 06                   - jmp game.dll+731923
-//game.dll+73191D - F3 0F10 7C 24 40        - movss xmm7,[rsp+40]
-//game.dll+731923 - F3 0F10 4B 70           - movss xmm1,[rbx+70]
-//game.dll+731928 - F3 0F59 4B 6C           - mulss xmm1,[rbx+6C]
-//game.dll+73192D - F3 0F10 A3 80000000     - movss xmm4,[rbx+00000080]
-//game.dll+731935 - F2 0F10 2D 0397CA00     - movsd xmm5,[game.dll+13DB040]
-//game.dll+73193D - F3 0F59 4B 74           - mulss xmm1,[rbx+74]
-//game.dll+731942 - F3 0F10 53 30           - movss xmm2,[rbx+30]
-//------------------------------------------------------------------------------
-//game.dll+731947 - F3 0F59 4B 78           - mulss xmm1,[rbx+78]
-//------------------------------------------------------------------------------
-//game.dll+73194C - F3 0F59 4B 7C           - mulss xmm1,[rbx+7C]
-//game.dll+731951 - 0F28 D9                 - movaps xmm3,xmm1
-//game.dll+731954 - F3 0F5C DC              - subss xmm3,xmm4
-//game.dll+731958 - 0F5A C3                 - cvtps2pd xmm0,xmm3
-//game.dll+73195B - 0F54 05 7EDCCA00        - andps xmm0,[game.dll+13DF5E0]
-//game.dll+731962 - 66 0F2F E8              - comisd xmm5,xmm0
-//game.dll+731966 - 77 20                   - ja game.dll+731988
-//game.dll+731968 - F3 0F59 D7              - mulss xmm2,xmm7
-//game.dll+73196C - 44 0F2F E2              - comiss xmm12,xmm2
-//game.dll+731970 - 76 06                   - jna game.dll+731978
+game.dll+86C918: 41 0F 28 F7              - movaps xmm6,xmm15
+game.dll+86C91C: F3 0F 5D F0              - minss xmm6,xmm0
+game.dll+86C920: EB 06                    - jmp game.dll+86C928
+game.dll+86C922: F3 0F 10 7C 24 40        - movss xmm7,[rsp+40]
+game.dll+86C928: F3 0F 10 4B 64           - movss xmm1,[rbx+64]
+game.dll+86C92D: F3 0F 59 4B 60           - mulss xmm1,[rbx+60]
+game.dll+86C932: F3 0F 10 63 74           - movss xmm4,[rbx+74]
+game.dll+86C937: F2 0F 10 2D A1 60 C7 00  - movsd xmm5,[game.dll+14E29E0]
+game.dll+86C93F: F3 0F 59 4B 68           - mulss xmm1,[rbx+68]
+game.dll+86C944: F3 0F 10 53 2C           - movss xmm2,[rbx+2C]
+// ---------- INJECTING HERE ----------
+game.dll+86C949: F3 0F 59 4B 6C           - mulss xmm1,[rbx+6C]
+game.dll+86C94E: F3 0F 59 4B 70           - mulss xmm1,[rbx+70]
+game.dll+86C953: 0F 28 D9                 - movaps xmm3,xmm1
+game.dll+86C956: F3 0F 5C DC              - subss xmm3,xmm4
+// ---------- DONE INJECTING  ----------
+game.dll+86C95A: 0F 5A C3                 - cvtps2pd xmm0,xmm3
+game.dll+86C95D: 0F 54 05 7C B1 C7 00     - andps xmm0,[game.dll+14E7AE0]
+game.dll+86C964: 66 0F 2F E8              - comisd xmm5,xmm0
+game.dll+86C968: 77 20                    - ja game.dll+86C98A
+game.dll+86C96A: F3 0F 59 D7              - mulss xmm2,xmm7
+game.dll+86C96E: 44 0F 2F EA              - comiss xmm13,xmm2
+gam
 </AssemblerScript>
               <CheatEntries>
                 <CheatEntry>
-                  <ID>171979</ID>
-                  <Description>"Player Multiplier"</Description>
-                  <ShowAsSigned>0</ShowAsSigned>
-                  <VariableType>Float</VariableType>
-                  <Address>spd_label</Address>
+                  <ID>114024</ID>
+                  <Description>"Freeze Non Player Characters"</Description>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+bFreeze:
+db 1
+
+ 
+ 
+[DISABLE]
+bFreeze:
+db 0
+
+</AssemblerScript>
                 </CheatEntry>
                 <CheatEntry>
-                  <ID>171980</ID>
-                  <Description>"Player Multiplier On Ship"</Description>
+                  <ID>114025</ID>
+                  <Description>"Speed:"</Description>
                   <ShowAsSigned>0</ShowAsSigned>
                   <VariableType>Float</VariableType>
-                  <Address>spd_label+4</Address>
-                </CheatEntry>
-                <CheatEntry>
-                  <ID>171981</ID>
-                  <Description>"Exosuit Multiplier"</Description>
-                  <ShowAsSigned>0</ShowAsSigned>
-                  <VariableType>Float</VariableType>
-                  <Address>spd_label+8</Address>
-                </CheatEntry>
-                <CheatEntry>
-                  <ID>171982</ID>
-                  <Description>"Enemy Multiplier"</Description>
-                  <ShowAsSigned>0</ShowAsSigned>
-                  <VariableType>Float</VariableType>
-                  <Address>spd_label+C</Address>
-                </CheatEntry>
-                <CheatEntry>
-                  <ID>171983</ID>
-                  <Description>"Civilian Multiplier"</Description>
-                  <ShowAsSigned>0</ShowAsSigned>
-                  <VariableType>Float</VariableType>
-                  <Address>spd_label+10</Address>
-                </CheatEntry>
-                <CheatEntry>
-                  <ID>172214</ID>
-                  <Description>"Soldier Multiplier"</Description>
-                  <ShowAsSigned>0</ShowAsSigned>
-                  <VariableType>Float</VariableType>
-                  <Address>spd_label+14</Address>
+                  <Address>fSpeed</Address>
                 </CheatEntry>
               </CheatEntries>
             </CheatEntry>
@@ -795,8 +704,8 @@ dealloc(*)
 </AssemblerScript>
             </CheatEntry>
             <CheatEntry>
-              <ID>117437</ID>
-              <Description>"Inf Health (by cfemen)"</Description>
+              <ID>195</ID>
+              <Description>"Inf. Health"</Description>
               <VariableType>Auto Assembler Script</VariableType>
               <AssemblerScript>[ENABLE]
 
@@ -826,8 +735,7 @@ return:
 registersymbol(aobReadLocalPlayerHealth)
 
 
-
-aobscanmodule(aobWriteHealth,game.dll,41 89 2C 00 48 8B 46 38 4C 03 46 50 4A 8B 0C C8) // should be unique
+aobscanmodule(aobWriteHealth,game.dll,45 89 34 00 48 8B 46 38 4C 03 46 50) // should be unique
 alloc(newmem2,$1000)
 
 label(code2)
@@ -843,11 +751,11 @@ code2:
   lea rcx,[r8+rax]
   cmp rbx,rcx
   jne short @f
-   mov ebp,#9999
+   mov r14d,#9999
   @@:
   pop rcx
   pop rbx
-  mov [r8+rax],ebp
+  mov [r8+rax],r14d
   mov rax,[rsi+38]
   add r8,[rsi+50]
   mov rcx,[rax+r9*8]
@@ -868,7 +776,7 @@ unregistersymbol(aobReadLocalPlayerHealth)
 dealloc(newmem)
 
 aobWriteHealth:
-  db 41 89 2C 00 48 8B 46 38 4C 03 46 50 4A 8B 0C C8
+  db 45 89 34 00 48 8B 46 38 4C 03 46 50 4A 8B 0C C8
 
 unregistersymbol(aobWriteHealth)
 dealloc(newmem2)
@@ -999,16 +907,17 @@ dealloc(*)
 //Inject : game.dll+57A80C
 //Date   : 23/03/25
 //Comment: Script made for Experimental Division.
+// Fixed by Igromanru for v6.0.1
 
 [ENABLE]
-//45 8B 4A 18 48 8D 8D 48 01 00 00 41 8B D4 66 0F 1F 44 00 00
-//41 8B 47 38 83 E8 02 83 F8 01 8B 83 14 08 00 00
-aobscanmodule(missionA,game.dll,45 8B 4A ? 48 8D 8D ? ? ? ? 41) //Unique
-aobscanmodule(missionB,game.dll,8B 46 ? 83 E8 ? 83 F8 ? 41) //Unique
-alloc(missionA_newmem,96,missionA)
-alloc(missionB_newmem,80,missionB)
+aobscanmodule(missionA,game.dll,45 8B 4A ? 49 8D 8C 24)
+aobscanmodule(missionB,game.dll,8B 46 ? 83 E8 ? 83 F8 ? 41 8B 85)
+alloc(missionA_newmem,100,missionA)
+alloc(missionB_newmem,100,missionB)
 label(missionA_code missionA_return missionB_code missionB_return)
+label(missionABackUp missionBBackUp)
 registersymbol(missionA missionB)
+registersymbol(missionABackUp missionBBackUp)
 
 missionA_newmem:
   pushfq
@@ -1039,14 +948,14 @@ missionA_newmem:
 missionA_code:
   pop rax
   popfq
-  mov r9d,[r10+18]
-  lea rcx,[rbp+00000148]
+missionABackUp:
+  readMem(missionA, 12)
   jmp missionA_return
   align 10 CC
 
 missionA:
   jmp missionA_newmem
-  nop 6
+  nop 7
 missionA_return:
 
 //------------------------------------------------------------------------------
@@ -1080,8 +989,8 @@ missionB_newmem:
 missionB_code:
   pop rax
   popfq
-  mov eax,[rsi+20]
-  sub eax,02
+missionBBackUp:
+  readMem(missionB, 6)
   jmp missionB_return
   align 10 CC
 
@@ -1093,10 +1002,10 @@ missionB_return:
 [DISABLE]
 
 missionA:
-  db 45 8B 4A 18 48 8D 8D 48 01 00 00
+  readMem(missionABackUp, 12)
 
 missionB:
-  db 8B 46 20 83 E8 02
+  readMem(missionBBackUp, 6)
 
 unregistersymbol(*)
 dealloc(*)
@@ -1272,7 +1181,7 @@ game.dll+519E5E: F2 0F 11 8D 80 02 00 00  - movsd [rbp+00000280],xmm1
             <CheatEntry>
               <ID>170558</ID>
               <Description>"Remove Currency Pickup Limit"</Description>
-              <Options moActivateChildrenAsWell="1"/>
+              <Options moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
               <VariableType>Auto Assembler Script</VariableType>
               <AssemblerScript>//Author : Zodiac, HavocBlitz
 //CE     : 7.6
@@ -2136,9 +2045,8 @@ Drem Caponera
 Credits for the farming guide and compilation:
 Igromanru
 </Comments>
-  <LuaScript/>
   <Signature>
-    <SignedHash HashSize="132">0lu1]R7N,pcm?wUlGYtP.oMylhW2yD@mdXasuEfw5^r._guzBhg{iqdkh2r0*A5WQkxgV3J7U8%dos.zc60${5Zpd}gVO/)?2yd!b1j}m/X%1F(}:DFx?u?T/2:eTrx2ae1^sj7;N.:E?rXz{3pOr#6YtH;!,p]/zuF%z</SignedHash>
+    <SignedHash HashSize="132">0L]ITc#()LUaN@ygVVf35cU{/YbgMuw[$SNGW{?]:rz9(w9WhQE/-{o5P^o?w[y.2+p+}/V)0c[FP5Uu4wC=u1wQzOE@$+bo%@{=SpAYG3F?+UoDR}?CSr.4j{ZDR^^q2Vyw)V21gsRXy^spHYF!L1=nK}E.E:zo?{%@/</SignedHash>
     <PublicKey Size="4763">6aWAKP.Yl-a%E(7VtF7+XL4[CVQzADi}s?vMMG0HLI3}(0Sb4F=bEq]p62pP4Hn9nEiy:B!;ItR%xr[wyK8!wor?#+IWu/6@YB%*bO3_$?kV,9;Yo@^pDDt0m(*])iwFT7O;F4,6O(4*v,2wtPr/E(ATvKGT.N=z!.^S4ah)ZT3XO/MPXVEI+)_-FU3wj=FKMcczRoFc]8kySc4hHy1ZEKc0EtjeM-2*Z3IG5A4M_8uQUCw_7ytkO7zhFY003[ls.;Y53QuW6Lr[p=Z++@SXm4.JNkc.+aB@;EX;4Tx0C=J,Q*g6D:?vcr-t/CCh:7z!Z(DQqAW{k$fE1A=Dj@9FN^At$+%eX25k+A:8[1xD1CEY;j1@HV42lZa2jn55j*S9!ipu-pd!uXCy!YnK^/YUW:dAOcv)E;;2n=1.Gf[2w45;mM5#WQz#Kz(_E/k_[Bya![2)x4%bNwR$0Qi19JS!r:2fhFSc,)3A0KiR}z%U$#^{1XynOp(YgaN;GkvK}TfD]}gdX7S-06/0ofSs5oQvjd?0AR}wV(ec%EdXFAf9BHwfSvf6djSAjlpz%XppgI_6J;{+0BAb@tj_]8MF3bZ02F3R#5n-iEdVe^S7t}6u)trf(JYW-00.}KFj0twDF6g{0AR:=BX_IWnE)[/?;e_ZE3OddDgXd?nX*^(BsoQaTL;,22Uk{v9w@R97b[GtVFF;AKrX[0nHe(HG!NkO%m4tOkrff)gY+4)(JM25(Nhy:4qq,mzXtyzVq*X_//F}dKmY+YbbitPEHASffI9_(ZT[Mq=gVIF3!ruPi*OM9K)zp%;DpKGaQJ;aJVl_9x!Kv{/mA^(#6nwP%2$2/XTo2:SN({Hemwm5[29nZB!Mzrfky:R.KI!GOr.#pk[m*j,}$u+^I=7L^2kLG#7SbgSSl3bQ4);EM4F8AGNmGkLXs*PCDQ,7.?;R$13uq10I,I40eg]xs9j=N[Dd%aSaiVR[W%I$yKlkNC/p[9XoKO.cmMA^^YRiB0Dxvml5qe4UPL4:RLZkI#_QubM4+8xut6L2!5A#S1^{c!,]$X^U@aw8B+el)5JC!MfE.pQDXfA+D2C0j9V%ci*Ic3Hz*?)1lW-0$!d18qJ#Y^DVF.eVD7:9Q1VP9M6Ja6Rhyh{XSR.-I7nz0lA.Cxl5^o1t$%qtDB1?4qNHJ21R3KGI9r8VL0y(3VM!JzZ$N)}e^D!/oF[eL[Q9aZQwL]h6HyVUSq6@SubTOKb7NDEZa/m#fj5eX=)5q,/,K*a%$1uR=7zZ:NY%ngy!$Pq+ED4ii%dsM=46DW)uvV-CyNUH/(#]v_5]jg*2^r[GLLgxtK{c9kSWehTs3069G!fbfHwgoTQNkx8lc-CyCb_+%#28^SF@5:4EF.zuj{tEtdx%5CHzX2=Loz41kOE1uq+T%p)niv5QX{asshc!N8Y7d+,GK082RW21AS:j*/elWh/TK/O/RS7}3Y{s:aisWD.wVzeYDyX95al%G24$EsK}/xgQr*PbR1r0gT0+U%wo/QAho{:Yb)%TNgBD3krLCfs).8=OX!mKa:ybXf-IX3rm)W,z%jrkxm+?lZcMJ]N6?$l!XDAt*7zY=/8Fv]3m]tV[)}B9$R4[L(;zL:651DUOSSq$Ed:-))3YAKgCY2j1FI1[jrmEhm3sv)}%T$l4UQ;OpMpZLY/EaVMmaA2(olxsj8(hYgJE)]MXQ+#fKcs$H^fP!y!%V_ZL!=olv0vl7#vlu08MAmSA!]k+hIN58#3r%L+=e^=yO^kQyNf-lsi8STGfFd8vr[YvW/Lkxm}r?:bWRE9D5sb6eu}{^=/wLb8;Tc(xiMv2YpRx*mRPGut5K@+;%BIv=Wdily,ylO],+KY$4Vz$Cr4,G(IO)4Q]uA9rwXSQO,7mGt{d!.r5mBUM0dY#r_y]ZzFvTyOmC.(dA.ZQ9DOhSRQ,xGr{ak,SO(8UBnI0I(KNw!HF0k_9WTe+?liuv!$3o(VU:N+.e=U7)LAHoMvX:fjA[PP/0Rv4#%.!/CI%*UCQD7}P41dfO{VBiraMeKOvla4(7#fLnKhd_G1oHZo9CO=o8Px!T6kJ4wy3taWl6H,TBcd/w!ChIS}+#zSXEkGvqr6+ttHmGt-GfYr?2m)POF}QXTz{Zw#l{sw.8bI+aq9Kwr#e3VP_3(XSc/!!_s#4lYP2/jr}0b4Tsqds}uV$esi;P6gpNq-kQ#w=mvCS@p?![XIRe:(*75LwiC-K#A%(Vo6_;U7iYP1gY$?siA#dZE_*$on.XX6$i3uBboFsv.d.^botv_p!tJQrukJSPY3[(IpUgC$DV_v}bI]-cL+P.6)LW2Hl]w1HtbR^JPl0E):OZs.FOgTR+RZ#xcdGYc=-xGyK60PqKI1$$-ZI]/U)7eax5(54Ps4AXUxnX8e/S}7_9bz=0H:T?0cQh:fkA.:0^i%Sd=CM%KRVlG[OjXSL5!feK?}xdf}_t)!L1:@$n21/A?{E*(XLY)4uw#D:,?8(Vdi0r!,s1Wg?:V#hChyQh+%oYF[$%W)cD9G-$eREmPFp0XE9GXuPsV7Dn6/%YCPIEx-[}!#x7:A%,+,)SV=S4962s3t}PFLzTf:q@M}S^.tS)?7nm:_U2u7!(cgJCrxvL$5-d8FKum}EIF#?}5Gtq@j3x3DcO^MrdBPpSXCg1rHqnUKLtH8zPVz]9O=r}-k-Rl_B+inOEaka]C#jIUObtxkn;wBrnsy+/GCexIF?utkka0q*Ax*FEXX/C;W[HW0Wrec-#cqqYFCLW#$!oKatOZ#u3bsO}:u{!L+D43HXJuDrzs-rtIhL!QE6wf9v(!3$H:OUE_LqdO65+1zrG]saEge_qy^u_EvOIBl,X}_q1uKSD2CO]_inc0k*laMKSC[7Sy)W51Yk@,D%7VeQ0c-0ERSM.Wee2xU=Ojh.FInHUVfu!h8$K0?imnvf7nc:)+eKk1/r^{?%D/W1l)ea/#JOb8X3{Qq:H4xyTMm{0m+$raZVlPmv/:??wC)lwMcXfz%[!TugSJDtqrW]3yk*1!(dobNRHRh(RQgml=$X]0Vb{O;)e4_2y!JHg*!SRV[x)P{zS}s,RZZ1q*n*rh]=L2yu8FGY[=G*@U9C:SaqY)g)gXbmBM!FLxzyDi)mhmCkJc.eM-ImyzW$x;cP$Mz4ONYt#@NJzM0w:t[X+$k9t{F$c8q)h.Rn,nb^%IOFKR-X?_s4QQ:0o+Vq3aT%s$c9;fU/%N829^oHRUHc{nwC$!Xf?g42@^@3RN(m7RTlF8SPG,oHC6:VQ+[Y7cMkx*5}X)nbG@:R3SR(Rp]ibn;#;/r7!9SDLRnUv27i;OB6F)?*2^oV%K=xm.[x=s}noduI3P8:g1L-SoYA?fQEq*t*($-M#aAZ{-Lb[1[lVesU-M(da.mcPH,xyidGe@g!*F+,boj*jwPQ,{Q8je];(Yp!3n)NB0JWgU_kv@@Xrj1(@7J%Z3ex;z,71IXU7#a^cN2r$f)V(nBK1^-XZNt]]/Be*!ev+Ur)H)V;@{my@G3e5L+B!0Q;W,s4Ai9:@$VGcjKDR^QP2cieX!?1x%jPvm=ce/:TG]LXp:)5L(88IzO$1Ou4!^9]jM,W-InAY)^UO#lFTB;)[]g8%@e^^R4h:;PzAFaQARU.qF+m.eA5Z/1fdMgRZ=rb$FWRCwA1!Fx}=[W:Ol-_lZ.w_jdp=!f@E$XgBsR1{RGTCK*RHMZ4hO/SY3YOH3eHMYhvF_8ew^+k0iOzLFPbZX2/ZH%!9VXCI25hxD?/o(ukULMCixx0Pb=%r.^4[/zu[Tt[OhQSFEpSiy8!fU7e31r=k][HS#PVXpcZ5#UIPwKW6S}OL(.@6Do*+X4Nws$(pXm5SfhllHPb=?yivYJhEGJ}$NDU3/iG!R%^X5m(J?Bnwq!:b}!+tPTEiQ@6J/r{KjY[5]ceqWXIr-#0CsY6)]@G6SE^:WYyc/aVsw]h0+@z$*pe0(mK]]ymgY3^,$^MloB-{s;0;zRLHYvs8(FYJHuY,{yy$?yKEuQqRSq82C1I]ig(0w:Q8%I}J*af:b^;h)ydTDH1$q/aL7CM4F)*UVCocIZ@i%93EfU%hTk!gIf@:}j8Z/LZ?]gX@rB4ud7rJ}1-=bRpT=bT]*lH=Oa;vusg]]{Mca:TPcoGzCf4kcQNs8};MzEGClN^my}(hjuhxcrz3fR?kVza.m1xC6H]mXVAzhxT:i{c^jSutgHC:Z=F99#XS/F(tAMT:Z]}[Buy0NHWPy$q4C!3f)*s5Fq*WO;YffiTg22A6Cr=QW1/.JXp#6#Ao_rnfDpJF-wbC%f5ZD9x8Co@mZPdB!O^YIS+_^N$y;Djz@e6Yoy?#H.eR.6SJKKec2sAxV:O(C.xVFl9wj#oClf$FwXl=F4%Jn#X:CaB-9Ow1#xN5F+OfXcEWNeb+5CXfN...3s(}peIpZ(3i3%GNND9eV90Hw486:MPEeQ8!.}{1x5Xu]dTC%Ic_GB-V6wcxdeEaZo=_nHKR-]gBHP!bxmnKYcA.$m;1kIx9A^QQuN_KCXW[o-v1ykuVJ:z-/DIRraS]EQRj2s#h([8]OiQGB0BWAXDc[UkjRR@Qzr^_UBaBM-}HE1ibI/shQi4*}CmdVP_sK;)%d(RN;):,b.315K6Q=xPTvyP_RHkM/8Ox9OtlMb6CqP;1@7GzjDjZktZuv{m-gRDl(q7D#NBkEU8tpmQ7;I-,Rb:}RqleA7]%%jW5(2v8pCq/}Y,ArQ1G_{lJFK/8d#%H-KtY4X{swoVWMP5?7(0%EFbczoJ$9:LD#Y{o6z$5l-^g1D-Kfim@bDN4@_KOf*at0cl]TL*+yVTIEMn:!QyrsK*=AZc,+XWXh.%R_n7,PhlTrw3^jB9DlZX]yg!a3FXqtk*nlB{F8=Ay@}dDZH;z0;g3?7LAlW:MK]U@G-!kYTr2dfFdjv_i;V6P9*s+f?Y/79(m4IM60TlCiYHY#}1S.[.ai-{{RdZ5?NlhqqU)AVlb+i9^m$W#]D_O_@af/HvT[aDec^fX.whO$.duEGE/GctYS%1#f-ip)?w9b8O]]u7,zJh:w^cO!Kn:F(c$KGvPgTD;,#i[AKgYdTe3g/hy[MMdYuWT35OXKOdOw9bbGjofKs:ACv#y/vaSy$:VY8#rJPGO@m}7Z+CuBaNIzku*M4Wh3fho;qsbByMEn5NE#a%^pIoBT;Dph(o?2A+?eM4l{#}v0N=p^-;zdPe_7Zdmo7IDKyp^Qyo)45NIRuD@bE_.U;1YHvAIBklW0rf:?UoV9zKdL#!kF=]jxld.TIQvy{]{P?_k-+sH;p4?zW.+j{%4Pw4pA=lr:Ck*z(kpNunnZgA3sZf/gp@0;__Y4?VN^frCeBt0m8s/u0%M%bmNoo:miOp4weGcW)THC0H?R6DaoI2fZIPwzRbO.26HqmFo:$VX-}S7mCDr5kM]$CHtTBj!$=s0g3p-#d#_TRp{b(0_?%:xie0N;Felh^@It^(zrBewk!mLEJd%$%$kmc:VCDoN8;p)9apd+mmn_[s!C[*eTExOjyb.-$R$D4k%XSWKmOaND.-og7/X6a?!BE*K!,1}2FGkP.ad(?0I*2_qzcP1M5YK5QPQ%k0sxB23rJl1/a!5AV-P_N*p^l-$EJaj1}psVHme0e^Cbj[jw{fZ$LR2U,Kkj;yTV+t0ctXpP70z5R1]vnCiOJ+2ND1v0B8UJ0B][g007JA/,P%zil!lQTEz(w+kY+2FeAAc86:J)s/xa:q_zFOkrGf-qJpZ;p6MXj44Z,q8!Unbc$r%Y[?[KRf/zFYDVl[1FjJ=uVweWC^_@8RBRs:,E][ZC0000/MNUMnLSTY}00001=(=^]%NbEqj3SiMcvx*m!$A]py+^^pN1?_P]9D4bGhVyH)uX/+N*+J$PNQo6QV(59Bg#H^67;By3zOdrr}s8uv?9IGpB9%gBkj4m2jTiWEZ8U^$4uj7.}I3mw*wQpLR#cR:974x%Xx97?G)kb;kEI;fA6:2w7a/ZwHYD</PublicKey>
   </Signature>
 </CheatTable>

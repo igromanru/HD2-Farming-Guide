@@ -45,12 +45,12 @@ But if it crashes for you, you should reduce the value of the Mass SC Pack Drop 
 1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
 2. Activate the **Enable All features for Super Credits Farming** group header to enable all SC relevant features
 3. Execute the AutoIt script **PickUp-Macro.au3** (just double-click the file, if AutoIt is installed)
-4. Start a **Terminids** or **Illuminate**, **Difficulty 3**, **40 min** mission
+4. Start a **Terminids**, **Difficulty 3**, **40 min** mission
 5. Drop into the mission, then call a Resupply Pod **ONCE**, which will "Mass Drop" all the Super Credits you need for the mission
 6. Lay down on top of the SC pile so the interaction to pick it up is available
 7. Press **F4** (default hotkey) to start the AutoIt macro and pick up SCs automatically.  
 By default, it runs 4 times with 13 SC per pick-up loop (52 overall). The duration is about 5 minutes, and you can’t use your PC while it’s running.  
-**Attention!** The macro uses **F** key for interaction. If you use another key, read the [Configurations -> AutoIt script](#autoit-script) section!
+**Attention!** The macro uses **E** key for interaction. If you use another key, read the [Configurations -> AutoIt script](#autoit-script) section!
 8. Wait until the macro is done. It will show a Message Box with the message: *PickUpLoop finished*
 9. Repeat from step 5. until your game crashes.
 10. Use the **Kill HD2 & CE** script to terminate the game’s process and close Cheat Engine if it gets stuck.
@@ -66,7 +66,7 @@ Open **PickUp-Macro.au3** in any text editor, but preferably in AutoIt's own edi
 [Here](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) you can find a documentation on AutoIt keys. It applies to hotkeys as well.  
 **Changeable variables in script:**  
 `$iPickUpsCount` is the number of "pick-up loops" the script will run. Each loop collects 13 SC and then waits for the server’s cooldown (50 sec) before continuing. The number of loops basically determines how long the macro will run.  
-`$sInteractionKey` is the interaction key for picking up items. The default is `F`. If you have changed it in the game, you must change it here as well.  
+`$sInteractionKey` is the interaction key for picking up items. The default is `E`. If you have changed it in the game, you must change it here as well.  
 `$sMacroHotKey` is the hotkey to start the macro. The default is `F4`.  
 `$sMacroCancelHotKey` is the hotkey to cancel the macro. The default is `CTRL+Q`. You can interrupt the macro at any time with this hotkey.  
 #### Mass SC Packs Drop

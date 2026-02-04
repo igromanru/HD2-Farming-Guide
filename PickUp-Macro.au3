@@ -5,7 +5,7 @@
 ; How many loops of 13 pick-ups will be run
 Global Const $iPickUpsCount = 4
 ; Change to the interaction key that you use in the game
-Global Const $sInteractionKey = "F"
+Global Const $sInteractionKey = "E"
 ; Hotkey to start the pick up loop (default: F4)
 Global Const $sMacroHotKey = "{F4}"
 ; Hotkey to cancel the macro (default: Ctrl + Q)
