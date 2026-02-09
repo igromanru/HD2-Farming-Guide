@@ -1,9 +1,9 @@
 #RequireAdmin
 
 ; How many loops of 13 pick-ups will be run
-Global Const $iPickUpsCount = 3
+Global Const $iPickUpsCount = 10
 ; Change to the interaction key that you use in the game
-Global Const $sInteractionKey = "F"
+Global Const $sInteractionKey = "E"
 ; Hotkey to start the macro (default: F3)
 Global Const $sMacroHotKey = "{F3}"
 ; Hotkey to cancel the macro (default: F4)
@@ -12,7 +12,7 @@ Global Const $sMacroCancelHotKey = "{F4}"
 Global Const $sExitScriptHotKey = "{F10}"
 
 ; Your Stratagem keys (default: z for opening the menu, and arrow keys for selection)
-Global Const $sOpenStratagemListKey = "y";"z"
+Global Const $sOpenStratagemListKey = "z"
 Global Const $UP = "{UP}"
 Global Const $DOWN = "{DOWN}"
 Global Const $LEFT = "{LEFT}"
@@ -37,8 +37,8 @@ AutoItSetOption("SendKeyDelay", 10)
 AutoItSetOption("SendKeyDownDelay", 20)
 
 HotKeySet($sMacroHotKey, "_StartMacro") ; Hotkey to start the macro
-HotKeySet($sMacroCancelHotKey, "_CancelMacro") ; Ctrl + Q to cancel the macro
-HotKeySet($sExitScriptHotKey, "_Exit")
+HotKeySet($sMacroCancelHotKey, "_CancelMacro") ; Hotkey to cancel the macro
+HotKeySet($sExitScriptHotKey, "_Exit") ; Hotkey to close the script
 
 Func _CancelMacro()
     $bCancelMacro = True
@@ -98,7 +98,7 @@ Func _StartMacro()
         Next
         ; Sleep loop with ability to cancel
         if $i < $iPickUpsCount Then
-            For $s = 1 To 480 ; 48 seconds + 1 from interaction sleep
+            For $s = 1 To 460 ; 46 seconds + 1 from interaction sleep
                 If $bCancelMacro Then
                     ExitLoop
                 EndIf
