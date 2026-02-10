@@ -1,7 +1,7 @@
 #RequireAdmin
 
 ; How many loops of 13 pick-ups will be run
-Global Const $iPickUpsCount = 10
+Global Const $iPickUpsCount = 15
 ; Change to the interaction key that you use in the game
 Global Const $sInteractionKey = "e"
 ; Hotkey to start the macro (default: F3)
@@ -22,13 +22,14 @@ Global Const $aStratagemToCall[] = [$DOWN, $DOWN, $UP, $RIGHT]
 
 ; -- Don't touch the code below unless you know what you're doing --
 Global Const $sScriptName = "Helldivers 2 SC Farming Macro by Igromanru"
-Global Const $sGameWindow = "HELLDIVERS™ 2"
+Global Const $sGameWindow = "[TITLE:HELLDIVERS™ 2; CLASS:stingray_window]"
+
 Global $bCancelMacro = False
 
 #include <AutoItConstants.au3>
 #include <Misc.au3>
 
-If _Singleton("HD2-SC-Farming-Macro", 1) = 0 Then
+If _Singleton($sScriptName, 1) = 0 Then
     MsgBox($MB_SYSTEMMODAL + $MB_ICONINFORMATION, "Helldivers 2 SC Farming Macros", "The script is already running.")
     Exit
 EndIf
@@ -74,6 +75,7 @@ Func CallStratagem($keySequence)
     Sleep(200)
     PressSequence($keySequence)
 EndFunc
+
 
 Func _StartMacro()
     If Not WinActive($sGameWindow) Then
