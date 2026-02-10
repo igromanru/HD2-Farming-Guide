@@ -3,7 +3,7 @@
 ; How many loops of 13 pick-ups will be run
 Global Const $iPickUpsCount = 10
 ; Change to the interaction key that you use in the game
-Global Const $sInteractionKey = "E"
+Global Const $sInteractionKey = "e"
 ; Hotkey to start the macro (default: F3)
 Global Const $sMacroHotKey = "{F3}"
 ; Hotkey to cancel the macro (default: F4)
@@ -51,6 +51,7 @@ EndFunc
 Func PressKey($key)
     If IsString($key) Then
         Send($key)
+        Sleep(25)
     EndIf
 EndFunc
 
@@ -59,7 +60,6 @@ Func PressSequence($keySequence)
         For $key In $keySequence
             PressKey($key)
         Next
-        Sleep(100)
     ElseIf IsString($keySequence) Then
         PressKey($keySequence)
     EndIf
@@ -67,11 +67,11 @@ EndFunc
 
 Func OpenStratagemMenu()
     PressKey($sOpenStratagemListKey)
-    Sleep(100)
 EndFunc
 
 Func CallStratagem($keySequence)
     OpenStratagemMenu()
+    Sleep(200)
     PressSequence($keySequence)
 EndFunc
 
@@ -87,7 +87,7 @@ Func _StartMacro()
         EndIf
         WinActivate($sGameWindow)
         CallStratagem($aStratagemToCall)
-        Sleep(500) ; Wait for the stratagem to be called
+        Sleep(1000) ; Wait for the stratagem to be called
         ; Pick up 13 times
         For $s = 1 To 13
             If $bCancelMacro Then
