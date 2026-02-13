@@ -1,7 +1,7 @@
 #RequireAdmin
 
 ; How many loops of 13 pick-ups will be run
-Global Const $iPickUpsCount = 15
+Global Const $iPickUpsCount = 12
 ; Change to the interaction key that you use in the game
 Global Const $sInteractionKey = "e"
 ; Hotkey to start the macro (default: F3)
@@ -27,6 +27,7 @@ Global Const $sGameWindow = "[TITLE:HELLDIVERS™ 2; CLASS:stingray_window]"
 Global $bCancelMacro = False
 
 #include <AutoItConstants.au3>
+#include <MsgBoxConstants.au3>
 #include <Misc.au3>
 
 If _Singleton($sScriptName, 1) = 0 Then
@@ -83,7 +84,7 @@ Func _StartMacro()
     EndIf
 
     For $i = 1 To $iPickUpsCount
-        If $bCancelMacro Then
+        If $bCancelMacro Or WinExists($sGameWindow) = 0 Then
             $bCancelMacro = False
             ExitLoop
         EndIf
@@ -98,9 +99,11 @@ Func _StartMacro()
             Send($sInteractionKey)
             Sleep(1000)
         Next
+
+        MsgBox($MB_SYSTEMMODAL, $sScriptName, "Loop " & $i & " of " & $iPickUpsCount & " finished", 2)
         ; Sleep loop with ability to cancel
         if $i < $iPickUpsCount Then
-            For $s = 1 To 460 ; 46 seconds + 1 from interaction sleep
+            For $s = 1 To 450 ; 45 seconds interaction sleep
                 If $bCancelMacro Then
                     ExitLoop
                 EndIf
@@ -108,7 +111,7 @@ Func _StartMacro()
             Next
         EndIf
     Next
-    MsgBox(0, $sScriptName, "SC Farming loop finished")
+    MsgBox($MB_SYSTEMMODAL + $MB_ICONINFORMATION, $sScriptName, "SC Farming loop finished")
 EndFunc
 
 While 1
