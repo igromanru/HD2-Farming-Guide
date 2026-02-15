@@ -38,42 +38,47 @@ Steps that you need to do each time, no matter what you want to farm.
 8. Enable the **Enable All Universal features** group header to activate all the scripts inside the group
 
 ## Super Credits Farming
-**Preface:** The SC farming guide is slightly outdated. When I wrote it, you could drop 200 SC at once.  
-Now 52 causes crashes for many. Not for everyone, you can still find planets and missions where it works.  
-But if it crashes for you, you should reduce the value of the Mass SC Pack Drop to 13 and farm manually by dropping 13 SC, picking them up, then dropping the next 13.
+**Important:** First read [AutoIt script and Game configurations](#autoit-script-and-game-configurations) below, to learn how to set-up the script and/or change your in-game hotkeys.
 
 1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
 2. Activate the **Enable All features for Super Credits Farming** group header to enable all SC relevant features
-3. Execute the AutoIt script **PickUp-Macro.au3** (just double-click the file, if AutoIt is installed)
-4. Start a **Terminids**, **Difficulty 3**, **40 min** mission
-5. Drop into the mission, then call a Resupply Pod **ONCE**, which will "Mass Drop" all the Super Credits you need for the mission
-6. Lay down on top of the SC pile so the interaction to pick it up is available
-7. Press **F4** (default hotkey) to start the AutoIt macro and pick up SCs automatically.  
-By default, it runs 4 times with 13 SC per pick-up loop (52 overall). The duration is about 5 minutes, and you can’t use your PC while it’s running.  
-**Attention!** The macro uses **E** key for interaction. If you use another key, read the [Configurations -> AutoIt script](#autoit-script) section!
-8. Wait until the macro is done. It will show a Message Box with the message: *PickUpLoop finished*
-9. Repeat from step 5. until your game crashes.
-10. Use the **Kill HD2 & CE** script to terminate the game’s process and close Cheat Engine if it gets stuck.
+3. Execute the AutoIt script **SC-Farming-Macro.au3** (just double-click the file, if AutoIt is installed)
+4. Start a **Terminids**, **Difficulty 4**, **40 min** mission.  
+5. Drop into the mission and lay down on a flat surface.  
+6. Press **F3** (default hotkey) to start the AutoIt macro, which will drop automatically 13 SC for you, pick them up and repeat the process.  
+By default, it runs 12 times with 13 SC per pick-up loop (156 overall). The duration is about 13 minutes, and you shouldn't use your PC while it’s running.  
+**Attention!** The macro uses **E** key for interaction, **Z** to toggle the Stratagems List menu and arrow keys for the input. If you use different keys, read the [AutoIt script and Game configurations](#autoit-script-and-game-configurations) section!
+1. Wait until the macro is done. It will show a Message Box with the message: *SC Farming loop finished*
+2. Change the planet and repeat from step **4**.
+3. Use the **Kill HD2 & CE** script to terminate the game’s process and close Cheat Engine if it gets stuck.
 
 **Important Notes**
+- Figure out how many pickup loops you can do before the game crashes, change the macro script to maximum value, and switch the planet to continue farming after each full farming loop.   
 - If you want to extract, you have to disable **Enable All features for Super Credits Farming** group before completing the mission!  
-- The AutoIt script runs in the background. To exit it, right-click the AutoIt tray icon in the taskbar and select **Exit**
+- The AutoIt script runs in the background. To exit it, right-click the AutoIt tray icon in the taskbar and select **Exit** or press **F10**
 
-### Configurations
-#### AutoIt script
+### AutoIt script and Game configurations
+**Important:** The Macro simulates key inputs, therefore they must match your in-game hotkey configurations.  
+#### AutoIt script settings
 You can configure the AutoIt Macro to your liking, to change hotkeys or reduce or increase how many "pick-up loops" it will run.  
-Open **PickUp-Macro.au3** in any text editor, but preferably in AutoIt's own editor, SciTE.  
+Open **SC-Farming-Macro.au3** in any text editor, but preferably in AutoIt's own editor, SciTE.  
 [Here](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) you can find a documentation on AutoIt keys. It applies to hotkeys as well.  
+
 **Changeable variables in script:**  
-`$iPickUpsCount` is the number of "pick-up loops" the script will run. Each loop collects 13 SC and then waits for the server’s cooldown (50 sec) before continuing. The number of loops basically determines how long the macro will run.  
+`$iPickUpsCount` is the number of "pick-up loops" the script will run. Each loop collects 13 SC and then waits for the server’s cooldown (46 sec) before continuing. The number of loops basically determines how long the macro will run. (Default: 15)   
 `$sInteractionKey` is the interaction key for picking up items. The default is `E`. If you have changed it in the game, you must change it here as well.  
-`$sMacroHotKey` is the hotkey to start the macro. The default is `F4`.  
-`$sMacroCancelHotKey` is the hotkey to cancel the macro. The default is `CTRL+Q`. You can interrupt the macro at any time with this hotkey.  
-#### Mass SC Packs Drop
-You can change the **Packs Amount** value to change the amount of SC the script will drop at once.  
-But be careful, right now, 59 is pretty much the maximum value. Dropping more than that at once will cause the game to crash.  
-For the AutoIt macro to work properly, you need to drop at least as many SC as the macro will try to pick up.  
-The simple formula is: **`$iPickUpsCount` * 13**.
+`$sMacroHotKey` is the hotkey to start the macro. The default is `F3`.  
+`$sMacroCancelHotKey` is the hotkey to cancel the macro. The default is `F4`. You can interrupt the macro at any time with this hotkey.  
+`$sExitScriptHotKey` is the hotkey to exit the whole script. Default key: `F10`.  
+`$sOpenStratagemListKey` is the key that toggle opens the **Stratagem List** menu, in-game you must set it to **Press**. Default and recommended key: `Z`.  
+`$UP`, `$DOWN`, `$LEFT` and `$RIGHT` are input keys for Stratagems. I highly recommend changing them to the arrow keys in your game. It will allow you to call Stratagems while you're moving. The default keys are the **arrow keys**: `up`, `down`, `left`, and `right`.
+
+#### In-game settings
+Most important change that you have to make in the game settings is to change the **Open Stratagem List** setting to **Press** and assign some convenient key like `Z`.  
+Change the input method of Up, Down, Left and Right to **Release**!  
+The keys you use can be adjusted in the AutoIt script (see above), but I highly recommend using the **arrow keys** for Stratagem input, as it will improve your overall gameplay.  
+  
+![Stratagem Settings](./Resources/Stratagem_Settings.png)
 
 ## Medals and Experience Farming
 Can be combined with [Samples Farming](#samples-farming)
