@@ -1720,7 +1720,7 @@ scriptmem:
   mov ecx,1
   cmp ebx,ecx
   cmovl ebx,ecx
-  mov ecx,(int)10
+  mov ecx,(int)16
   cmp ebx,ecx
   cmova ebx,ecx
   mov [rax],ebx
@@ -1789,6 +1789,12 @@ dealloc(*)
 8:200%
 9:250%
 10:300%
+11:350%
+12:400%
+13:450%
+14:500%
+15:550%
+16:600%
 </DropDownList>
                   <ShowAsSigned>0</ShowAsSigned>
                   <VariableType>4 Bytes</VariableType>
