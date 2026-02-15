@@ -1,7 +1,7 @@
 #RequireAdmin
 
 ; How many loops of 13 pick-ups will be run
-Global Const $iPickUpsCount = 15
+Global Const $iPickUpsCount = 50
 ; Change to the interaction key that you use in the game
 Global Const $sInteractionKey = "e"
 ; Hotkey to start the macro (default: F3)
@@ -27,6 +27,7 @@ Global Const $sScriptName = "Helldivers 2 SC Farming Macro by Igromanru"
 Global Const $sGameWindow = "[TITLE:HELLDIVERS™ 2; CLASS:stingray_window]"
 
 Global $bCancelMacro = False
+Global $iGameCrashedAt = -1
 
 #include <AutoItConstants.au3>
 #include <MsgBoxConstants.au3>
@@ -43,6 +44,8 @@ AutoItSetOption("SendKeyDownDelay", 20)
 HotKeySet($sMacroHotKey, "_StartMacro") ; Hotkey to start the macro
 HotKeySet($sMacroCancelHotKey, "_CancelMacro") ; Hotkey to cancel the macro
 HotKeySet($sExitScriptHotKey, "_Exit") ; Hotkey to close the script
+
+
 
 Func _CancelMacro()
     $bCancelMacro = True
@@ -79,14 +82,33 @@ Func CallStratagem($keySequence)
     PressSequence($keySequence)
 EndFunc
 
+Func CheckAndSetGameCrash($iAtLoop = 0)
+    If WinExists($sGameWindow) = 0 Then
+        $iGameCrashedAt = $iAtLoop
+        $bCancelMacro = True
+    EndIf
+EndFunc
+
+Func CancelableSleep($iAtLoop, $iSeconds)
+    $iSeconds = $iSeconds * 10 ; Convert to 100ms intervals
+    For $s = 1 To $iSeconds
+        CheckAndSetGameCrash($iAtLoop)
+        If $bCancelMacro Then
+            ExitLoop
+        EndIf
+        Sleep(100)
+    Next
+EndFunc
+
 Func _StartMacro()
     If Not WinActive($sGameWindow) Then
         Return
     EndIf
 
+    $bCancelMacro = False
     For $i = 1 To $iPickUpsCount
-        If $bCancelMacro Or WinExists($sGameWindow) = 0 Then
-            $bCancelMacro = False
+        CheckAndSetGameCrash($i)
+        If $bCancelMacro Then
             ExitLoop
         EndIf
         WinActivate($sGameWindow)
@@ -94,7 +116,8 @@ Func _StartMacro()
         Sleep(1000) ; Wait for the stratagem to be called
         ; Pick up 13 times
         For $s = 1 To 13
-            If $bCancelMacro Or WinExists($sGameWindow) = 0 Then
+            CheckAndSetGameCrash($i)
+            If $bCancelMacro Then
                 ExitLoop
             EndIf
             Send($sInteractionKey)
@@ -103,16 +126,15 @@ Func _StartMacro()
 
         MsgBox($MB_SYSTEMMODAL, $sScriptName, "Loop " & $i & " of " & $iPickUpsCount & " finished", 2)
         ; Sleep loop with ability to cancel
-        if $i < $iPickUpsCount Then
-            For $s = 1 To 450 ; 45 seconds interaction sleep
-                If $bCancelMacro Then
-                    ExitLoop
-                EndIf
-                Sleep(100)
-            Next
+        if $i < $iPickUpsCount And Not $bCancelMacro Then
+            CancelableSleep($i, 45) ; Wait 45 seconds before the next loop
         EndIf
     Next
-    MsgBox($MB_SYSTEMMODAL + $MB_ICONINFORMATION, $sScriptName, "SC Farming loop finished")
+    If $iGameCrashedAt > -1 Then
+        MsgBox($MB_SYSTEMMODAL + $MB_ICONERROR, $sScriptName, "Game window was not detected." & @CRLF & "Last loop was at: " & $iGameCrashedAt)
+    Else
+        MsgBox($MB_SYSTEMMODAL + $MB_ICONINFORMATION, $sScriptName, "SC Farming loop finished")
+    EndIf
 EndFunc
 
 While 1

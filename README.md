@@ -44,7 +44,7 @@ Steps that you need to do each time, no matter what you want to farm.
 2. Activate the **Enable All features for Super Credits Farming** group header to enable all SC relevant features
 3. Execute the AutoIt script **SC-Farming-Macro.au3** (just double-click the file, if AutoIt is installed)
 4. Start a **Terminids**, **Difficulty 4**, **40 min** mission.  
-5. In Loadout screen, make sure to select the **Orbital Precision Strike**. (It's the first Stratagem in the first row)
+5. On the Loadout screen, select the **Orbital Precision Strike** Stratagem. (It's the first Stratagem in the first row)
 6. Drop into the mission and lay down on a flat surface.  
 7. Press **F3** (default hotkey) to start the AutoIt macro, which will drop automatically 13 SC for you, pick them up and repeat the process.  
 By default, it runs 12 times with 13 SC per pick-up loop (156 overall). The duration is about 13 minutes, and you shouldn't use your PC while it’s running.  
