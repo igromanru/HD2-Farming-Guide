@@ -1,7 +1,7 @@
 #RequireAdmin
 
 ; How many loops of 13 pick-ups will be run
-Global Const $iPickUpsCount = 12
+Global Const $iPickUpsCount = 20
 ; Change to the interaction key that you use in the game
 Global Const $sInteractionKey = "e"
 ; Hotkey to start the macro (default: F3)
@@ -17,8 +17,10 @@ Global Const $UP = "{UP}"
 Global Const $DOWN = "{DOWN}"
 Global Const $LEFT = "{LEFT}"
 Global Const $RIGHT = "{RIGHT}"
+; Stratagem selection sequence (default: Orbital Precision Strike)
+Global Const $aStratagemToCall[] = [$RIGHT, $RIGHT, $UP]
 ; Stratagem selection sequence (default: Resupply pod)
-Global Const $aStratagemToCall[] = [$DOWN, $DOWN, $UP, $RIGHT]
+; Global Const $aStratagemToCall[] = [$DOWN, $DOWN, $UP, $RIGHT]
 
 ; -- Don't touch the code below unless you know what you're doing --
 Global Const $sScriptName = "Helldivers 2 SC Farming Macro by Igromanru"
@@ -53,7 +55,7 @@ EndFunc
 Func PressKey($key)
     If IsString($key) Then
         Send($key)
-        Sleep(25)
+        Sleep(15)
     EndIf
 EndFunc
 
@@ -77,7 +79,6 @@ Func CallStratagem($keySequence)
     PressSequence($keySequence)
 EndFunc
 
-
 Func _StartMacro()
     If Not WinActive($sGameWindow) Then
         Return
@@ -93,7 +94,7 @@ Func _StartMacro()
         Sleep(1000) ; Wait for the stratagem to be called
         ; Pick up 13 times
         For $s = 1 To 13
-            If $bCancelMacro Then
+            If $bCancelMacro Or WinExists($sGameWindow) = 0 Then
                 ExitLoop
             EndIf
             Send($sInteractionKey)
