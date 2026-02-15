@@ -34,7 +34,7 @@ Global $iGameCrashedAt = -1
 #include <Misc.au3>
 
 If _Singleton($sScriptName, 1) = 0 Then
-    MsgBox($MB_SYSTEMMODAL + $MB_ICONINFORMATION, "Helldivers 2 SC Farming Macros", "The script is already running.")
+    MsgBox($MB_SYSTEMMODAL + $MB_ICONINFORMATION, $sScriptName, "The script is already running.")
     Exit
 EndIf
 
@@ -44,8 +44,6 @@ AutoItSetOption("SendKeyDownDelay", 20)
 HotKeySet($sMacroHotKey, "_StartMacro") ; Hotkey to start the macro
 HotKeySet($sMacroCancelHotKey, "_CancelMacro") ; Hotkey to cancel the macro
 HotKeySet($sExitScriptHotKey, "_Exit") ; Hotkey to close the script
-
-
 
 Func _CancelMacro()
     $bCancelMacro = True
