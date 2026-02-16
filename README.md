@@ -53,12 +53,14 @@ By default, it runs 30 times with 13 SC per pick-up loop (390 overall). The dura
 9. Use the **Kill HD2 & CE** script to terminate the game’s process and close Cheat Engine if it gets stuck.
 
 **Important Notes**
-- Figure out how many pickup loops you can do before the game crashes, change the macro script to maximum value, and switch the planet to continue farming after each full farming loop.   
+- You can figure out how many pickup loops you can do before the game crashes, change the macro script to the maximum value, and switch the planet to continue farming after each full farming loop. It should extend the farming session before you have to restart the game.
+- In the latest version, the AutoIt script will show at which loop the game crashed, if it happens. It can be used to determine the limit.
 - If you want to extract, you have to disable **Enable All features for Super Credits Farming** group before completing the mission!  
 - The AutoIt script runs in the background. To exit it, right-click the AutoIt tray icon in the taskbar and select **Exit** or press **F10**
 
 ### AutoIt script and Game configurations
 **Important:** The Macro simulates key inputs, therefore they must match your in-game hotkey configurations.  
+
 #### AutoIt script settings
 You can configure the AutoIt Macro to your liking, to change hotkeys or reduce or increase how many "pick-up loops" it will run.  
 Open **SC-Farming-Macro.au3** in any text editor, but preferably in AutoIt's own editor, SciTE.  
