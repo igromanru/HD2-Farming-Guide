@@ -1,7 +1,7 @@
 #RequireAdmin
 
 ; How many loops of 13 pick-ups will be run
-Global Const $iPickUpsCount = 50
+Global Const $iPickUpsCount = 30
 ; Change to the interaction key that you use in the game
 Global Const $sInteractionKey = "e"
 ; Hotkey to start the macro (default: F3)
@@ -56,7 +56,7 @@ EndFunc
 Func PressKey($key)
     If IsString($key) Then
         Send($key)
-        Sleep(15)
+        Sleep(20)
     EndIf
 EndFunc
 

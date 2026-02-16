@@ -47,11 +47,10 @@ Steps that you need to do each time, no matter what you want to farm.
 5. On the Loadout screen, select the **Orbital Precision Strike** Stratagem. (It's the first Stratagem in the first row)
 6. Drop into the mission and lay down on a flat surface.  
 7. Press **F3** (default hotkey) to start the AutoIt macro, which will drop automatically 13 SC for you, pick them up and repeat the process.  
-By default, it runs 12 times with 13 SC per pick-up loop (156 overall). The duration is about 13 minutes, and you shouldn't use your PC while it’s running.  
+By default, it runs 30 times with 13 SC per pick-up loop (390 overall). The duration is about 30 minutes, and you shouldn't use your PC while it’s running.  
 **Attention!** The macro uses **E** key for interaction, **Z** to toggle the Stratagems List menu and arrow keys for the input. If you use different keys, read the [AutoIt script and Game configurations](#autoit-script-and-game-configurations) section!
-1. Wait until the macro is done. It will show a Message Box with the message: *SC Farming loop finished*
-2. Change the planet and repeat from step **4**.
-3. Use the **Kill HD2 & CE** script to terminate the game’s process and close Cheat Engine if it gets stuck.
+8. Wait until the macro is done. It will show a Message Box with the message: *SC Farming loop finished*
+9. Use the **Kill HD2 & CE** script to terminate the game’s process and close Cheat Engine if it gets stuck.
 
 **Important Notes**
 - Figure out how many pickup loops you can do before the game crashes, change the macro script to maximum value, and switch the planet to continue farming after each full farming loop.   
@@ -66,7 +65,7 @@ Open **SC-Farming-Macro.au3** in any text editor, but preferably in AutoIt's own
 [Here](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) you can find a documentation on AutoIt keys. It applies to hotkeys as well.  
 
 **Changeable variables in script:**  
-`$iPickUpsCount` is the number of "pick-up loops" the script will run. Each loop collects 13 SC and then waits for the server’s cooldown (46 sec) before continuing. The number of loops basically determines how long the macro will run. (Default: 15)   
+`$iPickUpsCount` is the number of "pick-up loops" the script will run. Each loop collects 13 SC and then waits for the server’s cooldown (46 sec) before continuing. The number of loops basically determines how long the macro will run. (Default: 30)   
 `$sInteractionKey` is the interaction key for picking up items. The default is `E`. If you have changed it in the game, you must change it here as well.  
 `$sMacroHotKey` is the hotkey to start the macro. The default is `F3`.  
 `$sMacroCancelHotKey` is the hotkey to cancel the macro. The default is `F4`. You can interrupt the macro at any time with this hotkey.  
