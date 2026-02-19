@@ -38,7 +38,9 @@ Steps that you need to do each time, no matter what you want to farm.
 8. Enable the **Enable All Universal features** group header to activate all the scripts inside the group
 
 ## Super Credits Farming
-**Important:** First read [AutoIt script and Game configurations](#autoit-script-and-game-configurations) below, to learn how to set-up the script and/or change your in-game hotkeys.
+**Important:**
+- Read [AutoIt script and Game configurations](#autoit-script-and-game-configurations) below, to learn how to set-up the script and/or change your in-game hotkeys.  
+- Use `Borderless Window` or `Window` as **Display Mode**. Don't use "Fullscreen"!
 
 1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
 2. Activate the **Enable All features for Super Credits Farming** group header to enable all SC relevant features
@@ -49,8 +51,8 @@ Steps that you need to do each time, no matter what you want to farm.
 7. Press **F3** (default hotkey) to start the AutoIt macro, which will drop automatically 13 SC for you, pick them up and repeat the process.  
 By default, it runs 30 times with 13 SC per pick-up loop (390 overall). The duration is about 30 minutes, and you shouldn't use your PC while it’s running.  
 **Attention!** The macro uses **E** key for interaction, **Z** to toggle the Stratagems List menu and arrow keys for the input. If you use different keys, read the [AutoIt script and Game configurations](#autoit-script-and-game-configurations) section!
-8. Wait until the macro is done. It will show a Message Box with the message: *SC Farming loop finished*
-9. Use the **Kill HD2 & CE** script to terminate the game’s process and close Cheat Engine if it gets stuck.
+1. Wait until the macro is done. It will show a Message Box with the message: *SC Farming loop finished*
+2. Use the **Kill HD2 & CE** script to terminate the game’s process and close Cheat Engine if it gets stuck.
 
 **Important Notes**
 - You can figure out how many pickup loops you can do before the game crashes, change the macro script to the maximum value, and switch the planet to continue farming after each full farming loop. It should extend the farming session before you have to restart the game.
