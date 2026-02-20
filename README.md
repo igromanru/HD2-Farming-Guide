@@ -116,7 +116,7 @@ It’s the server’s cooldown, and there’s currently no known way to skip it.
 If the host of the lobby uses the script, the limit will be bypassed for all players. But they won’t be able to see the pick-up notification. Also, you should make sure that nobody picks up SC or Medals during the 45s cooldown. 
 ### Super Credits appear as question "?" mark
 It means the SC model isn’t loaded in the current mission.  
-You can either switch to another mission or install the [Super Credits Cheat Arrows](https://rpghq.org/forums/viewtopic.php?t=3175) mod, which forces the game to always load the model.  
+You can either switch to another mission or install the [Super Credits Cheat Arrows](https://mods.rpghq.org/Helldivers%202/176522) mod, which forces the game to always load the model.  
 Use the [HD2 Arsenal – Mod Manager](https://www.nexusmods.com/helldivers2/mods/4664) to manage your mods — it’s better than other HD2 mod managers.
 ### Cheat Engine closes after attaching to the process
 It's an issue in CE v7.5. You can fix it easily.  
