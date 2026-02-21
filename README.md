@@ -15,6 +15,7 @@ The Farming CT contains only features that you need to farm Super Credits, Sampl
 - [Medals and Experience Farming](#medals-and-experience-farming)
 - [Samples Farming](#samples-farming)
 - [FAQ](#faq)
+  - [Which kind of cheats are possible in the game?](#which-kind-of-cheats-are-possible-in-the-game)
   - [Super Credits / Medals limit per mission](#super-credits--medals-limit-per-mission)
   - [Game Crashes](#game-crashes)
   - [AntiCheat Details](#anticheat-details)
@@ -105,6 +106,11 @@ Can be combined with [Medals and Experience Farming](#medals-and-experience-farm
 6. Repeat from **step 3.** for more Samples
 
 ## FAQ
+### Which kind of cheats are possible in the game?
+In HD2, most gameplay mechanics are handled by the client, and the host of a match is acting as a game server. That's why so many things are possible, from Infinite Health to changing weapon projects or replacing stratagems.  
+However, all currencies and players progression are saved on central servers, therefore they can't be directly influenced.  
+For that reason we have to farm all the currencies, experience, and samples and can't just change the value, or change the price of Warbonds, Stratagems, etc.  
+
 ### Super Credits / Medals limit per mission
 Originally, there’s a limit on how many Super Credit or Medal stacks can be picked up in a mission. You should count in stacks, one stack equals one pick-up. The server determines how many resources you get from each stack. One Super Credit stack usually gives you 10 SC, with a 1% chance to get 100 instead. For Medals, the amount is random.  
 The original limit is random between 0 and 15. The limit applies to each player individually.  
