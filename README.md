@@ -25,8 +25,8 @@ The Farming CT contains only features that you need to farm Super Credits, Sampl
 - Basic understanding of how Cheat Engine works (watch video tutorials on YT)
 - [Cheat Engine 7.5](https://mega.nz/file/HNFRBSrY#rj4oel3UuK9hoj1BtezRVbGhNJBo8mQ3EYl7ioFprcc) or higher
 - **GameGuard Bypass**
-- HD2 ED Farming table
-- My AutoIt PickUp Macro or similar
+- [HD2 ED Farming table](https://github.com/igromanru/HD2-Farming-Guide/releases)
+- [My AutoIt PickUp Macro](https://github.com/igromanru/HD2-Farming-Guide/releases) or similar
 - Installed [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) (if you want to use the script)
 - Understanding on how the game works
 
