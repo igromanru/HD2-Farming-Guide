@@ -21,7 +21,6 @@ The Farming CT contains only features that you need to farm Super Credits, Sampl
   - [AntiCheat Details](#anticheat-details)
 - [Related Discord Server](#related-discord-server)
 
-
 ## Required resources
 - Basic understanding of how Cheat Engine works (watch video tutorials on YT)
 - [Cheat Engine 7.5](https://mega.nz/file/HNFRBSrY#rj4oel3UuK9hoj1BtezRVbGhNJBo8mQ3EYl7ioFprcc) or higher
