@@ -48,8 +48,8 @@ Steps that you need to do each time, no matter what you want to farm.
 4. Start a **Terminids**, **Difficulty 4**, **40 min** mission.  
 5. On the Loadout screen, select the **Orbital Precision Strike** Stratagem. (It's the first Stratagem in the first row)
 6. Drop into the mission and lay down on a flat surface.  
-7. Press **F3** (default hotkey) to start the AutoIt macro, which will drop automatically 13 SC for you, pick them up and repeat the process.  
-By default, it runs 60 times with 13 SC per pick-up loop (780 overall). The duration is about 60 minutes, and you shouldn't use your PC while it’s running.  
+7. Press **F3** (default hotkey) to start the AutoIt macro, which will drop automatically 9 SC for you, pick them up and repeat the process.  
+By default, it runs 100 times with 9 SC per pick-up loop (900 overall). The duration is about 100 minutes, and you shouldn't use your PC while it’s running.  
 **Attention!** The macro uses **E** key for interaction, **Z** to toggle the Stratagems List menu and arrow keys for the input. If you use different keys, read the [AutoIt script and Game configurations](#autoit-script-and-game-configurations) section!
 1. Wait until the macro is done. It will show a Message Box with the message: *SC Farming loop finished*
 2. Use the **Kill HD2 & CE** script to terminate the game’s process and close Cheat Engine if it gets stuck.
@@ -69,7 +69,7 @@ Open **SC-Farming-Macro.au3** in any text editor, but preferably in AutoIt's own
 [Here](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) you can find a documentation on AutoIt keys. It applies to hotkeys as well.  
 
 **Changeable variables in script:**  
-`$iPickUpsCount` is the number of "pick-up loops" the script will run. Each loop collects 13 SC and then waits for the server’s cooldown (46 sec) before continuing. The number of loops basically determines how long the macro will run. (Default: 60)   
+`$iPickUpsCount` is the number of "pick-up loops" the script will run. Each loop collects 9 SC and then waits for the server’s cooldown (46 sec) before continuing. The number of loops basically determines how long the macro will run. (Default: 60)   
 `$sInteractionKey` is the interaction key for picking up items. The default is `E`. If you have changed it in the game, you must change it here as well.  
 `$sMacroHotKey` is the hotkey to start the macro. The default is `F3`.  
 `$sMacroCancelHotKey` is the hotkey to cancel the macro. The default is `F4`. You can interrupt the macro at any time with this hotkey.  
@@ -116,7 +116,7 @@ The original limit is random between 0 and 15. The limit applies to each player 
 
 **Remove Currency Pickup Limit script**  
 The feature allows bypassing the original limit.  
-With the feature enabled, you can pick up exactly 13 stacks every ~45 seconds.
+With the feature enabled, you can pick up exactly 9 stacks every ~45 seconds.
 It’s the server’s cooldown, and there’s currently no known way to skip it.  
 If the host of the lobby uses the script, the limit will be bypassed for all players. But they won’t be able to see the pick-up notification. Also, you should make sure that nobody picks up SC or Medals during the 45s cooldown. 
 ### Super Credits appear as question "?" mark

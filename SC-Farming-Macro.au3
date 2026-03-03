@@ -1,7 +1,7 @@
 #RequireAdmin
 
-; How many loops of 13 pick-ups will be run
-Global Const $iPickUpsCount = 60
+; How many loops of 9 pick-ups will be run
+Global Const $iPickUpsCount = 100
 ; Change to the interaction key that you use in the game
 Global Const $sInteractionKey = "e"
 ; Hotkey to start the macro (default: F3)
@@ -112,8 +112,8 @@ Func _StartMacro()
         WinActivate($sGameWindow)
         CallStratagem($aStratagemToCall)
         Sleep(1000) ; Wait for the stratagem to be called
-        ; Pick up 13 times
-        For $s = 1 To 13
+        ; Pick up 9 times
+        For $s = 1 To 9
             CheckAndSetGameCrash($i)
             If $bCancelMacro Then
                 ExitLoop
