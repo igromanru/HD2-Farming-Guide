@@ -143,3 +143,6 @@ To reduce any friction, read the guide carefully and follow the steps.
 **nProtect GameGuard in Helldivers 2** serves solely as anti-tamper software. Despite what it can do in other games, in HD2 it only attempts to preserve the integrity of the original code and prevent external software from accessing the process. It doesn't even check for foreign DLLs in the process.
 If GameGuard detects ".text" code changes or one of the blacklisted programs like Cheat Engine, it will only close the game, usually with a message.    
 There are no (GameGuard) bans! And until today, no bans for cheating were reported in any of HD2 related (cheating) communities.
+
+## Discord Server
+<a href="https://discord.gg/SKbHMw5Npf"><img src='https://discordapp.com/api/guilds/1417474730906095626/widget.png?style=shield'></a>  
