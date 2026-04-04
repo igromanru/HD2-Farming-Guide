@@ -5,7 +5,7 @@
 **The guide revolves around the abridged version of the released ED CT, compiled by me for farming**  
 You need the "Farming" Cheat Engine Table from the [release](https://github.com/igromanru/HD2-Farming-Guide/releases) to follow the guide!
 Which is an abridge version of the Experimental Division CT v4.0.0 (credits Zodiac, Havoc and anyone else who provided scripts for it).  
-The Farming CT contains only features that you need to farm Super Credits, Samples, Medals and Experience.  
+The Farming CT contains only the GameGuard Bypass and features that you need to farm Super Credits, Samples, Medals and Experience.  
 
 ## Index
 - [Required resources](#required-resources)
@@ -26,7 +26,6 @@ The Farming CT contains only features that you need to farm Super Credits, Sampl
 ## Required resources
 - Basic understanding of how Cheat Engine works (watch video tutorials on YT)
 - [Cheat Engine 7.5](https://mega.nz/file/HNFRBSrY#rj4oel3UuK9hoj1BtezRVbGhNJBo8mQ3EYl7ioFprcc) or higher
-- **GameGuard Bypass**
 - [HD2 ED Farming table](https://github.com/igromanru/HD2-Farming-Guide/releases)
 - [My AutoIt PickUp Macro](https://github.com/igromanru/HD2-Farming-Guide/releases) or similar
 - Installed [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) (if you want to use the script)
@@ -34,10 +33,13 @@ The Farming CT contains only features that you need to farm Super Credits, Sampl
 
 ## Required first steps for each farming session
 Steps that you need to do each time, no matter what you want to farm.
-1. Start the game and use a third-party GameGuard Bypass, that you have to get somewhere first, to remove the Anti-Cheat from the game.  
-3. Open the Farming CT in Cheat Engine. Usually you can simple double-click on the CT to open in directly with CE.
-7. Activate the initializer script **ED Farming Only v(version number here)**
-8. Enable the **Enable All Universal features** group header to activate all the scripts inside the group
+1. Start the game and wait at least until you see the intro. 
+2. Open the Farming CT in Cheat Engine by double-click on the `.CT` file.   
+Press **Yes** as soon you see `Execute this lua script?` window, it will run the GameGuard Bypass.
+3. Activate the initializer script **ED Farming Only v(version number here)**
+4. Enable the **Enable All Universal features** group header to activate all the scripts inside the group
+
+*Sometimes GameGaurd will detect Cheat Engine before you manage to bypass it, in such case you have to try again*
 
 ## Super Credits Farming
 **Important:**

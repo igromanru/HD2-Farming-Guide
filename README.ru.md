@@ -3,7 +3,7 @@
 **Руководство основано на сокращенной версии ED CT, подготовленной мной специально для фарма-**  
 Чтобы следовать этому руководству, вам нужна "Farming" Cheat Engine Table из [релиза](https://github.com/igromanru/HD2-Farming-Guide/releases)!  
 Это урезанная версия Experimental Division CT v4.0.0 (спасибо Zodiac, Havoc предоставлял для нее скрипты).  
-Farming CT содержит только те функции, которые нужны для фарма Super Credits, Samples, Medals и Experience.
+Farming CT содержит только GameGuard Bypass и те функции, которые нужны для фарма Super Credits, Samples, Medals и Experience.
 
 ## Содержание
 - [Необходимые ресурсы](#required-resources)
@@ -24,7 +24,6 @@ Farming CT содержит только те функции, которые н�
 ## Необходимые ресурсы
 - Базовое понимание того, как работает Cheat Engine (посмотрите видеоуроки на YouTube)
 - [Cheat Engine 7.5](https://mega.nz/file/HNFRBSrY#rj4oel3UuK9hoj1BtezRVbGhNJBo8mQ3EYl7ioFprcc) или новее
-- **GameGuard Bypass**
 - [HD2 ED Farming table](https://github.com/igromanru/HD2-Farming-Guide/releases)
 - [Мой AutoIt PickUp Macro](https://github.com/igromanru/HD2-Farming-Guide/releases) или аналог
 - Установленный [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) (если вы хотите использовать скрипт)
@@ -33,10 +32,13 @@ Farming CT содержит только те функции, которые н�
 ## Обязательные первые шаги для каждой сессии фарма
 Шаги, которые нужно выполнять каждый раз, независимо от того, что именно вы хотите фармить.
 
-1. Запустите игру и используйте сторонний GameGuard Bypass, который нужно где-то заранее получить, чтобы отключить Anti-Cheat.  
-2. Откройте Farming CT в Cheat Engine. Обычно можно просто дважды кликнуть по CT, чтобы открыть его напрямую через CE.  
+1. Запустите игру и подождите как минимум до появления вступительного экрана.  
+2. Откройте Farming CT в Cheat Engine, дважды кликнув по файлу `.CT`.  
+   Нажмите **Yes**, как только появится окно `Execute this lua script?` — это запустит GameGuard Bypass.  
 3. Активируйте инициализирующий скрипт **ED Farming Only v(номер версии здесь)**  
 4. Включите группу **Enable All Universal features** (это активирует все универсальные скрипты внутри)
+
+*Иногда GameGuard обнаруживает Cheat Engine до того, как вы успеете его обойти; в таком случае нужно попробовать снова.*
 
 ## Фарм Super Credits
 **Важно:**
