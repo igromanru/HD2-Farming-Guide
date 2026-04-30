@@ -1,4 +1,4 @@
-# Helldivers 2 Farming Guide by Igromanru
+# (Outdated) Helldivers 2 Farming Guide by Igromanru
 
 [**Russian Translation | На русском языке**](./README.ru.md)
 
@@ -147,4 +147,5 @@ If GameGuard detects ".text" code changes or one of the blacklisted programs lik
 There are no (GameGuard) bans! And until today, no bans for cheating were reported in any of HD2 related (cheating) communities.
 
 ## Discord Server
+The server is by now "archived" and I moved one from maintaining it, but there are still some useful stuff there.
 <a href="https://discord.gg/SKbHMw5Npf"><img src='https://discordapp.com/api/guilds/1417474730906095626/widget.png?style=shield'></a>  
