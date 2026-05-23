@@ -8,7 +8,10 @@ The Farming CT contains only the GameGuard Bypass and features that you need to 
 ## Index
 - [Required resources](#required-resources)
 - [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
-- [[Patched] Super Credits Farming](#patched-super-credits-farming)
+- [Super Credits Farming](#super-credits-farming)
+  - [Configurations](#configurations)
+    - [AutoIt script](#autoit-script)
+    - [Mass SC Packs Drop](#mass-sc-packs-drop)
 - [Medals and Experience Farming](#medals-and-experience-farming)
 - [Samples Farming](#samples-farming)
 - [FAQ](#faq)
@@ -22,8 +25,8 @@ The Farming CT contains only the GameGuard Bypass and features that you need to 
 - Basic understanding of how Cheat Engine works (watch video tutorials on YT)
 - [Cheat Engine 7.5](https://mega.nz/file/HNFRBSrY#rj4oel3UuK9hoj1BtezRVbGhNJBo8mQ3EYl7ioFprcc) or higher
 - [HD2 ED Farming table](https://github.com/igromanru/HD2-Farming-Guide/releases)
-- ~~[My AutoIt PickUp Macro](https://github.com/igromanru/HD2-Farming-Guide/releases) or similar~~
-- ~~Installed [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) (if you want to use the script)~~
+- [My AutoIt PickUp Macro](https://github.com/igromanru/HD2-Farming-Guide/releases) or similar
+- Installed [AutoIt](https://www.autoitscript.com/site/autoit/downloads/) (if you want to use the script)
 - Understanding on how the game works
 
 ## Required first steps for each farming session
@@ -36,11 +39,52 @@ Press **Yes** as soon you see `Execute this lua script?` window, it will run the
 
 *Sometimes GameGaurd will detect Cheat Engine before you manage to bypass it, in such case you have to try again*
 
-## [Patched] Super Credits Farming 
-With update 6.2.2, Arrowhead has patched the Super Credits farming method that was covered by this guide.
-Picking up Super Credits that you dropped yourself doesn't work anymore.
+## Super Credits Farming
+**Important:**
+- Read [AutoIt script and Game configurations](#autoit-script-and-game-configurations) below, to learn how to set-up the script and/or change your in-game hotkeys.  
+- Use `Borderless Window` or `Window` as **Display Mode**. Don't use "Fullscreen"!
 
-*There is a new method, but I don't have it as a Cheat Engine script and have no plans to do anything further for the game.*
+1. Follow [Required first steps for each farming session](#required-first-steps-for-each-farming-session)
+2. Activate the **Enable All features for Super Credits Farming** group header to enable all SC relevant features
+3. Execute the AutoIt script **SC-Farming-Macro.au3** (just double-click the file, if AutoIt is installed)
+4. Start a **Terminids**, **Difficulty 4**, **40 min** mission.  
+5. On the Loadout screen, select the **Orbital Precision Strike** Stratagem. (It's the first Stratagem in the first row)
+6. Drop into the mission and lay down on a flat surface.  
+7. Press **F3** (default hotkey) to start the AutoIt macro, which will drop automatically 9 SC for you, pick them up and repeat the process.  
+By default, it runs 100 times with 9 SC per pick-up loop (900 overall). The duration is about 100 minutes, and you shouldn't use your PC while it’s running.  
+**Attention!** The macro uses **E** key for interaction, **Z** to toggle the Stratagems List menu and arrow keys for the input. If you use different keys, read the [AutoIt script and Game configurations](#autoit-script-and-game-configurations) section!
+1. Wait until the macro is done. It will show a Message Box with the message: *SC Farming loop finished*
+2. Use the **Kill HD2 & CE** script to terminate the game’s process and close Cheat Engine if it gets stuck.
+
+**Important Notes**
+- You can figure out how many pickup loops you can do before the game crashes, change the macro script to the maximum value, and switch the planet to continue farming after each full farming loop. It should extend the farming session before you have to restart the game.
+- In the latest version, the AutoIt script will show at which loop the game crashed, if it happens. It can be used to determine the limit.
+- If you want to extract, you have to disable **Enable All features for Super Credits Farming** group before completing the mission!  
+- The AutoIt script runs in the background. To exit it, right-click the AutoIt tray icon in the taskbar and select **Exit** or press **F10**
+
+### AutoIt script and Game configurations
+**Important:** The Macro simulates key inputs, therefore they must match your in-game hotkey configurations.  
+
+#### AutoIt script settings
+You can configure the AutoIt Macro to your liking, to change hotkeys or reduce or increase how many "pick-up loops" it will run.  
+Open **SC-Farming-Macro.au3** in any text editor, but preferably in AutoIt's own editor, SciTE.  
+[Here](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) you can find a documentation on AutoIt keys. It applies to hotkeys as well.  
+
+**Changeable variables in script:**  
+`$iPickUpsCount` is the number of "pick-up loops" the script will run. Each loop collects 9 SC and then waits for the server’s cooldown (46 sec) before continuing. The number of loops basically determines how long the macro will run. (Default: 60)   
+`$sInteractionKey` is the interaction key for picking up items. The default is `E`. If you have changed it in the game, you must change it here as well.  
+`$sMacroHotKey` is the hotkey to start the macro. The default is `F3`.  
+`$sMacroCancelHotKey` is the hotkey to cancel the macro. The default is `F4`. You can interrupt the macro at any time with this hotkey.  
+`$sExitScriptHotKey` is the hotkey to exit the whole script. Default key: `F10`.  
+`$sOpenStratagemListKey` is the key that toggle opens the **Stratagem List** menu, in-game you must set it to **Press**. Default and recommended key: `Z`.  
+`$UP`, `$DOWN`, `$LEFT` and `$RIGHT` are input keys for Stratagems. I highly recommend changing them to the arrow keys in your game. It will allow you to call Stratagems while you're moving. The default keys are the **arrow keys**: `up`, `down`, `left`, and `right`.
+
+#### In-game settings
+Most important change that you have to make in the game settings is to change the **Open Stratagem List** setting to **Press** and assign some convenient key like `Z`.  
+Change the input method of Up, Down, Left and Right to **Release**!  
+The keys you use can be adjusted in the AutoIt script (see above), but I highly recommend using the **arrow keys** for Stratagem input, as it will improve your overall gameplay.  
+  
+![Stratagem Settings](./Resources/Stratagem_Settings.png)
 
 ## Medals and Experience Farming
 Can be combined with [Samples Farming](#samples-farming)
