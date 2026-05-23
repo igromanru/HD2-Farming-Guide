@@ -3,7 +3,7 @@
   <CheatEntries>
     <CheatEntry>
       <ID>118846</ID>
-      <Description>"ED Farming Only v2.8.3"</Description>
+      <Description>"ED Farming Only v2.9.0"</Description>
       <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
       <Color>0482FF</Color>
       <VariableType>Auto Assembler Script</VariableType>
@@ -565,91 +565,17 @@ game.dll+90329E: 8B CF                    - mov ecx,edi
 </AssemblerScript>
             </CheatEntry>
             <CheatEntry>
-              <ID>11</ID>
-              <Description>"No Fall Damage"</Description>
-              <VariableType>Auto Assembler Script</VariableType>
-              <AssemblerScript>//Author : Zodiac
-//CE     : 7.61
-//Game   : HELLDIVERS™ 2
-//Version: 01.004.000
-//Process: helldivers2.exe
-//Module : game.dll
-//Inject : game.dll+96F4CE
-//Date   : 02/09/25
-//Comment: Script made for Experimental Division.
-
-[ENABLE]
-//48 81 EC 90 01 00 00 48 8B 05  ? ? ? ? 48 33 C4 48 89 45 ? 48 8B F9 - reserve AoB
-aobscanmodule(FallDMG,game.dll,48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 85 ? ? ? ? 3B 15 ? ? ? ? 8B DA) //Unique
-alloc(NoFallnewmem,48,FallDMG)
-label(NoFallcode NoFallreturn)
-registersymbol(FallDMG NoFallcode)
-assert(FallDMG-E,4C 8B DC 55 53 41 56 49 8D AB) //push correct registers check
-
-NoFallnewmem:
-  push rax
-  pushfq
-  mov eax,[rbp+AC8]
-  cmp eax,E32E9832 //local check for fall damage
-  jne short @f
-  popfq
-  pop rax
-  pop r14
-  pop rbx
-  pop rbp
-  ret
-
-NoFallcode:
-  popfq
-  pop rax
-  reassemble(FallDMG)
-  jmp NoFallreturn
-  align 10 CC
-
-FallDMG:
-  jmp NoFallnewmem
-  nop 2
-NoFallreturn:
-
-[DISABLE]
-
-FallDMG:
-  reassemble(NoFallcode+2)
-
-unregistersymbol(*)
-dealloc(*)
-
-//Original Instructions:
-//game.dll+96F4BB - CC                      - int 3
-//game.dll+96F4BC - CC                      - int 3
-//game.dll+96F4BD - CC                      - int 3
-//game.dll+96F4BE - CC                      - int 3
-//game.dll+96F4BF - CC                      - int 3
-//game.dll+96F4C0 - 4C 8B DC                - mov r11,rsp
-//game.dll+96F4C3 - 55                      - push rbp
-//game.dll+96F4C4 - 53                      - push rbx
-//game.dll+96F4C5 - 41 56                   - push r14
-//game.dll+96F4C7 - 49 8D AB B8F5FFFF       - lea rbp,[r11-00000A48]
-//------------------------------------------------------------------------------
-//game.dll+96F4CE - 48 81 EC 400B0000       - sub rsp,00000B40
-//------------------------------------------------------------------------------
-//game.dll+96F4D5 - 48 8B 05 34DBC600       - mov rax,[game.dll+15DD010]
-//game.dll+96F4DC - 48 33 C4                - xor rax,rsp
-//game.dll+96F4DF - 48 89 85 90090000       - mov [rbp+00000990],rax
-//game.dll+96F4E6 - 3B 15 50614E01          - cmp edx,[game.dll+1E5563C]
-//game.dll+96F4EC - 8B DA                   - mov ebx,edx
-//game.dll+96F4EE - 8B 85 700A0000          - mov eax,[rbp+00000A70]
-//game.dll+96F4F4 - 4C 8B F1                - mov r14,rcx
-//game.dll+96F4F7 - 89 45 0C                - mov [rbp+0C],eax
-//game.dll+96F4FA - 8B 85 780A0000          - mov eax,[rbp+00000A78]
-//game.dll+96F500 - 89 45 08                - mov [rbp+08],eax
-</AssemblerScript>
-            </CheatEntry>
-            <CheatEntry>
-              <ID>195</ID>
+              <ID>114036</ID>
               <Description>"Inf. Health"</Description>
               <VariableType>Auto Assembler Script</VariableType>
-              <AssemblerScript>[ENABLE]
+              <AssemblerScript>{ Game   : helldivers2.exe
+  Version: 
+  Date   : 2026-04-28
+  Author : cfemen
+
+}
+
+[ENABLE]
 
 aobscanmodule(aobReadLocalPlayerHealth,game.dll,41 8B 47 18 4C 8B 7C 24 20 4C 8B 74 24 28) // should be unique
 alloc(newmem,$1000)
@@ -677,35 +603,37 @@ return:
 registersymbol(aobReadLocalPlayerHealth)
 
 
-aobscanmodule(aobWriteHealth,game.dll,45 89 34 00 48 8B 46 38 4C 03 46 50) // should be unique
+
+
+
+aobscanmodule(aobWriteHealth,game.dll,45 89 34 01 48 8B 47 38 4C 8B 47 50 4D 03 C1) // should be unique
 alloc(newmem2,$1000)
 
 label(code2)
 label(return2)
 
 newmem2:
-
-code2:
   push rbx
   push rcx
   mov rbx,pHealth
   mov rbx,[rbx]
-  lea rcx,[r8+rax]
+  lea rcx,[r9+rax]
   cmp rbx,rcx
   jne short @f
    mov r14d,#9999
   @@:
   pop rcx
   pop rbx
-  mov [r8+rax],r14d
-  mov rax,[rsi+38]
-  add r8,[rsi+50]
-  mov rcx,[rax+r9*8]
-  jmp return2
+code2:
+  mov [r9+rax],r14d
+  mov rax,[rdi+38]
+  mov r8,[rdi+50]
+  add r8,r9
+  jmp far return2
 
 aobWriteHealth:
   jmp far newmem2
-  nop 2
+  nop
 return2:
 registersymbol(aobWriteHealth)
 
@@ -718,11 +646,38 @@ unregistersymbol(aobReadLocalPlayerHealth)
 dealloc(newmem)
 
 aobWriteHealth:
-  db 45 89 34 00 48 8B 46 38 4C 03 46 50 4A 8B 0C C8
+  db 45 89 34 01 48 8B 47 38 4C 8B 47 50 4D 03 C1
 
 unregistersymbol(aobWriteHealth)
 dealloc(newmem2)
 
+{
+// ORIGINAL CODE - INJECTION POINT: game.dll+5F6C58
+
+game.dll+5F6C34: 8D 48 FF           - lea ecx,[rax-01]
+game.dll+5F6C37: F3 48 0F 2A C8     - cvtsi2ss xmm1,rax
+game.dll+5F6C3C: 0F 5B C0           - cvtdq2ps xmm0,xmm0
+game.dll+5F6C3F: F3 0F 5E D0        - divss xmm2,xmm0
+game.dll+5F6C43: F3 0F 59 D1        - mulss xmm2,xmm1
+game.dll+5F6C47: F3 48 0F 2C C2     - cvttss2si rax,xmm2
+game.dll+5F6C4C: 3B C1              - cmp eax,ecx
+game.dll+5F6C4E: 0F 46 C8           - cmovbe ecx,eax
+game.dll+5F6C51: 89 4E 10           - mov [rsi+10],ecx
+game.dll+5F6C54: 48 8B 47 50        - mov rax,[rdi+50]
+// ---------- INJECTING HERE ----------
+game.dll+5F6C58: 45 89 34 01        - mov [r9+rax],r14d
+// ---------- DONE INJECTING  ----------
+game.dll+5F6C5C: 48 8B 47 38        - mov rax,[rdi+38]
+game.dll+5F6C60: 4C 8B 47 50        - mov r8,[rdi+50]
+game.dll+5F6C64: 4D 03 C1           - add r8,r9
+game.dll+5F6C67: 4A 8B 0C F8        - mov rcx,[rax+r15*8]
+game.dll+5F6C6B: 8B 49 10           - mov ecx,[rcx+10]
+game.dll+5F6C6E: E8 DD E1 64 00     - call game.dll+C44E50
+game.dll+5F6C73: 83 FB FF           - cmp ebx,-01
+game.dll+5F6C76: 0F 84 B3 00 00 00  - je game.dll+5F6D2F
+game.dll+5F6C7C: 4C 8B 5C 24 38     - mov r11,[rsp+38]
+game.dll+5F6C81: 4D 8B D7           - mov r10,r15
+}
 </AssemblerScript>
             </CheatEntry>
             <CheatEntry>
@@ -1210,9 +1165,56 @@ dealloc(*)
 </AssemblerScript>
             </CheatEntry>
             <CheatEntry>
+              <ID>1337315381</ID>
+              <Description>"Pick-Up Validation Check Bypass"</Description>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>/*
+  Pick-Up Validation Check Bypass by Igromanru
+  Based on BlackValac's code
+*/
+
+{$lua}
+if syntaxcheck then return end
+
+[ENABLE]
+destroyPickUpCheckBypassTimer = false
+validationCheckAddress = nil
+
+local address = AOBScanModuleUnique('game.dll', '48 8B 05 ? ? ? ? 83 B8 ? ? ? ? ? 75 ? 39 98')
+
+if not address then
+    error('Failed to find address')
+end
+
+local offset = readInteger(address + 3)
+local targetObject = readPointer(address + 7 + offset)
+
+if not targetObject then
+  error('Failed to resolve RIP for target object')
+end
+
+local validationCheckOffset = readInteger(address + 18)
+validationCheckAddress = targetObject + validationCheckOffset
+
+pickUpCheckBypassTimer = createTimer(getMainForm())
+pickUpCheckBypassTimer.Interval = 1000
+pickUpCheckBypassTimer.OnTimer = function (timer)
+  if destroyPickUpCheckBypassTimer then
+    timer.destroy()
+    timer = nil
+  end
+  writeInteger(validationCheckAddress, 0)
+end
+
+[DISABLE]
+destroyPickUpCheckBypassTimer = true
+
+
+</AssemblerScript>
+            </CheatEntry>
+            <CheatEntry>
               <ID>170558</ID>
               <Description>"Remove Currency Pickup Limit"</Description>
-              <Options moActivateChildrenAsWell="1" moDeactivateChildrenAsWell="1"/>
               <VariableType>Auto Assembler Script</VariableType>
               <AssemblerScript>//Author : Zodiac, HavocBlitz
 //CE     : 7.6
@@ -1240,7 +1242,7 @@ if game == nil then
 end
 
 local patterns = {
-    limitscan = '48 8B E8 4C 8B 89 ? ? ? ? 48 8B C8 41 FF 91 ? ? ? ? 48 8B 0D ? ? ? ? 48 8D 15 ? ? ? ? 45 8B 46 ? 4C'
+    limitscan = '4C 8B F0 4C 8B 89 ? ? ? ? 48 8B C8 41 FF 91 ? ? ? ? 48 8B 0D ? ? ? ? 48 8D 15 ? ? ? ? 44 8B C3'
 }
 
 for AOBNAME, pattern in pairs(patterns) do
@@ -1910,13 +1912,15 @@ dealloc(*)
 //Inject : game.dll+DBD87F
 //Date   : 26/08/25
 //Comment: Script made for Experimental Division. Sets 100 of each samples after the extraction.
+// Fixed for v6.2.2 by Igromanru
 
 [ENABLE]
 {$STRICT}
-aobscanmodule(MaxSamplesR,game.dll,44 8B C5 4C 8B 89 ? ? ? ? 48 8B CB 41 FF 91 ? ? ? ? 41 FF C6) //Unique
+aobscanmodule(MaxSamplesR,game.dll,44 8B C5 4C 8B 89 ? ? ? ? 48 8B CB 41 FF 91 ? ? ? ? 41 FF C7)
 alloc(newmem,80,MaxSamplesR)
 label(exit_samples MaxSamplesR_code maxsamples_l return)
-registersymbol(MaxSamplesR MaxSamplesR_code maxsamples_l)
+label(MaxSamplesRBackUp)
+registersymbol(MaxSamplesR MaxSamplesRBackUp MaxSamplesR_code maxsamples_l)
 
 newmem:
   push rax
@@ -1943,8 +1947,8 @@ exit_samples:
   pop rax
 
 MaxSamplesR_code:
-  mov r8d,ebp
-  reassemble(MaxSamplesR+3)
+MaxSamplesRBackUp:
+  readMem(MaxSamplesR, 10)
   jmp return
   align 10
 
@@ -1960,38 +1964,39 @@ MaxSamplesR:
 return:
 
 [DISABLE]
-
 MaxSamplesR:
-  db 44 8B C5
-  reassemble(MaxSamplesR_code+3)
+  readMem(MaxSamplesRBackUp, 10)
 
 unregistersymbol(*)
 dealloc(*)
 
-//Original Instructions:
-//game.dll+DBD84F - 48 8B D8                - mov rbx,rax
-//game.dll+DBD852 - 4C 8B 89 28010000       - mov r9,[rcx+00000128]
-//game.dll+DBD859 - 8D 4F 01                - lea ecx,[rdi+01]
-//game.dll+DBD85C - 48 8D 0C 49             - lea rcx,[rcx+rcx*2]
-//game.dll+DBD860 - 48 03 C9                - add rcx,rcx
-//game.dll+DBD863 - 45 8B 04 CC             - mov r8d,[r12+rcx*8]
-//game.dll+DBD867 - 48 8B C8                - mov rcx,rax
-//game.dll+DBD86A - 41 FF 91 E8000000       - call qword ptr [r9+000000E8]
-//game.dll+DBD871 - 48 8B 0D 38E2F700       - mov rcx,[game.dll+1D3BAB0]
-//game.dll+DBD878 - 48 8D 15 D9786000       - lea rdx,[game.dll+13C5158]
-//------------------------------------------------------------------------------
-//game.dll+DBD87F - 44 8B C5                - mov r8d,ebp
-//------------------------------------------------------------------------------
-//game.dll+DBD882 - 4C 8B 89 28010000       - mov r9,[rcx+00000128]
-//game.dll+DBD889 - 48 8B CB                - mov rcx,rbx
-//game.dll+DBD88C - 41 FF 91 E8000000       - call qword ptr [r9+000000E8]
-//game.dll+DBD893 - 41 FF C6                - inc r14d
-//game.dll+DBD896 - FF C7                   - inc edi
-//game.dll+DBD898 - 48 83 C6 04             - add rsi,04
-//game.dll+DBD89C - 83 FF 08                - cmp edi,08
-//game.dll+DBD89F - 0F82 7BFFFFFF           - jb game.dll+DBD820
-//game.dll+DBD8A5 - 4C 8B 64 24 30          - mov r12,[rsp+30]
-//game.dll+DBD8AA - 48 8B 74 24 28          - mov rsi,[rsp+28]
+{
+// ORIGINAL CODE - INJECTION POINT: game.dll+E2E0C4
+
+game.dll+E2E08A: 41 FF 91 58 01 00 00  - call qword ptr [r9+00000158]
+game.dll+E2E091: 48 8B 0D A0 16 C5 00  - mov rcx,[game.dll+1A7F738]
+game.dll+E2E098: 48 8D 15 D5 A8 77 00  - lea rdx,[game.dll+15A8974]
+game.dll+E2E09F: 44 8B 06              - mov r8d,[rsi]
+game.dll+E2E0A2: 48 8B D8              - mov rbx,rax
+game.dll+E2E0A5: 4C 8B 89 28 01 00 00  - mov r9,[rcx+00000128]
+game.dll+E2E0AC: 48 8B C8              - mov rcx,rax
+game.dll+E2E0AF: 41 FF 91 F8 00 00 00  - call qword ptr [r9+000000F8]
+game.dll+E2E0B6: 48 8B 0D 7B 16 C5 00  - mov rcx,[game.dll+1A7F738]
+game.dll+E2E0BD: 48 8D 15 A8 A8 77 00  - lea rdx,[game.dll+15A896C]
+// ---------- INJECTING HERE ----------
+game.dll+E2E0C4: 44 8B C5              - mov r8d,ebp
+// ---------- DONE INJECTING  ----------
+game.dll+E2E0C7: 4C 8B 89 28 01 00 00  - mov r9,[rcx+00000128]
+game.dll+E2E0CE: 48 8B CB              - mov rcx,rbx
+game.dll+E2E0D1: 41 FF 91 F8 00 00 00  - call qword ptr [r9+000000F8]
+game.dll+E2E0D8: 41 FF C7              - inc r15d
+game.dll+E2E0DB: 48 83 C7 04           - add rdi,04
+game.dll+E2E0DF: 48 83 C6 40           - add rsi,40
+game.dll+E2E0E3: 49 83 EE 01           - sub r14,01
+game.dll+E2E0E7: 75 87                 - jne game.dll+E2E070
+game.dll+E2E0E9: 48 8B 44 24 30        - mov rax,[rsp+30]
+game.dll+E2E0EE: 48 8B 74 24 28        - mov rsi,[rsp+28]
+}
 </AssemblerScript>
               <CheatEntries>
                 <CheatEntry>
@@ -2093,7 +2098,7 @@ local BypassGameGuard = decodeFunction("c-pO0,iKfD5M9,GHKK,;^L%!%5K4%Pi7)RXl0I1R
 BypassGameGuard()
 </LuaScript>
   <Signature>
-    <SignedHash HashSize="132">0jz%skyB6g7Gb4}nM67)Z#@SH/mEUeC_F@^QxH?hxTTkR%eyRkZ}2Ak^/HgUEyogI-^}b=kuMDTxIty?0n]C+i5h3gq:vS5TXBfQZITnD+%m[X+9^+Qd7T(pC$b?3-H1pvS7%DhFRa0Ejk_GmY1{:t%1.3Dv{pN^]8K+o</SignedHash>
+    <SignedHash HashSize="132">0H-rzZuWmG+oKC0MBC#Z=n1@@#;1fra6uW/apF6NyU5.N-yAnd9Z1GH.7CPNEJ)az46dA6%BuJr%7lU6!yf[8m,O-upZJ/rMFHUHAfB1trVI54,]D1gueFWi[=*)W%W0vi03E/bQeN9{8[k:cB!%}bTi;o/gmI/We?+/m</SignedHash>
     <PublicKey Size="4763">6aWAKP.Yl-a%E(7VtF7+XL4[CVQzADi}s?vMMG0HLI3}(0Sb4F=bEq]p62pP4Hn9nEiy:B!;ItR%xr[wyK8!wor?#+IWu/6@YB%*bO3_$?kV,9;Yo@^pDDt0m(*])iwFT7O;F4,6O(4*v,2wtPr/E(ATvKGT.N=z!.^S4ah)ZT3XO/MPXVEI+)_-FU3wj=FKMcczRoFc]8kySc4hHy1ZEKc0EtjeM-2*Z3IG5A4M_8uQUCw_7ytkO7zhFY003[ls.;Y53QuW6Lr[p=Z++@SXm4.JNkc.+aB@;EX;4Tx0C=J,Q*g6D:?vcr-t/CCh:7z!Z(DQqAW{k$fE1A=Dj@9FN^At$+%eX25k+A:8[1xD1CEY;j1@HV42lZa2jn55j*S9!ipu-pd!uXCy!YnK^/YUW:dAOcv)E;;2n=1.Gf[2w45;mM5#WQz#Kz(_E/k_[Bya![2)x4%bNwR$0Qi19JS!r:2fhFSc,)3A0KiR}z%U$#^{1XynOp(YgaN;GkvK}TfD]}gdX7S-06/0ofSs5oQvjd?0AR}wV(ec%EdXFAf9BHwfSvf6djSAjlpz%XppgI_6J;{+0BAb@tj_]8MF3bZ02F3R#5n-iEdVe^S7t}6u)trf(JYW-00.}KFj0twDF6g{0AR:=BX_IWnE)[/?;e_ZE3OddDgXd?nX*^(BsoQaTL;,22Uk{v9w@R97b[GtVFF;AKrX[0nHe(HG!NkO%m4tOkrff)gY+4)(JM25(Nhy:4qq,mzXtyzVq*X_//F}dKmY+YbbitPEHASffI9_(ZT[Mq=gVIF3!ruPi*OM9K)zp%;DpKGaQJ;aJVl_9x!Kv{/mA^(#6nwP%2$2/XTo2:SN({Hemwm5[29nZB!Mzrfky:R.KI!GOr.#pk[m*j,}$u+^I=7L^2kLG#7SbgSSl3bQ4);EM4F8AGNmGkLXs*PCDQ,7.?;R$13uq10I,I40eg]xs9j=N[Dd%aSaiVR[W%I$yKlkNC/p[9XoKO.cmMA^^YRiB0Dxvml5qe4UPL4:RLZkI#_QubM4+8xut6L2!5A#S1^{c!,]$X^U@aw8B+el)5JC!MfE.pQDXfA+D2C0j9V%ci*Ic3Hz*?)1lW-0$!d18qJ#Y^DVF.eVD7:9Q1VP9M6Ja6Rhyh{XSR.-I7nz0lA.Cxl5^o1t$%qtDB1?4qNHJ21R3KGI9r8VL0y(3VM!JzZ$N)}e^D!/oF[eL[Q9aZQwL]h6HyVUSq6@SubTOKb7NDEZa/m#fj5eX=)5q,/,K*a%$1uR=7zZ:NY%ngy!$Pq+ED4ii%dsM=46DW)uvV-CyNUH/(#]v_5]jg*2^r[GLLgxtK{c9kSWehTs3069G!fbfHwgoTQNkx8lc-CyCb_+%#28^SF@5:4EF.zuj{tEtdx%5CHzX2=Loz41kOE1uq+T%p)niv5QX{asshc!N8Y7d+,GK082RW21AS:j*/elWh/TK/O/RS7}3Y{s:aisWD.wVzeYDyX95al%G24$EsK}/xgQr*PbR1r0gT0+U%wo/QAho{:Yb)%TNgBD3krLCfs).8=OX!mKa:ybXf-IX3rm)W,z%jrkxm+?lZcMJ]N6?$l!XDAt*7zY=/8Fv]3m]tV[)}B9$R4[L(;zL:651DUOSSq$Ed:-))3YAKgCY2j1FI1[jrmEhm3sv)}%T$l4UQ;OpMpZLY/EaVMmaA2(olxsj8(hYgJE)]MXQ+#fKcs$H^fP!y!%V_ZL!=olv0vl7#vlu08MAmSA!]k+hIN58#3r%L+=e^=yO^kQyNf-lsi8STGfFd8vr[YvW/Lkxm}r?:bWRE9D5sb6eu}{^=/wLb8;Tc(xiMv2YpRx*mRPGut5K@+;%BIv=Wdily,ylO],+KY$4Vz$Cr4,G(IO)4Q]uA9rwXSQO,7mGt{d!.r5mBUM0dY#r_y]ZzFvTyOmC.(dA.ZQ9DOhSRQ,xGr{ak,SO(8UBnI0I(KNw!HF0k_9WTe+?liuv!$3o(VU:N+.e=U7)LAHoMvX:fjA[PP/0Rv4#%.!/CI%*UCQD7}P41dfO{VBiraMeKOvla4(7#fLnKhd_G1oHZo9CO=o8Px!T6kJ4wy3taWl6H,TBcd/w!ChIS}+#zSXEkGvqr6+ttHmGt-GfYr?2m)POF}QXTz{Zw#l{sw.8bI+aq9Kwr#e3VP_3(XSc/!!_s#4lYP2/jr}0b4Tsqds}uV$esi;P6gpNq-kQ#w=mvCS@p?![XIRe:(*75LwiC-K#A%(Vo6_;U7iYP1gY$?siA#dZE_*$on.XX6$i3uBboFsv.d.^botv_p!tJQrukJSPY3[(IpUgC$DV_v}bI]-cL+P.6)LW2Hl]w1HtbR^JPl0E):OZs.FOgTR+RZ#xcdGYc=-xGyK60PqKI1$$-ZI]/U)7eax5(54Ps4AXUxnX8e/S}7_9bz=0H:T?0cQh:fkA.:0^i%Sd=CM%KRVlG[OjXSL5!feK?}xdf}_t)!L1:@$n21/A?{E*(XLY)4uw#D:,?8(Vdi0r!,s1Wg?:V#hChyQh+%oYF[$%W)cD9G-$eREmPFp0XE9GXuPsV7Dn6/%YCPIEx-[}!#x7:A%,+,)SV=S4962s3t}PFLzTf:q@M}S^.tS)?7nm:_U2u7!(cgJCrxvL$5-d8FKum}EIF#?}5Gtq@j3x3DcO^MrdBPpSXCg1rHqnUKLtH8zPVz]9O=r}-k-Rl_B+inOEaka]C#jIUObtxkn;wBrnsy+/GCexIF?utkka0q*Ax*FEXX/C;W[HW0Wrec-#cqqYFCLW#$!oKatOZ#u3bsO}:u{!L+D43HXJuDrzs-rtIhL!QE6wf9v(!3$H:OUE_LqdO65+1zrG]saEge_qy^u_EvOIBl,X}_q1uKSD2CO]_inc0k*laMKSC[7Sy)W51Yk@,D%7VeQ0c-0ERSM.Wee2xU=Ojh.FInHUVfu!h8$K0?imnvf7nc:)+eKk1/r^{?%D/W1l)ea/#JOb8X3{Qq:H4xyTMm{0m+$raZVlPmv/:??wC)lwMcXfz%[!TugSJDtqrW]3yk*1!(dobNRHRh(RQgml=$X]0Vb{O;)e4_2y!JHg*!SRV[x)P{zS}s,RZZ1q*n*rh]=L2yu8FGY[=G*@U9C:SaqY)g)gXbmBM!FLxzyDi)mhmCkJc.eM-ImyzW$x;cP$Mz4ONYt#@NJzM0w:t[X+$k9t{F$c8q)h.Rn,nb^%IOFKR-X?_s4QQ:0o+Vq3aT%s$c9;fU/%N829^oHRUHc{nwC$!Xf?g42@^@3RN(m7RTlF8SPG,oHC6:VQ+[Y7cMkx*5}X)nbG@:R3SR(Rp]ibn;#;/r7!9SDLRnUv27i;OB6F)?*2^oV%K=xm.[x=s}noduI3P8:g1L-SoYA?fQEq*t*($-M#aAZ{-Lb[1[lVesU-M(da.mcPH,xyidGe@g!*F+,boj*jwPQ,{Q8je];(Yp!3n)NB0JWgU_kv@@Xrj1(@7J%Z3ex;z,71IXU7#a^cN2r$f)V(nBK1^-XZNt]]/Be*!ev+Ur)H)V;@{my@G3e5L+B!0Q;W,s4Ai9:@$VGcjKDR^QP2cieX!?1x%jPvm=ce/:TG]LXp:)5L(88IzO$1Ou4!^9]jM,W-InAY)^UO#lFTB;)[]g8%@e^^R4h:;PzAFaQARU.qF+m.eA5Z/1fdMgRZ=rb$FWRCwA1!Fx}=[W:Ol-_lZ.w_jdp=!f@E$XgBsR1{RGTCK*RHMZ4hO/SY3YOH3eHMYhvF_8ew^+k0iOzLFPbZX2/ZH%!9VXCI25hxD?/o(ukULMCixx0Pb=%r.^4[/zu[Tt[OhQSFEpSiy8!fU7e31r=k][HS#PVXpcZ5#UIPwKW6S}OL(.@6Do*+X4Nws$(pXm5SfhllHPb=?yivYJhEGJ}$NDU3/iG!R%^X5m(J?Bnwq!:b}!+tPTEiQ@6J/r{KjY[5]ceqWXIr-#0CsY6)]@G6SE^:WYyc/aVsw]h0+@z$*pe0(mK]]ymgY3^,$^MloB-{s;0;zRLHYvs8(FYJHuY,{yy$?yKEuQqRSq82C1I]ig(0w:Q8%I}J*af:b^;h)ydTDH1$q/aL7CM4F)*UVCocIZ@i%93EfU%hTk!gIf@:}j8Z/LZ?]gX@rB4ud7rJ}1-=bRpT=bT]*lH=Oa;vusg]]{Mca:TPcoGzCf4kcQNs8};MzEGClN^my}(hjuhxcrz3fR?kVza.m1xC6H]mXVAzhxT:i{c^jSutgHC:Z=F99#XS/F(tAMT:Z]}[Buy0NHWPy$q4C!3f)*s5Fq*WO;YffiTg22A6Cr=QW1/.JXp#6#Ao_rnfDpJF-wbC%f5ZD9x8Co@mZPdB!O^YIS+_^N$y;Djz@e6Yoy?#H.eR.6SJKKec2sAxV:O(C.xVFl9wj#oClf$FwXl=F4%Jn#X:CaB-9Ow1#xN5F+OfXcEWNeb+5CXfN...3s(}peIpZ(3i3%GNND9eV90Hw486:MPEeQ8!.}{1x5Xu]dTC%Ic_GB-V6wcxdeEaZo=_nHKR-]gBHP!bxmnKYcA.$m;1kIx9A^QQuN_KCXW[o-v1ykuVJ:z-/DIRraS]EQRj2s#h([8]OiQGB0BWAXDc[UkjRR@Qzr^_UBaBM-}HE1ibI/shQi4*}CmdVP_sK;)%d(RN;):,b.315K6Q=xPTvyP_RHkM/8Ox9OtlMb6CqP;1@7GzjDjZktZuv{m-gRDl(q7D#NBkEU8tpmQ7;I-,Rb:}RqleA7]%%jW5(2v8pCq/}Y,ArQ1G_{lJFK/8d#%H-KtY4X{swoVWMP5?7(0%EFbczoJ$9:LD#Y{o6z$5l-^g1D-Kfim@bDN4@_KOf*at0cl]TL*+yVTIEMn:!QyrsK*=AZc,+XWXh.%R_n7,PhlTrw3^jB9DlZX]yg!a3FXqtk*nlB{F8=Ay@}dDZH;z0;g3?7LAlW:MK]U@G-!kYTr2dfFdjv_i;V6P9*s+f?Y/79(m4IM60TlCiYHY#}1S.[.ai-{{RdZ5?NlhqqU)AVlb+i9^m$W#]D_O_@af/HvT[aDec^fX.whO$.duEGE/GctYS%1#f-ip)?w9b8O]]u7,zJh:w^cO!Kn:F(c$KGvPgTD;,#i[AKgYdTe3g/hy[MMdYuWT35OXKOdOw9bbGjofKs:ACv#y/vaSy$:VY8#rJPGO@m}7Z+CuBaNIzku*M4Wh3fho;qsbByMEn5NE#a%^pIoBT;Dph(o?2A+?eM4l{#}v0N=p^-;zdPe_7Zdmo7IDKyp^Qyo)45NIRuD@bE_.U;1YHvAIBklW0rf:?UoV9zKdL#!kF=]jxld.TIQvy{]{P?_k-+sH;p4?zW.+j{%4Pw4pA=lr:Ck*z(kpNunnZgA3sZf/gp@0;__Y4?VN^frCeBt0m8s/u0%M%bmNoo:miOp4weGcW)THC0H?R6DaoI2fZIPwzRbO.26HqmFo:$VX-}S7mCDr5kM]$CHtTBj!$=s0g3p-#d#_TRp{b(0_?%:xie0N;Felh^@It^(zrBewk!mLEJd%$%$kmc:VCDoN8;p)9apd+mmn_[s!C[*eTExOjyb.-$R$D4k%XSWKmOaND.-og7/X6a?!BE*K!,1}2FGkP.ad(?0I*2_qzcP1M5YK5QPQ%k0sxB23rJl1/a!5AV-P_N*p^l-$EJaj1}psVHme0e^Cbj[jw{fZ$LR2U,Kkj;yTV+t0ctXpP70z5R1]vnCiOJ+2ND1v0B8UJ0B][g007JA/,P%zil!lQTEz(w+kY+2FeAAc86:J)s/xa:q_zFOkrGf-qJpZ;p6MXj44Z,q8!Unbc$r%Y[?[KRf/zFYDVl[1FjJ=uVweWC^_@8RBRs:,E][ZC0000/MNUMnLSTY}00001=(=^]%NbEqj3SiMcvx*m!$A]py+^^pN1?_P]9D4bGhVyH)uX/+N*+J$PNQo6QV(59Bg#H^67;By3zOdrr}s8uv?9IGpB9%gBkj4m2jTiWEZ8U^$4uj7.}I3mw*wQpLR#cR:974x%Xx97?G)kb;kEI;fA6:2w7a/ZwHYD</PublicKey>
   </Signature>
 </CheatTable>
