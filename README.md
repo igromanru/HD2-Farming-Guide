@@ -17,6 +17,7 @@ The Farming CT contains only the GameGuard Bypass and features that you need to 
 - [FAQ](#faq)
   - [Which kind of cheats are possible in the game?](#which-kind-of-cheats-are-possible-in-the-game)
   - [Super Credits / Medals limit per mission](#super-credits--medals-limit-per-mission)
+  - [Pick-Up Validation Check](#pick-up-validation-check)
   - [Game Crashes](#game-crashes)
   - [AntiCheat Details](#anticheat-details)
 - [Related Discord Server](#related-discord-server)
@@ -134,6 +135,10 @@ It's an issue in CE v7.5. You can fix it easily.
 5. Press **OK** at the bottom to save the settings
 6. Done
 
+### Pick-Up Validation Check
+Around v6.2.2 AH added a validation check to spawned currency items, like Super Credits, Medals, Requisition Slips.  
+A bit later a UC user [BlackValac](https://www.unknowncheats.me/forum/4669897-post17.html), posted a script that contains a bypass for the validation check.  
+I used it to create the **Pick-Up Validation Check Bypass** script that is now part of the Farming Table and allows to pick-up dropped currencies as before.  
 
 ### Game Crashes
 Hacking is not an "exact science". Removing GameGuard from the game will sometimes cause it to crash. Also, some features might cause crashes under different circumstances.  
